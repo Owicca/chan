@@ -1,18 +1,25 @@
 package logs
 
 import (
-	"github.com/jackc/pgx/v4/pgxpool"
-	"context"
+	// "github.com/jackc/pgx/v4/pgxpool"
+	"gorm.io/gorm"
+	// "context"
 	"errors"
+	"log"
 )
 
 
 type Entry struct {
+	ID uint64 `gorm="primaryKey"`
 	Action string
-	Subject int64
-	Object int64
-	Object_type string
+	Subject uint64
+	Object uint64
+	ObjectType string
 	Data string
+}
+
+func (e Entry) TableName() string {
+	return "log_actions"
 }
 
 // A generic interface that writes an "Entry" to a "Store".
@@ -22,11 +29,11 @@ type Logger interface {
 }
 
 type ActionLog struct {
-	Store *pgxpool.Pool
+	Store *gorm.DB
 }
 
 // Create an ActionLog
-func NewActionLog(store *pgxpool.Pool) *ActionLog {
+func NewActionLog(store *gorm.DB) *ActionLog {
 	if store == nil {
 		return nil
 	}
@@ -53,7 +60,7 @@ func (l *ActionLog) Write(entry Entry) error {
 		return errors.New("Invalid action object")
 	}
 
-	if entry.Object_type == "" {
+	if entry.ObjectType == "" {
 		return errors.New("Invalid action object_type")
 	}
 
@@ -61,15 +68,8 @@ func (l *ActionLog) Write(entry Entry) error {
 		return errors.New("No data provided on insert/update")
 	}
 
-	sql := `
-	INSERT INTO
-	log_actions(action, subject, object, object_type, data)
-	VALUES($1, $2, $3, $4, $5)
-	`
-	_, err := l.Store.Exec(context.Background(), sql, entry.Action, entry.Subject, entry.Object, entry.Object_type, entry.Data)
-	if err != nil {
-		return err
-	}
+	tx := l.Store.Create(&entry)
+	log.Fatal(tx.Error, tx.RowsAffected)
 
 	return nil
 }

@@ -7,7 +7,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	// "github.com/jackc/pgx/v4/pgxpool"
+	"gorm.io/gorm"
 	"go.uber.org/zap"
 )
 
@@ -44,7 +45,7 @@ func NewConfig() Config {
 	return cfg
 }
 
-func Setup(configPath string) (Config, *pgxpool.Pool, *zap.Logger) {
+func Setup(configPath string) (Config, *gorm.DB, *zap.Logger) {
 	cfg, err := LoadConfig(configPath)
 	if err != nil {
 		log.Fatalf("{\"level\":\"fatal\", \"message\":\"Could not load configuration (%s)\", \"timestamp\": %d", err, time.Now().Unix())

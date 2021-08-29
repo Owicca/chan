@@ -1,18 +1,13 @@
 package main
 
 import (
-	"context"
-	"log"
+	// "log"
 
 	"github.com/Owicca/chan/infra"
 	"github.com/Owicca/chan/routes"
 
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
-)
-
-var (
-	ctx = context.Background()
 )
 
 func main() {

@@ -10,20 +10,22 @@ import (
 	"context"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4/pgxpool"
+	// "github.com/jackc/pgx/v4/pgxpool"
+	"gorm.io/gorm"
+
 	"go.uber.org/zap"
 )
 
 type Server struct {
 	Config Config
-	Conn   *pgxpool.Pool
+	Conn   *gorm.DB
 	Router *mux.Router
 	Template *Template
 }
 
 func NewServer(
 	cfg Config,
-	conn *pgxpool.Pool,
+	conn *gorm.DB,
 	r *mux.Router,
 	tmpl *Template,
 ) Server {
@@ -112,7 +114,7 @@ func (s Server) ShutdownOnInterrupt(srv *http.Server) {
 			zap.L().Info(msg, zap.Int64("timestamp", time.Now().Unix()))
 		}
 		zap.L().Info("Close everything!", zap.Int64("timestamp", time.Now().Unix()))
-		s.Conn.Close()
+		// s.Conn.Close()
 		close(idleConnsClosed)
 	}()
 
