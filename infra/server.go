@@ -13,6 +13,8 @@ import (
 	// "github.com/jackc/pgx/v4/pgxpool"
 	"gorm.io/gorm"
 
+	"github.com/Owicca/chan/models/acl"
+
 	"go.uber.org/zap"
 )
 
@@ -84,6 +86,8 @@ func (s Server) Redirect(w http.ResponseWriter, r *http.Request, status int, dst
 }
 
 func (s Server) Run() {
+	acl.Run(s.Conn)
+
 	addr := s.GetAddr()
 	msg := fmt.Sprintf("Running at %s", addr)
 	zap.L().Info(msg, zap.Int64("timestamp", time.Now().Unix()))

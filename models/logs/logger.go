@@ -10,10 +10,10 @@ import (
 
 
 type Entry struct {
-	ID uint64 `gorm="primaryKey"`
+	ID int64 `gorm:"primaryKey,column:log_id"`
 	Action string
-	Subject uint64
-	Object uint64
+	Subject int64
+	Object int64
 	ObjectType string
 	Data string
 }
