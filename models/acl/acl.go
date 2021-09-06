@@ -46,15 +46,10 @@ func NewObjectAction(db *gorm.DB) ObjectAction {
 	mp := make(ObjectAction)
 
 	var atoList []ActionToObject
-	db.Find(&atoList)
+	db.Preload("Object").Preload("Action").Find(&atoList)
 
 	for _, ato := range atoList {
-		obj := Object{}
-		act := Action{}
-		db.Model(&ato).Association("Object").Find(&obj)
-		db.Model(&ato).Association("Action").Find(&act)
-
-		name := fmt.Sprintf("%s_%s", obj.Name, act.Name)
+		name := fmt.Sprintf("%s_%s", ato.Object.Name, ato.Action.Name)
 		if _, ok := mp[ato.ID]; !ok {
 			mp[ato.ID] = name
 		}
@@ -79,18 +74,13 @@ func NewRolePair(db *gorm.DB) RolePair {
 	mp := make(RolePair)
 
 	var ptr []PairToRole
-	db.Find(&ptr)
+	db.Preload("Role").Preload("ActionToObject").Find(&ptr)
 
 	for _, v := range ptr {
-		role := Role{}
-		db.Model(&v).Association("Role").Find(&role)
-		ato := ActionToObject{}
-		db.Model(&v).Association("ActionToObject").Find(&ato)
-
-		if _, ok := mp[role.Name]; !ok {
-			mp[role.Name] = []string{ObjectActionList[ato.ID]}
+		if _, ok := mp[v.Role.Name]; !ok {
+			mp[v.Role.Name] = []string{ObjectActionList[v.ActionToObject.ID]}
 		} else {
-			mp[role.Name] = append(mp[role.Name], ObjectActionList[ato.ID])
+			mp[v.Role.Name] = append(mp[v.Role.Name], ObjectActionList[v.ActionToObject.ID])
 		}
 	}
 
