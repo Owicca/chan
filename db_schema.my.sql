@@ -155,26 +155,19 @@ INSERT INTO pair_to_role(ato_id, role_id) VALUES
 (53, 5),
 (54, 5);
 
--- ---
+CREATE TABLE users(
+	user_id bigint primary key,
+	deleted_at int NOT NULL DEFAULT 0,
+	username varchar(255) NOT NULL,
+	email varchar(255) NOT NULL,
+	password varchar(255) NOT NULL,
+	salt varchar(255) NOT NULL,
+	status varchar(2) NOT NULL,
+	role_id integer REFERENCES roles(role_id)
+);
 
--- INSERT INTO user_types(user_type_id, name, code) VALUES
--- (1, 'R', 'root'),
--- (2, 'SA', 'site_admin'),
--- (3, 'BA', 'board_admin'),
--- (4, 'BOP', 'board_operator');
-
--- ---
-
--- CREATE TABLE user_statuses(
--- 	user_status_id serial primary key,
--- 	deleted_at int NOT NULL DEFAULT 0,
--- 	name varchar(64) NOT NULL,
--- 	code varchar(64) NOT NULL
--- );
-
--- INSERT INTO user_statuses(user_status_id, name, code) VALUES
--- (1, 'Disabled', 'D'),
--- (2, 'Active', 'A');
+INSERT INTO users(user_id, username, email, password, salt, status, role_id) VALUES
+(1, 'root', 'root@root.com', '$2a$10$KI4EmNCFlvYteYeI//1s2OhR5jNmIJlEdrgLOzYINyuf8MrUNbaAC', 'salt', "A", 5);-- password: password; salt: salt
 
 -- ---
 
@@ -199,23 +192,6 @@ INSERT INTO pair_to_role(ato_id, role_id) VALUES
 -- 	code varchar(64) NOT NULL,-- img, vid
 -- 	path text NOT NULL
 -- );
-
--- ---
-
--- CREATE TABLE users(
--- 	user_id serial primary key,
--- 	deleted_at int NOT NULL DEFAULT 0,
--- 	username varchar(255) NOT NULL,
--- 	email varchar(255) NOT NULL,
--- 	password varchar(255) NOT NULL,
--- 	salt varchar(255) NOT NULL,
--- 	user_type_id integer REFERENCES user_types(user_type_id),
--- 	user_status_id integer REFERENCES user_statuses(user_status_id),
--- 	role_id integer REFERENCES roles(role_id)
--- );
-
--- INSERT INTO users(user_id, username, email, password, salt, user_type_id, user_status_id, role_id) VALUES
--- (1, 'root', 'root@root.com', '$2a$10$KI4EmNCFlvYteYeI//1s2OhR5jNmIJlEdrgLOzYINyuf8MrUNbaAC', 'salt', 1, 2, 5);-- password: password; salt: salt
 
 -- ---
 

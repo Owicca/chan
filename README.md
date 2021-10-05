@@ -34,9 +34,9 @@
 		2. update
 		3. delete
 
-- #group: a list of actions
+- #role: a list of actions
 
-- default_groups(new groups can be created, but these are unchangeable):
+- default_roles(new roles can be created, but these are unchangeable):
 	- anon:
 		- action_list:
 			- 1.1
@@ -109,106 +109,6 @@
 	- image: #image
 
 
-### db_schema:
-- every entity contains:
-	- deleted_at int DEFAULT 0
-
-- log_actions:
-	- log_id:
-		- serial(this should be the highest int size available)
-		- primary key
-	- action: varchar(255) not null(insert, update, delete)
-	- subject: int not null
-	- object: int not null
-	- object_type: varchar(255) not null
-	- data: large text null(has values only on insert and update)
-
-- user_type:
-	- user_type_id: serial primary key
-	- name: varchar(64)
-	- code: varchar(64)
-	- values on db creation:
-		- R: root
-		- SA: site_admin
-		- BA: board_admin
-		- BOP: board_operator
-
-- user_status:
-	- user_status_id: serial primary key
-	- name: varchar(64)
-	- code: varchar(64) DEFAULT 'D'
-	- values on db creation:
-		- D: disabled
-		- A: active
-
-- post_status:
-	- post_status_id: serial primary key
-	- name: varchar(64)
-	- code: varchar(64) DEFAULT 'D'
-	- values on db creation:
-		- D: disabled
-		- H: hidden
-		- A: active
-
-- action:
-	- action_id: serial primary key
-	- name: varchar(64)
-	- code: varchar(64)
-
-- role:
-	- role_id: serial primary key
-	- name: varchar(64)
-
-- media_type:
-	- media_type_id: serial primary key
-	- name: varchar(64)
-	- code: varchar(64)
-
-- media:
-	- media_id: serial primary key
-	- media_type_id: fk to media_type.media_type_id
-	- path: text
-
-- action_to_role:
-	- atg_id: serial primary key
-	- action_id: fk to action.action_id
-	- role_id: fk to role.role_id
-
-- user:
-	- user_id: serial primary key
-	- username: varchar(255)
-	- email: varchar(255)
-	- password: varchar(255)
-	- salt: varchar(255)
-	- user_type_id: fk to user_type.user_type_id
-	- user_status_id: fk to user_status.user_status_id
-	- role_id: fk to role.role_id
-
-- board:
-	- board_id: serial primary key
-	- name: varchar(255)
-	- code: varchar(64)
-	- description: text
-	- media_id: fk to media.media_id
-
-- thread:
-	- thread_id: serial primary key
-	- board_id: fk to board.board_id
-
-- post:
-	- post_id: serial primary key
-	- thread_id: fk to thread.thread_id
-	- name: varchar(255)
-	- status: fk to post_status.post_status_id
-	- media: fk to media.media_id
-	- content: text
-
-- post_to_post:
-	- ptp_id: serial primary key
-	- post_from_id: fk to post.post_id
-	- post_to_id: fk to post.post_id
-
-
 ### sitemap:
 - frontend:
 	- /: site index
@@ -238,7 +138,7 @@
 
 
 ### tech:
-- db: postgresql
+- db: mysql
 - backend: golang
 - frontend: golang templates + react
 

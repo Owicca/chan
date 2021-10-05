@@ -92,6 +92,32 @@ func Run(db *gorm.DB) bool {
 
 	ObjectActionList = NewObjectAction(db)
 	RoleActionObjectList = NewRolePair(db)
+	if len(ObjectActionList) > 0 || len(RoleActionObjectList) > 0 {
+		result = true
+	}
+
+	return result
+}
+
+type Acl struct {
+}
+
+func Check(subject string, action string, object string, checkArr RolePair) bool {
+	result := false
+
+	if subject == "" || action == "" || object == "" {
+		return result
+	}
+
+	objectAction := fmt.Sprintf("%s_%s", object, action)
+	if arr, ok := checkArr[subject]; ok {
+		for _, v := range arr {
+			if v == objectAction {
+				result = true
+				break
+			}
+		}
+	}
 
 	return result
 }
