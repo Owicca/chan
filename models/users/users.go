@@ -17,7 +17,7 @@ type User struct {
 	Role acl.Role `gorm:"foreignKey:role_id;joinForeignKey:role_id"`
 }
 
-func GetUserList(db *gorm.DB) []User {
+func UserList(db *gorm.DB) []User {
 	var userList = []User{}
 
 	db.Preload("Role").Find(&userList)
@@ -25,7 +25,7 @@ func GetUserList(db *gorm.DB) []User {
 	return userList
 }
 
-func GetUser(db *gorm.DB, id int) User {
+func UserOne(db *gorm.DB, id int) User {
 	var user User
 
 	db.Preload("Role").First(&user, id)

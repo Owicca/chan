@@ -5,7 +5,7 @@ import (
 	// "log"
 )
 
-func GetRoleList(db *gorm.DB) []Role {
+func RoleList(db *gorm.DB) []Role {
 	var roleList []Role
 
 	db.Find(&roleList)

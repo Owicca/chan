@@ -1,11 +1,8 @@
 package logs
 
 import (
-	// "github.com/jackc/pgx/v4/pgxpool"
 	"gorm.io/gorm"
-	// "context"
 	"errors"
-	"log"
 )
 
 
@@ -23,7 +20,7 @@ func (e Entry) TableName() string {
 }
 
 // A generic interface that writes an "Entry" to a "Store".
-// Similar to io.Writer
+// Similar to io.Writer.
 type Logger interface {
 	Write(data Entry) error
 }
@@ -32,7 +29,7 @@ type ActionLog struct {
 	Store *gorm.DB
 }
 
-// Create an ActionLog
+// Create an ActionLog.
 func NewActionLog(store *gorm.DB) *ActionLog {
 	if store == nil {
 		return nil
@@ -46,7 +43,7 @@ func NewActionLog(store *gorm.DB) *ActionLog {
 }
 
 // Write "Entry" to "Store",
-// return error if fields are invalid or could not write to "Store"
+// return error if fields are invalid or could not write to "Store".
 func (l *ActionLog) Write(entry Entry) error {
 	if !AllowedAction(entry.Action).IsValid() {
 		return errors.New("Invalid action provided")
@@ -68,8 +65,7 @@ func (l *ActionLog) Write(entry Entry) error {
 		return errors.New("No data provided on insert/update")
 	}
 
-	tx := l.Store.Create(&entry)
-	log.Fatal(tx.Error, tx.RowsAffected)
+	l.Store.Create(&entry)
 
 	return nil
 }

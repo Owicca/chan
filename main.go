@@ -9,8 +9,6 @@ import (
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 	"github.com/Owicca/chan/models/acl"
-	// "github.com/Owicca/chan/models/users"
-	// "gorm.io/gorm"
 )
 
 func main() {

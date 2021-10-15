@@ -3,12 +3,13 @@ package backend
 import (
 	"github.com/Owicca/chan/models/users"
 	"github.com/Owicca/chan/models/acl"
+	"github.com/Owicca/chan/models/logs"
 	"github.com/Owicca/chan/infra"
 	"net/http"
 	"github.com/gorilla/mux"
 
-	// "log"
 	"strconv"
+	"upspin.io/errors"
 )
 
 type viewUser struct {
@@ -19,9 +20,11 @@ type viewUser struct {
 }
 
 func UserList(srv *infra.Server) http.HandlerFunc {
+	const op errors.Op = "back.UserOne"
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		data := map[string]interface{} {
-			"users": users.GetUserList(srv.Conn),
+			"users": users.UserList(srv.Conn),
 		}
 
 		srv.Render(w, http.StatusOK, "back/user_list", data)
@@ -29,17 +32,21 @@ func UserList(srv *infra.Server) http.HandlerFunc {
 }
 
 func UserOne(srv *infra.Server) http.HandlerFunc {
+	const op errors.Op = "back.UserOne"
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
 		user_id, err := strconv.Atoi(vars["user_id"])
-		if err != nil {
-			user_id = 0
+		if err != nil || user_id < 1 {
+			logs.LogWarn(op, errors.Str("No user_id provided!"))
+			srv.Render(w, http.StatusOK, "back/user", nil)
+			return
 		}
 
 		data := map[string]interface{} {
-			"user": users.GetUser(srv.Conn, user_id),
-			"roles": acl.GetRoleList(srv.Conn),
+			"user": users.UserOne(srv.Conn, user_id),
+			"roles": acl.RoleList(srv.Conn),
 			"statusList": users.UserStatusList(),
 		}
 
@@ -48,7 +55,28 @@ func UserOne(srv *infra.Server) http.HandlerFunc {
 }
 
 func UserOneUpdate(srv *infra.Server) http.HandlerFunc {
+	const op errors.Op = "back.UserOneUpdate"
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		srv.Render(w, http.StatusOK, "back/user", nil)
+		user_id, err := strconv.Atoi(r.PostFormValue("user_id"))
+		if err != nil {
+			logs.LogWarn(op, errors.Str("No user_id provided!"))
+			srv.Render(w, http.StatusOK, "back/user", nil)
+			return
+		}
+
+		if err := r.ParseForm(); err != nil {
+			logs.LogErr(op, err)
+			srv.Render(w, http.StatusOK, "back/user", nil)
+			return
+		}
+
+		data := map[string]interface{} {
+			"user": users.UserOne(srv.Conn, user_id),
+			"roles": acl.RoleList(srv.Conn),
+			"statusList": users.UserStatusList(),
+		}
+
+		srv.Render(w, http.StatusOK, "back/user", data)
 	})
 }
