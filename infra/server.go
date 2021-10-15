@@ -10,7 +10,6 @@ import (
 	"context"
 
 	"github.com/gorilla/mux"
-	// "github.com/jackc/pgx/v4/pgxpool"
 	"gorm.io/gorm"
 
 	"github.com/Owicca/chan/models/acl"
@@ -39,6 +38,7 @@ func NewServer(
 	}
 }
 
+// Merge hostname and port
 func (s Server) GetAddr() string {
 	return fmt.Sprintf("%s:%s", s.Config.HttpHost, s.Config.HttpPort)
 }
@@ -52,6 +52,16 @@ func (s Server) RegisterRoute(
 	s.Router.HandleFunc(path, handler).Methods(methods...).Name(name)
 }
 
+func (s Server) RegisterSubRoute(
+	router *mux.Router,
+	path string,
+	handler func(w http.ResponseWriter, r *http.Request),
+	methods []string,
+	name string,
+) {
+	router.HandleFunc(path, handler).Methods(methods...).Name(name)
+}
+
 func (s Server) RegisterPathPrefix(
 	path string,
 	handler http.Handler,
@@ -61,6 +71,7 @@ func (s Server) RegisterPathPrefix(
 	s.Router.PathPrefix(path).Handler(handler).Methods(methods...).Name(name)
 }
 
+// Server JSON response
 func (s Server) JSON(w http.ResponseWriter, status int, data interface{}) error {
 	w.Header().Set("Content-Type", "application/json")
 	if data != nil {
@@ -70,6 +81,7 @@ func (s Server) JSON(w http.ResponseWriter, status int, data interface{}) error 
 	return fmt.Errorf("No data to return")
 }
 
+// Serve a media file
 func (s Server) MEDIA(w http.ResponseWriter, status int, media []byte, mediaType string) {
 	w.Header().Set("Content-Type", mediaType)
 	w.Header().Set("Cache-Control", "max-age=31536000")
@@ -77,6 +89,7 @@ func (s Server) MEDIA(w http.ResponseWriter, status int, media []byte, mediaType
 	w.Write(media)
 }
 
+// Server a HTML response
 func (s Server) Render(w http.ResponseWriter, status int, htmlView string, data interface{}) error {
 	return s.Template.Render(w, status, htmlView, data)
 }

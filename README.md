@@ -153,3 +153,9 @@
 		- [ ] content
 	- [ ] create thread:
 		- [ ] enforce thread rules
+
+
+
+### Setup:
+1. `go get github.com/githubnemo/CompileDaemon`
+2. `CompileDaemon.exe -build="go build -o ..\main.exe .\main.go" -command="..\main.exe" -exclude-dir=".git" -exclude-dir="log" -exclude="(.*\.exe)$" -pattern="(.*)$" -verbose`

@@ -9,13 +9,15 @@ import (
 	// "github.com/Owicca/chan/models/boards"
 )
 
+type viewThread struct {
+	Name string
+	Path string
+}
+
 func Board(srv *infra.Server) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		data := map[string]interface{} {
-			"threads": []struct{
-				Name string
-				Path string
-			} {
+			"threads": []viewThread{
 				{
 					Name: "n1",
 					Path: "/a/n1/",

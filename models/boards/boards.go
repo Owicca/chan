@@ -7,6 +7,8 @@ import (
 	// "github.com/Owicca/chan/models/base"
 	// "github.com/jackc/pgx/v4"
 	// "github.com/jackc/pgx/v4/pgxpool"
+
+	"gorm.io/gorm"
 )
 
 type Board struct {
@@ -18,8 +20,10 @@ type Board struct {
 	Media media.Media
 }
 
-func GetBoardList() []Board {
-	boards := []Board{}
+func GetBoardList(db *gorm.DB) []Board {
+	var boards []Board
+
+	db.Preload("Media").Find(&boards)
 
 	return boards
 }

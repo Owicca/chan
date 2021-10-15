@@ -23,7 +23,7 @@
 					<h2>Boards</h2>
 				</div>
 				<div class="boxcontent">
-				{{range $col, $boardList := .boards}}
+				{{range $col, $boardList := .topics}}
 					<div class="column">
 						<h3 class="col">{{$col}}</h3>
 						<ul>

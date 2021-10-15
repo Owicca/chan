@@ -13,7 +13,7 @@ func Index(srv *infra.Server) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		data := map[string]interface{}{
 			"topics": map[string]interface{} {
-				"Col 1": boards.GetBoardList(),
+				"Col 1": boards.GetBoardList(srv.Conn),
 			},
 			"site": map[string]interface{}{
 				"name": "Chan",
