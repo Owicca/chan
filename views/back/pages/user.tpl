@@ -1,6 +1,7 @@
 {{define "back/user"}}
 {{if .user}}
 <form method="POST" action="/admin/users/{{.user.ID}}/" class="">
+	<input type="hidden" id="user_id" name="user_id" value="{{.user.ID}}" />
 	<div class="input-group input-group-sm mb-3">
 		<label for="username" class="input-group-text">Username: </label>
 		<input type="text" id="username" class="form-control" name="username" value="{{.user.Username}}" />

@@ -1,7 +1,6 @@
 package users
 
 import(
-	// "log"
 	"github.com/Owicca/chan/models/acl"
 	"gorm.io/gorm"
 )
@@ -18,7 +17,7 @@ type User struct {
 }
 
 func UserList(db *gorm.DB) []User {
-	var userList = []User{}
+	userList := []User{}
 
 	db.Preload("Role").Find(&userList)
 
@@ -26,9 +25,17 @@ func UserList(db *gorm.DB) []User {
 }
 
 func UserOne(db *gorm.DB, id int) User {
-	var user User
+	user := User{}
 
 	db.Preload("Role").First(&user, id)
 
 	return user
+}
+
+func UserOneCreate(db *gorm.DB, user User) error {
+	return db.Create(&user).Error
+}
+
+func UserOneUpdate(db *gorm.DB, user User) error {
+	return db.Model(&user).Updates(user).Error
 }

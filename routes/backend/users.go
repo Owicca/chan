@@ -10,6 +10,8 @@ import (
 
 	"strconv"
 	"upspin.io/errors"
+
+	// "log"
 )
 
 type viewUser struct {
@@ -58,18 +60,28 @@ func UserOneUpdate(srv *infra.Server) http.HandlerFunc {
 	const op errors.Op = "back.UserOneUpdate"
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user_id, err := strconv.Atoi(r.PostFormValue("user_id"))
-		if err != nil {
-			logs.LogWarn(op, errors.Str("No user_id provided!"))
-			srv.Render(w, http.StatusOK, "back/user", nil)
-			return
-		}
-
 		if err := r.ParseForm(); err != nil {
 			logs.LogErr(op, err)
 			srv.Render(w, http.StatusOK, "back/user", nil)
 			return
 		}
+
+		user_id, err := strconv.Atoi(r.PostFormValue("user_id"))
+		if err != nil || user_id < 1 {
+			logs.LogWarn(op, errors.Str("No user_id provided!"))
+			srv.Render(w, http.StatusOK, "back/user", nil)
+			return
+		}
+
+		role_id, _ := strconv.Atoi(r.PostFormValue("role"))
+
+		users.UserOneUpdate(srv.Conn, users.User{
+			ID: user_id,
+			Username: r.PostFormValue("username"),
+			Email: r.PostFormValue("email"),
+			Status: r.PostFormValue("status"),
+			RoleId: role_id,
+		})
 
 		data := map[string]interface{} {
 			"user": users.UserOne(srv.Conn, user_id),
