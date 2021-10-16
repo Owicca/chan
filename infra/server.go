@@ -17,62 +17,59 @@ import (
 	"go.uber.org/zap"
 )
 
+var S *Server
+
+// To be ran on server closing
+var (
+	undo func()
+	loggerSync func() error
+)
+
+// Get config, db, logger
+// set up settings and create Server
+func init() {
+	cfg, conn, logger := Setup("./config.json")
+	loggerSync = logger.Sync
+	undo = zap.ReplaceGlobals(logger)
+
+	S = NewServer(
+		cfg,
+		conn,
+		NewTemplate(),
+	)
+}
+
 type Server struct {
+	mux.Router
 	Config Config
 	Conn   *gorm.DB
-	Router *mux.Router
 	Template *Template
 }
 
 func NewServer(
 	cfg Config,
 	conn *gorm.DB,
-	r *mux.Router,
 	tmpl *Template,
-) Server {
-	return Server{
-		Config: cfg,
-		Conn:   conn,
-		Router: r,
-		Template: tmpl,
+) *Server {
+	if S == nil {
+		S = &Server{
+			Config: cfg,
+			Router: *mux.NewRouter(),
+			Conn:   conn,
+			Template: tmpl,
+		}
 	}
+
+	return S
 }
 
-// Merge hostname and port
-func (s Server) GetAddr() string {
+// Get hostname and port.
+func (s *Server) Addr() string {
 	return fmt.Sprintf("%s:%s", s.Config.HttpHost, s.Config.HttpPort)
 }
 
-func (s Server) RegisterRoute(
-	path string,
-	handler func(w http.ResponseWriter, r *http.Request),
-	methods []string,
-	name string,
-) {
-	s.Router.HandleFunc(path, handler).Methods(methods...).Name(name)
-}
-
-func (s Server) RegisterSubRoute(
-	router *mux.Router,
-	path string,
-	handler func(w http.ResponseWriter, r *http.Request),
-	methods []string,
-	name string,
-) {
-	router.HandleFunc(path, handler).Methods(methods...).Name(name)
-}
-
-func (s Server) RegisterPathPrefix(
-	path string,
-	handler http.Handler,
-	methods []string,
-	name string,
-) {
-	s.Router.PathPrefix(path).Handler(handler).Methods(methods...).Name(name)
-}
-
-// Server JSON response
-func (s Server) JSON(w http.ResponseWriter, status int, data interface{}) error {
+// Server JSON response.
+func (s *Server) JSON(w http.ResponseWriter, status int, data interface{}) error {
 	w.Header().Set("Content-Type", "application/json")
 	if data != nil {
 		json.NewEncoder(w).Encode(data)
@@ -81,27 +78,27 @@ func (s Server) JSON(w http.ResponseWriter, status int, data interface{}) error 
 	return fmt.Errorf("No data to return")
 }
 
-// Serve a media file
-func (s Server) MEDIA(w http.ResponseWriter, status int, media []byte, mediaType string) {
+// Serve a media file.
+func (s *Server) MEDIA(w http.ResponseWriter, status int, media []byte, mediaType string) {
 	w.Header().Set("Content-Type", mediaType)
 	w.Header().Set("Cache-Control", "max-age=31536000")
 	w.WriteHeader(status)
 	w.Write(media)
 }
 
-// Server a HTML response
-func (s Server) Render(w http.ResponseWriter, status int, htmlView string, data interface{}) error {
+// Server a HTML response.
+func (s *Server) HTML(w http.ResponseWriter, status int, htmlView string, data interface{}) error {
 	return s.Template.Render(w, status, htmlView, data)
 }
 
-func (s Server) Redirect(w http.ResponseWriter, r *http.Request, status int, dst string) {
+func (s *Server) Redirect(w http.ResponseWriter, r *http.Request, status int, dst string) {
 	http.Redirect(w, r, dst, status)
 }
 
-func (s Server) Run() {
+func (s *Server) Run() {
 	acl.Run(s.Conn)
 
-	addr := s.GetAddr()
+	addr := s.Addr()
 	msg := fmt.Sprintf("Running at %s", addr)
 	zap.L().Info(msg, zap.Int64("timestamp", time.Now().Unix()))
 
@@ -109,7 +106,7 @@ func (s Server) Run() {
 		Addr: addr,
 		Handler: http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				s.Router.ServeHTTP(w, r)
+				s.ServeHTTP(w, r)
 			}),
 		WriteTimeout: 10 * time.Second,
 		ReadTimeout:  10 * time.Second,
@@ -118,7 +115,7 @@ func (s Server) Run() {
 	s.ShutdownOnInterrupt(httpServer)
 }
 
-func (s Server) ShutdownOnInterrupt(srv *http.Server) {
+func (s *Server) ShutdownOnInterrupt(srv *http.Server) {
 	idleConnsClosed := make(chan struct{})
 
 	go func() {
@@ -131,6 +128,8 @@ func (s Server) ShutdownOnInterrupt(srv *http.Server) {
 			zap.L().Info(msg, zap.Int64("timestamp", time.Now().Unix()))
 		}
 		zap.L().Info("Close everything!", zap.Int64("timestamp", time.Now().Unix()))
+		defer loggerSync()
+		defer undo()
 		// s.Conn.Close()
 		close(idleConnsClosed)
 	}()

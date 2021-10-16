@@ -3,7 +3,6 @@ package infra
 import (
 	"fmt"
 
-	// "github.com/jackc/pgx/v4/pgxpool"
 	"gorm.io/gorm"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"

@@ -7,12 +7,12 @@ import (
 	"os"
 	"time"
 
-	// "github.com/jackc/pgx/v4/pgxpool"
 	"gorm.io/gorm"
 	"go.uber.org/zap"
 )
 
 type Config struct {
+	CfgPath    string
 	HttpHost   string
 	HttpPort   string
 	DbHost     string
@@ -24,8 +24,18 @@ type Config struct {
 	StoreKey   string
 }
 
+func (c Config) String() string {
+	cfgStr, err := json.Marshal(c.CfgPath)
+	if err != nil {
+		// fmt.Errorf("Could not serialize config struct %s (%s)", c.CfgPath, err)
+		return ""
+	}
+
+	return string(cfgStr)
+}
+
 func LoadConfig(path string) (Config, error) {
-	cfg := NewConfig()
+	cfg := NewConfig(path)
 
 	file, err := os.Open(path)
 	if err != nil {
@@ -39,8 +49,10 @@ func LoadConfig(path string) (Config, error) {
 	return cfg, nil
 }
 
-func NewConfig() Config {
-	var cfg Config
+func NewConfig(path string) Config {
+	var cfg = Config{
+		CfgPath: path,
+	}
 
 	return cfg
 }
