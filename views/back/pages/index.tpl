@@ -1,23 +1,22 @@
 {{define "back/index"}}
-<ul>
-	<li>{{.site.name}}</li>
-	<li>{{.site.title}}</li>
-	<li>{{.site.welcome}}</li>
-</ul>
-<ul>
+<ul class="container">
 {{range $col, $boards := .topics}}
-	<li>
+	<li class="row">
 		{{$col}}
-		<ul>
+		<ul class="col-2 container">
 			{{range $board := $boards}}
-				<p>{{$board.Name}}</p>
-				<p>{{$board.Code}}</p>
-				<p>{{$board.Description}}</p>
-				<ul>
+			<li class="row">
+				<div class="card">
 					{{range $media := $board.MediaList}}
-					<img src="{{$media.Path}}">
+					<img class="image rounded card-img-top" src="{{$media.Path}}">
 					{{end}}
-				</ul>
+					<div class="card-body">
+						<h5 class="card-title">{{$board.Name}}</h5>
+						<p class="card-text">{{$board.Description}}</p>
+						<a href="/admin/boards/{{$board.ID}}/" class="btn btn-primary">View</a>
+					</div>
+				</div>
+			</li>
 			{{end}}
 		</ul>
 	</li>

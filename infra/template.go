@@ -54,6 +54,9 @@ func NewTemplate() *Template {
 
 			return dict, nil
 		},
+		"len": func(values ...interface{}) int {
+			return len(values)
+		},
 	}
 
 	templatePagePath := []string{

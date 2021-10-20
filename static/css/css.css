@@ -6,3 +6,11 @@
 main {
 	margin-top: 70px;
 }
+
+.image {
+	display: block;
+	width: auto;
+	height: auto;
+	max-width: 200px;
+	max-height: 100px;
+}

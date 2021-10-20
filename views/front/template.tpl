@@ -4,7 +4,7 @@
 <head>
 	{{template "front/meta"}}
 	{{template "front/links"}}
-	<title>{{.title}}</title>
+	<title>{{with .title}}{{.title}}{{else}}The Chan{{end}}</title>
 </head>
 <body>
 	{{.page | asHTML}}

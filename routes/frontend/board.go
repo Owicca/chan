@@ -18,7 +18,7 @@ type viewThread struct {
 
 func Board(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "front.Board"
-	println(op)
+
 	data := map[string]interface{} {
 		"threads": []viewThread{
 			{

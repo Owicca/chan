@@ -15,10 +15,10 @@ func init() {
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "front.Index"
-	println(op)
+
 	data := map[string]interface{}{
 		"topics": map[string]interface{} {
-			"Col 1": boards.BoardList(infra.S.Conn),
+			"Topic1": boards.BoardList(infra.S.Conn),
 		},
 		"site": map[string]interface{}{
 			"name": "Chan",

@@ -30,3 +30,11 @@ func BoardOne(db *gorm.DB, id int) Board {
 
 	return board
 }
+
+func BoardOneCreate(db *gorm.DB, board Board) error {
+	return db.Create(&board).Error
+}
+
+func BoardOneUpdate(db *gorm.DB, board Board) error {
+	return db.Model(&board).Updates(board).Error
+}

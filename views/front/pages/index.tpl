@@ -23,13 +23,22 @@
 					<h2>Boards</h2>
 				</div>
 				<div class="boxcontent">
-				{{range $col, $boardList := .topics}}
+				{{range $topic, $boardList := .topics}}
 					<div class="column">
-						<h3 class="col">{{$col}}</h3>
+						<h3 class="col">{{$topic}}</h3>
 						<ul>
-						{{range $idx, $board := $boardList}}
-							<li>
-								<a href="{{$board.Path}}">{{$board.Name}}</a>
+						{{range $board := $boardList}}
+							<li class="row">
+								<div class="card">
+									{{range $media := $board.MediaList}}
+									<img class="image rounded card-img-top" src="{{$media.Path}}">
+									{{end}}
+									<div class="card-body">
+										<h5 class="card-title">{{$board.Name}}</h5>
+										<p class="card-text">{{$board.Description}}</p>
+										<a href="/boards/{{$board.ID}}/" class="btn btn-primary">View</a>
+									</div>
+								</div>
 							</li>
 						{{else}}
 							<li>No boards available!</li>

@@ -173,6 +173,7 @@ INSERT INTO users(user_id, username, email, password, salt, status, role_id) VAL
 
 CREATE TABLE media(
 	object_id bigint NOT NULL,
+	object_type varchar(64) NOT NULL,
 	deleted_at int NOT NULL DEFAULT 0,
 	name varchar(64) NOT NULL,-- seo name
 	code varchar(64) NOT NULL DEFAULT 'img',-- img, vid
