@@ -12,6 +12,6 @@ func UserStatusList() map[string]UserStatus {
 	return map[string]UserStatus{
 		"Active": UserStatusActive,
 		"Disabled": UserStatusDisabled,
-		"Hidden": UserStatusHidden,
+		// "Hidden": UserStatusHidden,
 	}
 }

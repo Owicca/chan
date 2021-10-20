@@ -171,38 +171,26 @@ INSERT INTO users(user_id, username, email, password, salt, status, role_id) VAL
 
 -- ---
 
--- CREATE TABLE post_statuses(
--- 	post_status_id serial primary key,
--- 	deleted_by int NOT NULL DEFAULT 0,
--- 	name varchar(64) NOT NULL,
--- 	code varchar(64) NOT NULL
--- );
-
--- INSERT INTO post_statuses(post_status_id, name, code) VALUES
--- (1, 'Disabled', 'D'),
--- (2, 'Hidden', 'H'),
--- (3, 'Active', 'A');
+CREATE TABLE media(
+	object_id bigint NOT NULL,
+	deleted_at int NOT NULL DEFAULT 0,
+	name varchar(64) NOT NULL,-- seo name
+	code varchar(64) NOT NULL DEFAULT 'img',-- img, vid
+	path text NOT NULL,
+	PRIMARY KEY(name)
+);
 
 -- ---
 
--- CREATE TABLE medias(
--- 	media_id serial primary key,
--- 	deleted_at int NOT NULL DEFAULT 0,
--- 	name varchar(64) NOT NULL,-- seo name
--- 	code varchar(64) NOT NULL,-- img, vid
--- 	path text NOT NULL
--- );
-
--- ---
-
--- CREATE TABLE boards(
--- 	board_id serial primary key,
--- 	deleted_at int NOT NULL DEFAULT 0,
--- 	name varchar(255) NOT NULL,
--- 	code varchar(64) NOT NULL,
--- 	description text NOT NULL,
--- 	media_id integer REFERENCES medias(media_id)
--- );
+CREATE TABLE boards(
+	board_id bigint primary key,
+	deleted_at int NOT NULL DEFAULT 0,
+	name varchar(255) NOT NULL,
+	code varchar(64) NOT NULL,
+	description text NOT NULL,
+	media_id bigint NOT NULL,
+	FOREIGN KEY(media_id) REFERENCES media(media_id)
+);
 
 -- ---
 
@@ -219,7 +207,7 @@ INSERT INTO users(user_id, username, email, password, salt, status, role_id) VAL
 -- 	deleted_at int NOT NULL DEFAULT 0,
 -- 	thread_id integer REFERENCES threads(thread_id),
 -- 	status integer REFERENCES post_statuses(post_status_id),
--- 	media integer REFERENCES medias(media_id),
+-- 	media integer REFERENCES media(media_id),
 -- 	name varchar(255) NOT NULL,
 -- 	content text NOT NULL
 -- );

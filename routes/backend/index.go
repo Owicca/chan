@@ -1,22 +1,23 @@
-package frontend
+package backend
 
 import (
 	"net/http"
+	"upspin.io/errors"
 
-	"github.com/Owicca/chan/infra"
 	"github.com/Owicca/chan/models/boards"
 
-	"upspin.io/errors"
+	"github.com/Owicca/chan/infra"
 )
 
 func init() {
-	infra.S.HandleFunc("/", http.HandlerFunc(Index)).Methods(http.MethodGet).Name("site_index")
+	adminRouter := infra.S.Router.PathPrefix("/admin").Subrouter()
+	adminRouter.HandleFunc("/", http.HandlerFunc(Index)).Methods(http.MethodGet).Name("back_index")
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	const op errors.Op = "front.Index"
-	println(op)
-	data := map[string]interface{}{
+	const op errors.Op = "back.Index"
+	data := map[string]interface{} {
+		"title": "The title",
 		"topics": map[string]interface{} {
 			"Col 1": boards.BoardList(infra.S.Conn),
 		},
@@ -27,7 +28,8 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 Be sure to familiarize yourself with the Rules before posting, and read the FAQ if you wish to learn more about how to use the site.`,
 		},
+
 	}
 
-	infra.S.HTML(w, http.StatusOK, "front/index", data)
+	infra.S.HTML(w, http.StatusOK, "back/index", data)
 }

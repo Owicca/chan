@@ -1,11 +1,30 @@
 {{define "back/user_list"}}
-<ul>
+<table>
+	<thead>
+		<tr>
+			<td>ID</td>
+			<td>Name</td>
+			<td>Role</td>
+			<td>Email</td>
+			<td>Status</td>
+			<td></td>
+		</tr>
+	</thead>
+	<tbody>
 {{range $user := .users}}
-	<li>
-		<a href="/admin/users/{{$user.ID}}/">{{$user.Username}}</a>({{$user.Role.Name}}): <a href="mailto:{{$user.Email}}">{{$user.Email}}</a>
-	</li>
+	<tr>
+		<td><a href="/admin/users/{{$user.ID}}/">{{$user.ID}}</a></td>
+		<td>{{$user.Username}}</td>
+		<td>{{$user.Role.Name}}</td>
+		<td><a href="mailto:{{$user.Email}}">{{$user.Email}}</a></td>
+		<td>{{template "back/status" params "Status" $user.Status}}</td>
+		<td>{{template "back/actions" params "Name" "users" "ID" $user.ID}}</td>
+	</tr>
 {{else}}
-	<li>No user available!</li>
+	<tr>
+		<td>No users available!</td>
+	</tr>
 {{end}}
-</ul>
+	</tbody>
+</table>
 {{end}}

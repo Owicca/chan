@@ -1,45 +1,32 @@
 package boards
 
 import (
-	// "context"
+	"gorm.io/gorm"
 
 	"github.com/Owicca/chan/models/media"
-	// "github.com/Owicca/chan/models/base"
-	// "github.com/jackc/pgx/v4"
-	// "github.com/jackc/pgx/v4/pgxpool"
-
-	"gorm.io/gorm"
 )
 
 type Board struct {
-	Board_id int
+	ID int `gorm:"primaryKey;column:board_id"`
 	Deleted_at int
 	Name string
 	Code string
 	Description string
-	Media media.Media
+	MediaList []media.Media `gorm:"foreignKey:object_id"`
 }
 
-func GetBoardList(db *gorm.DB) []Board {
+func BoardList(db *gorm.DB) []Board {
 	var boards []Board
 
-	db.Preload("Media").Find(&boards)
+	db.Preload("MediaList").Find(&boards)
 
 	return boards
 }
 
-// func GetOneBoard(db *pgxpool.Pool, int id) (Board, error) {
-// 	sql := `SELECT b.*, mt.code AS media_type, m.path AS media_path
-// 	FROM boards b
-// 	LEFT JOIN medias AS m ON b.media_id=m.media_id
-// 	LEFT JOIN media_types AS mt ON m.media_type_id = mt.media_type_id
-// 	WHERE board_id = $1
-// 	LIMIT 1`
-// 	row := db.QueryRowx(context.Background(), sql, )
+func BoardOne(db *gorm.DB, id int) Board {
+	var board Board
 
-// 	board := &Board{}
+	db.Preload("MediaList").First(&board, id)
 
-// 	if err := db.QueryRowx(board, sql, id); err != nil {
-// 		log.Fatal(err)
-// 	}
-// }
+	return board
+}

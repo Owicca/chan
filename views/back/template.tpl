@@ -4,13 +4,13 @@
 <head>
 	{{template "back/meta"}}
 	{{template "back/links"}}
-	<title>{{.title}}</title>
+	<title>{{with .title}}{{.title}}{{else}}The Chan{{end}}</title>
 </head>
 <body class="container-sm">
-	<header class="">
+	<header>
 		{{template "back/nav"}}
 	</header>
-	<main class="mt-3">
+	<main>
 		{{.page | asHTML}}
 	</main>
 	<footer class="fixed-bottom">

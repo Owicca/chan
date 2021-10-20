@@ -5,7 +5,8 @@ import (
 	"bytes"
 	"log"
 	"strings"
-	// "path/filepath"
+	"fmt"
+	"errors"
 
 	stdtemplate "html/template"
 	customtemplate "html/template"
@@ -36,6 +37,22 @@ func NewTemplate() *Template {
 		},
 		"asHTML": func(html string) customtemplate.HTML {
 			return customtemplate.HTML(html)
+		},
+		"params": func(values ...interface{}) (map[string]interface{}, error) {
+			if len(values)%2 != 0 {
+				return nil, errors.New("'params' should be called with pairs of values")
+			}
+
+			dict := make(map[string]interface{}, len(values))
+			for i := 0; i < len(values); i+=2 {
+				k, ok := values[i].(string)
+				if !ok {
+					return nil, fmt.Errorf("%d th key is not a string", i/2)
+				}
+				dict[k] = values[i+1]
+			}
+
+			return dict, nil
 		},
 	}
 

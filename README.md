@@ -116,44 +116,41 @@
 	- /<board_name:string>/thread/<thread_id:int>/: thread index
 	- /media/<media_id:int>.<extension:string>/: media view
 - backend:
-	- /admin?dispatch=auth.login: login form
-	- /admin?dispatch=auth.reset: reset password form
-	- /admin?dispatch=auth.logout: logout endpoint
+	- POST  : /admin/auth/login: login form
+	- POST  : /admin/auth/reset: reset password form
+	- POST  : /admin/auth/logout: logout endpoint
 
-	- /admin?dispatch=user.manage: user list
-	- /admin?dispatch=user.create: user creation
-	- /admin?dispatch=user.update: user updating
-	- /admin?dispatch=user.delete: user deletion endpoint
+	- GET 	: /admin/users/: list
+	- GET	: /admin/users/<int>/: read
+	- POST	: /admin/users/<int>/: create
+	- POST	: /admin/users/<int>/: update
+	- DELETE: /admin/users/<int>/: delete
 
-	- /admin?dispatch=index.index: dashboard
+	- GET   : /admin/: dashboard
 
-	- /admin?dispatch=boards.manage: board list
-	- /admin?dispatch=boards.create: board creation
-	- /admin?dispatch=boards.update: board updating
+	- GET   : /admin/boards/: list
+	- GET   : /admin/boards/<int>/: read
+	- POST  : /admin/boards/<int>/: create
+	- POST  : /admin/boards/<int>/: update
+	- DELETE: /admin/boards/<int>/: delete
 
-	- /admin?dispatch=threads.manage: thread list
-	- /admin?dispatch=threads.update: thread updating
+	- GET   : /admin/threads/: list
+	- GET   : /admin/threads/<int>/: read
+	- POST  : /admin/threads/<int>/: create
+	- POST  : /admin/threads/<int>/: update
+	- DELETE: /admin/threads/<int>/: delete
 
-	- /admin?dispatch=posts.manage: post list
+	- GET   : /admin/posts/: list
+	- GET   : /admin/posts/<int>/: read
+	- POST  : /admin/posts/<int>/: create
+	- POST  : /admin/posts/<int>/: update
+	- DELETE: /admin/posts/<int>/: delete
 
 
 ### tech:
 - db: mysql
 - backend: golang
-- frontend: golang templates + react
-
-
-### MVP:
-- working imageboard with no users except for anons:
-	- [ ] serve sitemap pages
-	- [x] serve media
-	- [ ] post:
-		- [ ] name
-		- [ ] media
-		- [ ] content
-	- [ ] create thread:
-		- [ ] enforce thread rules
-
+- frontend: golang templates
 
 
 ### Setup:

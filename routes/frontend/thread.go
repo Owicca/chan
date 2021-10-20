@@ -18,6 +18,7 @@ type viewPost struct {
 
 func Thread(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "front.Thread"
+	println(op)
 	data := map[string]interface{} {
 		"posts": []viewPost{
 			{
