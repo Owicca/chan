@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/signal"
 	"context"
+	"runtime"
+	"path"
 
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
@@ -23,12 +25,13 @@ var S *Server
 var (
 	undo func()
 	loggerSync func() error
+	_, filename, _, _ = runtime.Caller(0)
 )
 
 // Get config, db, logger
 // set up settings and create Server
 func init() {
-	cfg, conn, logger := Setup("./config.json")
+	cfg, conn, logger := Setup(path.Join(path.Dir(filename), "../config.json"))
 	loggerSync = logger.Sync
 	undo = zap.ReplaceGlobals(logger)
 
