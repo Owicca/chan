@@ -10,6 +10,7 @@ import (
 	"context"
 	"runtime"
 	"path"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
@@ -96,6 +97,10 @@ func (s *Server) HTML(w http.ResponseWriter, status int, htmlView string, data i
 
 func (s *Server) Redirect(w http.ResponseWriter, r *http.Request, status int, dst string) {
 	http.Redirect(w, r, dst, status)
+}
+
+func (s *Server) GenerateUrl(endpoint string) string {
+	return fmt.Sprintf("%s/%s/", s.Addr(), strings.Trim(endpoint, "/"))
 }
 
 func (s *Server) Run() {

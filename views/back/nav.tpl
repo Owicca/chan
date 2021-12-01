@@ -13,6 +13,7 @@
 				<li class="navbar-item"><a href="/admin/">Home</a></li>
 				<li class="navbar-item"><a href="/admin/users/">Users</a></li>
 				<li class="navbar-item"><a href="/admin/boards/">Boards</a></li>
+				<li class="navbar-item"><a href="/admin/threads/">Threads</a></li>
 			</ul>
 		</div>
 	</div>

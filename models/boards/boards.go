@@ -15,10 +15,24 @@ type Board struct {
 	MediaList []media.Media `gorm:"foreignKey:object_id"`
 }
 
+type BoardWithThreadCount struct{
+	Board
+	Thread_count int
+}
+
+func BoardListWithThreadCount(db *gorm.DB) []BoardWithThreadCount {
+	var boards []BoardWithThreadCount
+
+	db.Table("boards").Select("boards.*", "COUNT(t.thread_id) AS thread_count").Joins("LEFT JOIN threads AS t ON t.board_id=boards.board_id").Preload("MediaList", "object_type = 'boards'").Find(&boards)
+
+	return boards
+}
+
+
 func BoardList(db *gorm.DB) []Board {
 	var boards []Board
 
-	db.Preload("MediaList").Find(&boards)
+	db.Preload("MediaList", "object_type = 'boards'").Find(&boards)
 
 	return boards
 }

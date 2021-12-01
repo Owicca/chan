@@ -13,7 +13,11 @@
 	<tr>
 		<td><a href="/admin/boards/{{$board.ID}}/">{{$board.ID}}</a></td>
 		<td>{{$board.Name}}</td>
-		<td>0</td>
+		<td>
+			<a href="/admin/boards/{{$board.ID}}/threads/">
+				{{$board.Thread_count}}
+			</a>
+		</td>
 		<td>{{template "back/actions" params "Name" "boards" "ID" $board.ID}}</td>
 	</tr>
 {{else}}

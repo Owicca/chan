@@ -184,39 +184,33 @@ CREATE TABLE media(
 -- ---
 
 CREATE TABLE boards(
-	board_id bigint primary key,
+	board_id bigint NOT NULL,
 	deleted_at int NOT NULL DEFAULT 0,
 	name varchar(255) NOT NULL,
 	code varchar(64) NOT NULL,
 	description text NOT NULL,
-	media_id bigint NOT NULL,
-	FOREIGN KEY(media_id) REFERENCES media(media_id)
+	PRIMARY KEY(board_id)
 );
 
 -- ---
 
--- CREATE TABLE threads(
--- 	thread_id serial primary key,
--- 	deleted_at int NOT NULL DEFAULT 0,
--- 	board_id integer REFERENCES boards(board_id)
--- );
+CREATE TABLE threads(
+	thread_id bigint NOT NULL,
+	deleted_at int NOT NULL DEFAULT 0,
+	board_id bigint NOT NULL,
+	FOREIGN KEY(board_id) REFERENCES boards(board_id),
+	PRIMARY KEY(thread_id)
+);
 
 -- ---
 
--- CREATE TABLE posts(
--- 	post_id serial primary key,
--- 	deleted_at int NOT NULL DEFAULT 0,
--- 	thread_id integer REFERENCES threads(thread_id),
--- 	status integer REFERENCES post_statuses(post_status_id),
--- 	media integer REFERENCES media(media_id),
--- 	name varchar(255) NOT NULL,
--- 	content text NOT NULL
--- );
-
--- ---
-
--- CREATE TABLE post_to_post(
--- 	ptp_id serial primary key,
--- 	post_from_id integer REFERENCES posts(post_id),
--- 	post_to_id integer REFERENCES posts(post_id)
--- )
+CREATE TABLE posts(
+	post_id bigint NOT NULL,
+	deleted_at int NOT NULL DEFAULT 0,
+	status varchar(10) NOT NULL DEFAULT 'A',
+	content text NOT NULL,
+	is_primary BIT(1) NOT NULL DEFAULT 0,
+	thread_id bigint NOT NULL,
+	FOREIGN KEY(thread_id) REFERENCES threads(thread_id),
+	PRIMARY KEY(post_id)
+);

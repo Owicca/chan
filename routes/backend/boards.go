@@ -23,7 +23,7 @@ func BoardList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.BoardList"
 
 	data := map[string]interface{} {
-		"boards": boards.BoardList(infra.S.Conn),
+		"boards": boards.BoardListWithThreadCount(infra.S.Conn),
 	}
 
 	infra.S.HTML(w, http.StatusOK, "back/board_list", data)
