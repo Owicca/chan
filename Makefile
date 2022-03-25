@@ -1,4 +1,3 @@
-fl=-f ./container.yml
 bin=./chan.exe
 dev_reload=CompileDaemon \
 					 -build="go build -o ./chan.exe ./main.go" \

@@ -3,3 +3,4 @@
 *.log
 
 /static/media/*
+/config.json
