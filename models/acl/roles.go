@@ -2,7 +2,6 @@ package acl
 
 import (
 	"gorm.io/gorm"
-	// "log"
 )
 
 func RoleList(db *gorm.DB) []Role {

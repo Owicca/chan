@@ -1,37 +1,37 @@
-CREATE DATABASE IF NOT EXISTS chan;
-
+DROP DATABASE chan;
+CREATE DATABASE IF NOT EXISTS chan CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE chan;
 
 CREATE TABLE log_actions(
-	log_id bigint NOT NULL AUTO_INCREMENT,
+	id bigint NOT NULL AUTO_INCREMENT,
 	action varchar(255) NOT NULL,-- insert, update, delete, virtual_delete
 	subject bigint NOT NULL,-- subject that does the action
 	object bigint NOT NULL,-- the subject acts on an object
 	object_type varchar(255) NOT NULL,-- type of the object acted on
 	data text NULL,-- data from insert or update
-	PRIMARY KEY(log_id)
+	PRIMARY KEY(id)
 );
 
 CREATE TABLE actions(
-	action_id bigint NOT NULL AUTO_INCREMENT,
+	id bigint NOT NULL AUTO_INCREMENT,
 	deleted_at int NOT NULL DEFAULT 0,
 	name varchar(64) NOT NULL,
-	PRIMARY KEY(action_id)
+	PRIMARY KEY(id)
 );
 
-INSERT INTO actions(action_id, name) VALUES
+INSERT INTO actions(id, name) VALUES
 (1, 'read'),
 (2, 'create'),
 (3, 'update'),
 (4, 'delete');
 
 CREATE TABLE objects(
-	obj_id bigint NOT NULL AUTO_INCREMENT,
+	id bigint NOT NULL AUTO_INCREMENT,
 	name varchar(64) NOT NULL,
-	PRIMARY KEY(obj_id)
+	PRIMARY KEY(id)
 );
 
-INSERT INTO objects(obj_id, name) VALUES
+INSERT INTO objects(id, name) VALUES
 (1, "post"),
 (2, "thread"),
 (3, "board"),
@@ -39,15 +39,15 @@ INSERT INTO objects(obj_id, name) VALUES
 (5, "site");
 
 CREATE TABLE action_to_object (
-	ato_id bigint NOT NULL AUTO_INCREMENT,
+	id bigint NOT NULL AUTO_INCREMENT,
 	obj_id bigint,
 	action_id bigint,
-	PRIMARY KEY (ato_id),
-	CONSTRAINT fk_action_to_object_object FOREIGN KEY (obj_id) REFERENCES objects(obj_id),
-	CONSTRAINT fk_action_to_object_action FOREIGN KEY (action_id) REFERENCES actions(action_id)
+	PRIMARY KEY (id),
+	CONSTRAINT fk_action_to_object_object FOREIGN KEY (obj_id) REFERENCES objects(id),
+	CONSTRAINT fk_action_to_object_action FOREIGN KEY (action_id) REFERENCES actions(id)
 );
 
-INSERT INTO action_to_object (ato_id, action_id, obj_id) VALUES
+INSERT INTO action_to_object (id, action_id, obj_id) VALUES
 (11, 1,	1),
 (12, 2,	1),
 (13, 3,	1),
@@ -70,13 +70,13 @@ INSERT INTO action_to_object (ato_id, action_id, obj_id) VALUES
 (54, 4,	5);
 
 CREATE TABLE roles(
-	role_id bigint NOT NULL AUTO_INCREMENT,
+	id bigint NOT NULL AUTO_INCREMENT,
 	deleted_at int NOT NULL DEFAULT 0,
 	name varchar(64) NOT NULL,
-	PRIMARY KEY(role_id)
+	PRIMARY KEY(id)
 );
 
-INSERT INTO roles(role_id, name) VALUES
+INSERT INTO roles(id, name) VALUES
 (1, 'anon'),
 (2, 'op'),
 (3, 'board_admin'),
@@ -84,12 +84,12 @@ INSERT INTO roles(role_id, name) VALUES
 (5, 'root');
 
 CREATE TABLE pair_to_role(
-	atr_id bigint NOT NULL AUTO_INCREMENT,
+	id bigint NOT NULL AUTO_INCREMENT,
 	ato_id bigint NOT NULL,
 	role_id bigint NOT NULL,
-	PRIMARY KEY(atr_id),
-	FOREIGN KEY(ato_id) REFERENCES action_to_object(ato_id),
-	FOREIGN KEY(role_id) REFERENCES roles(role_id)
+	PRIMARY KEY(id),
+	FOREIGN KEY(ato_id) REFERENCES action_to_object(id),
+	FOREIGN KEY(role_id) REFERENCES roles(id)
 );
 
 INSERT INTO pair_to_role(ato_id, role_id) VALUES
@@ -156,17 +156,17 @@ INSERT INTO pair_to_role(ato_id, role_id) VALUES
 (54, 5);
 
 CREATE TABLE users(
-	user_id bigint primary key,
+	id bigint primary key,
 	deleted_at int NOT NULL DEFAULT 0,
 	username varchar(255) NOT NULL,
 	email varchar(255) NOT NULL,
 	password varchar(255) NOT NULL,
 	salt varchar(255) NOT NULL,
 	status varchar(2) NOT NULL,
-	role_id integer REFERENCES roles(role_id)
+	role_id integer REFERENCES roles(id)
 );
 
-INSERT INTO users(user_id, username, email, password, salt, status, role_id) VALUES
+INSERT INTO users(id, username, email, password, salt, status, role_id) VALUES
 (1, 'root', 'root@root.com', '$2a$10$KI4EmNCFlvYteYeI//1s2OhR5jNmIJlEdrgLOzYINyuf8MrUNbaAC', 'salt', "A", 5);-- password: password; salt: salt
 
 -- ---
@@ -183,34 +183,46 @@ CREATE TABLE media(
 
 -- ---
 
-CREATE TABLE boards(
-	board_id bigint NOT NULL,
+CREATE TABLE topics(
+	id bigint NOT NULL AUTO_INCREMENT,
 	deleted_at int NOT NULL DEFAULT 0,
+	name varchar(255) NOT NULL,
+	PRIMARY KEY(id)
+);
+
+-- ---
+
+CREATE TABLE boards(
+	id bigint NOT NULL AUTO_INCREMENT,
+	deleted_at int NOT NULL DEFAULT 0,
+	topic_id bigint NOT NULL,
 	name varchar(255) NOT NULL,
 	code varchar(64) NOT NULL,
 	description text NOT NULL,
-	PRIMARY KEY(board_id)
+	FOREIGN KEY(topic_id) REFERENCES topics(id),
+	PRIMARY KEY(id)
 );
 
 -- ---
 
 CREATE TABLE threads(
-	thread_id bigint NOT NULL,
+	id bigint NOT NULL AUTO_INCREMENT,
 	deleted_at int NOT NULL DEFAULT 0,
+	primary_post_id bigint NOT NULL,
 	board_id bigint NOT NULL,
-	FOREIGN KEY(board_id) REFERENCES boards(board_id),
-	PRIMARY KEY(thread_id)
+	FOREIGN KEY(board_id) REFERENCES boards(id),
+	PRIMARY KEY(id)
 );
 
 -- ---
 
 CREATE TABLE posts(
-	post_id bigint NOT NULL,
+	id bigint NOT NULL AUTO_INCREMENT,
 	deleted_at int NOT NULL DEFAULT 0,
 	status varchar(10) NOT NULL DEFAULT 'A',
 	content text NOT NULL,
 	is_primary BIT(1) NOT NULL DEFAULT 0,
 	thread_id bigint NOT NULL,
-	FOREIGN KEY(thread_id) REFERENCES threads(thread_id),
-	PRIMARY KEY(post_id)
+	FOREIGN KEY(thread_id) REFERENCES threads(id),
+	PRIMARY KEY(id)
 );

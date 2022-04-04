@@ -7,7 +7,7 @@ import (
 
 
 type Entry struct {
-	ID int64 `gorm:"primaryKey,column:log_id"`
+	ID int64 `gorm:"primaryKey,column:id"`
 	Action string
 	Subject int64
 	Object int64

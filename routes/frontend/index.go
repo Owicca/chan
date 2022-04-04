@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Owicca/chan/infra"
-	"github.com/Owicca/chan/models/boards"
+	"github.com/Owicca/chan/models/topics"
 
 	"upspin.io/errors"
 )
@@ -17,9 +17,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "front.Index"
 
 	data := map[string]interface{}{
-		"topics": map[string]interface{} {
-			"Topic1": boards.BoardList(infra.S.Conn),
-		},
+		"topic_list": topics.TopicListWithBoardList(infra.S.Conn),
 		"site": map[string]interface{}{
 			"name": "Chan",
 			"title": "Home",

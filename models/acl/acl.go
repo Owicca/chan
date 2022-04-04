@@ -2,7 +2,6 @@ package acl
 
 import (
 	"gorm.io/gorm"
-	// "log"
 	"fmt"
 )
 
@@ -15,27 +14,25 @@ type ObjectAction map[int]string
 type RolePair map[string][]string
 
 type Action struct {
-	ID int `gorm:"primaryKey;column:action_id"`
-	DeletedAt int `gorm:"default=0"`
+	ID int `gorm:"primaryKey;column:id"`
+	DeletedAt int64
 	Name string
-	// Objects []*Object `gorm:"many2many:action_to_object;foreignKey:obj_id;joinForeignKey:obj_id;references:code;joinReferenceKey:code"`
 }
 type Object struct {
-	ID int `gorm:"primaryKey;column:obj_id"`
+	ID int `gorm:"primaryKey;column:id"`
 	Name string
-	// Actions []Action `gorm:"many2many:action_to_object;foreignKey:obj_id;joinForeignKey:obj_id;references:action_id;joinReferenceKey:action_id"`
 }
 type Role struct {
-	ID int `gorm:"primaryKey;column:role_id"`
-	DeletedAt int
+	ID int `gorm:"primaryKey;column:id"`
+	DeletedAt int64
 	Name string
 }
 
 type ActionToObject struct{
-	ID int `gorm:"primaryKey;column:ato_id"`
+	ID int `gorm:"primaryKey;column:id"`
 	ActionId int `gorm:"column:action_id"`
 	ObjId int `gorm:"column:obj_id"`
-	Action Action `gorm:"foreignKey:action_id;references:action_id"`
+	Action Action `gorm:"foreignKey:action_id;references:id"`
 	Object Object `gorm:"foreignKey:obj_id;joinForeignKey:obj_id"`
 }
 func (ato ActionToObject) TableName() string {
@@ -59,11 +56,11 @@ func NewObjectAction(db *gorm.DB) ObjectAction {
 }
 
 type PairToRole struct{
-	ID int `gorm:"primaryKey;column:ptr_id"`
+	ID int `gorm:"primaryKey;column:id"`
 	AtoId int `gorm:"column:ato_id"`
 	RoleId int `gorm:"column:role_id"`
-	ActionToObject ActionToObject `gorm:"foreignKey:ato_id;references:ato_id"`
-	Role Role `gorm:"foreignKey:role_id;references:role_id"`
+	ActionToObject ActionToObject `gorm:"foreignKey:ato_id;references:id"`
+	Role Role `gorm:"foreignKey:role_id;references:id"`
 }
 func (ptr PairToRole) TableName() string {
 	return "pair_to_role"

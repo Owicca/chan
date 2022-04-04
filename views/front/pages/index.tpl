@@ -23,11 +23,11 @@
 					<h2>Boards</h2>
 				</div>
 				<div class="boxcontent">
-				{{range $topic, $boardList := .topics}}
+				{{range $topic := .topic_list}}
 					<div class="column">
-						<h3 class="col">{{$topic}}</h3>
+						<h3 class="col">{{$topic.Name}}</h3>
 						<ul>
-						{{range $board := $boardList}}
+						{{range $board := $topic.BoardList}}
 							<li class="row">
 								<div class="card">
 									{{range $media := $board.MediaList}}
@@ -36,7 +36,7 @@
 									<div class="card-body">
 										<h5 class="card-title">{{$board.Name}}</h5>
 										<p class="card-text">{{$board.Description}}</p>
-										<a href="/boards/{{$board.ID}}/" class="btn btn-primary">View</a>
+										<a href="/boards/{{$board.Code}}/" class="btn btn-primary">View</a>
 									</div>
 								</div>
 							</li>

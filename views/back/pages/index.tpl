@@ -1,10 +1,10 @@
 {{define "back/index"}}
 <ul class="container">
-{{range $col, $boards := .topics}}
+{{range $topic := .topic_list}}
 	<li class="row">
-		{{$col}}
+		{{$topic.Name}}
 		<ul class="col-2 container">
-			{{range $board := $boards}}
+			{{range $board := $topic.BoardList}}
 			<li class="row">
 				<div class="card">
 					{{range $media := $board.MediaList}}

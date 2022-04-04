@@ -7,6 +7,7 @@ import (
 	"strings"
 	"fmt"
 	"errors"
+	"time"
 
 	stdtemplate "html/template"
 	customtemplate "html/template"
@@ -23,12 +24,6 @@ type Template struct {
 
 func NewTemplate() *Template {
 	funcMap := customtemplate.FuncMap{
-		"add": func(a, b int) int {
-			return a + b
-		},
-		"sub": func(a, b int) int {
-			return a - b
-		},
 		"last": func(a []int) int {
 			if len(a) == 0 {
 				return -1
@@ -56,6 +51,11 @@ func NewTemplate() *Template {
 		},
 		"len": func(values ...interface{}) int {
 			return len(values)
+		},
+		"unixToUTC": func(timestamp int64) string {
+			t := time.Unix(timestamp, 0)
+
+			return t.Format(time.RFC3339)
 		},
 	}
 

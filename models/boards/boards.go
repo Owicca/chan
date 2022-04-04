@@ -4,15 +4,18 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/Owicca/chan/models/media"
+	"github.com/Owicca/chan/models/threads"
 )
 
 type Board struct {
-	ID int `gorm:"primaryKey;column:board_id"`
-	Deleted_at int
+	ID int `gorm:"primaryKey;column:id"`
+	Deleted_at int64
 	Name string
 	Code string
 	Description string
+	Topic_id int
 	MediaList []media.Media `gorm:"foreignKey:object_id"`
+	ThreadList []threads.Thread
 }
 
 type BoardWithThreadCount struct{
@@ -23,7 +26,7 @@ type BoardWithThreadCount struct{
 func BoardListWithThreadCount(db *gorm.DB) []BoardWithThreadCount {
 	var boards []BoardWithThreadCount
 
-	db.Table("boards").Select("boards.*", "COUNT(t.thread_id) AS thread_count").Joins("LEFT JOIN threads AS t ON t.board_id=boards.board_id").Preload("MediaList", "object_type = 'boards'").Find(&boards)
+	db.Table("boards AS b").Select("b.*", "COUNT(t.id) AS thread_count").Joins("LEFT JOIN threads AS t ON t.id=b.topic_id").Group("b.id").Preload("MediaList", "object_type = 'boards'").Find(&boards)
 
 	return boards
 }
@@ -50,5 +53,5 @@ func BoardOneCreate(db *gorm.DB, board Board) error {
 }
 
 func BoardOneUpdate(db *gorm.DB, board Board) error {
-	return db.Model(&board).Updates(board).Error
+	return db.Model(&board).Select("*").Updates(board).Error
 }

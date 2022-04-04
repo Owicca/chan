@@ -6,14 +6,14 @@ import(
 )
 
 type User struct {
-	ID int `gorm:"primaryKey;column:user_id"`
-	DeletedAt int
+	ID int `gorm:"primaryKey;column:id"`
+	Deleted_at int64
 	Username string
 	Email string
 	Password string
 	Status string
 	RoleId int
-	Role acl.Role `gorm:"foreignKey:role_id;joinForeignKey:role_id"`
+	Role acl.Role `gorm:"foreignKey:role_id;"`
 }
 
 func UserList(db *gorm.DB) []User {

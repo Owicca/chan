@@ -1,4 +1,4 @@
-{{define "back/thread_list"}}
+{{define "back/board_list_thread_list"}}
 <table>
     <thead>
         <tr>
@@ -17,7 +17,7 @@
         </tr>
     </thead>
     <tbody>
-{{range $thread := .threads}}
+{{range $thread := .thread_list}}
     <tr>
         <td> 
             <a href="/admin/threads/{{$thread.ID}}/">
