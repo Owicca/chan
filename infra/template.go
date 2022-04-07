@@ -48,9 +48,6 @@ func NewTemplate() *Template {
 
 			return dict, nil
 		},
-		"len": func(values ...any) int {
-			return len(values)
-		},
 		"unixToUTC": func(timestamp int64) string {
 			t := time.Unix(timestamp, 0)
 

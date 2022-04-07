@@ -24,6 +24,9 @@
 				</div>
 				<div class="boxcontent">
 				{{range $topic := .topic_list}}
+					{{if not $topic.BoardList}}
+						{{continue}}
+					{{end}}
 					<div class="column">
 						<h3 class="col">{{$topic.Name}}</h3>
 						<ul>
@@ -34,14 +37,14 @@
 									<img class="image rounded card-img-top" src="{{$media.Path}}">
 									{{end}}
 									<div class="card-body">
-										<h5 class="card-title">{{$board.Name}}</h5>
-										<p class="card-text">{{$board.Description}}</p>
-										<a href="/boards/{{$board.Code}}/" class="btn btn-primary">View</a>
+										<h5 class="card-title">
+											<a href="/boards/{{$board.Code}}/">
+												{{$board.Name}}
+											</a>
+										</h5>
 									</div>
 								</div>
 							</li>
-						{{else}}
-							<li>No boards available!</li>
 						{{end}}
 						</ul>
 					</div>
