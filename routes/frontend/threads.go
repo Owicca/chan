@@ -6,8 +6,8 @@ import (
 	"github.com/Owicca/chan/infra"
 	"github.com/Owicca/chan/models/threads"
 
-	"upspin.io/errors"
 	"github.com/gorilla/mux"
+	"upspin.io/errors"
 
 	"log"
 )
@@ -20,7 +20,7 @@ func ThreadList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "front.ThreadList"
 	vars := mux.Vars(r)
 
-	data := map[string]interface{} {
+	data := map[string]any{
 		"threads": threads.BoardThreadListByCode(infra.S.Conn, vars["board_code"]),
 	}
 	log.Println(threads.BoardThreadListByCode(infra.S.Conn, vars["board_code"]))

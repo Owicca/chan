@@ -1,17 +1,19 @@
 package backend
 
 import (
-	"github.com/Owicca/chan/infra"
 	"net/http"
 
-	"upspin.io/errors"
-	"github.com/gorilla/mux"
+	"github.com/Owicca/chan/infra"
+
 	"strconv"
 	"time"
-	
+
+	"github.com/gorilla/mux"
+	"upspin.io/errors"
+
+	"github.com/Owicca/chan/models/boards"
 	"github.com/Owicca/chan/models/logs"
 	"github.com/Owicca/chan/models/threads"
-	"github.com/Owicca/chan/models/boards"
 )
 
 func init() {
@@ -33,7 +35,7 @@ func BoardThreadList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := map[string]interface{} {
+	data := map[string]any{
 		"threads": threads.ThreadList(infra.S.Conn),
 	}
 
@@ -43,7 +45,7 @@ func BoardThreadList(w http.ResponseWriter, r *http.Request) {
 func ThreadList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.ThreadList"
 
-	data := map[string]interface{} {
+	data := map[string]any{
 		"threads": threads.ThreadList(infra.S.Conn),
 	}
 
@@ -61,8 +63,8 @@ func ThreadOne(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := map[string]interface{} {
-		"thread": threads.ThreadOne(infra.S.Conn, thread_id),
+	data := map[string]any{
+		"thread":    threads.ThreadOne(infra.S.Conn, thread_id),
 		"boardList": boards.BoardList(infra.S.Conn),
 	}
 
@@ -97,15 +99,15 @@ func ThreadOneUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newThread := threads.Thread{
-		ID: thread_id,
+		ID:         thread_id,
 		Deleted_at: deleted_at,
-		Board_id: board_id,
+		Board_id:   board_id,
 	}
 
 	threads.ThreadOneUpdate(infra.S.Conn, newThread)
 
-	data := map[string]interface{} {
-		"thread": threads.ThreadOne(infra.S.Conn, thread_id),
+	data := map[string]any{
+		"thread":    threads.ThreadOne(infra.S.Conn, thread_id),
 		"boardList": boards.BoardList(infra.S.Conn),
 	}
 

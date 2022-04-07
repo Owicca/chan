@@ -1,13 +1,13 @@
 package backend
 
 import (
+	"log"
 	"net/http"
 	"strconv"
-	"log"
 
 	"github.com/Owicca/chan/infra"
-	"github.com/Owicca/chan/models/posts"
 	"github.com/Owicca/chan/models/logs"
+	"github.com/Owicca/chan/models/posts"
 
 	"github.com/gorilla/mux"
 	"upspin.io/errors"
@@ -30,8 +30,8 @@ func ThreadPostList(w http.ResponseWriter, r *http.Request) {
 		infra.S.Redirect(w, r, http.StatusNotFound, infra.S.GenerateUrl("/admin/threads/"))
 		return
 	}
-	data := map[string]interface{} {
-		"posts": posts.ThreadPostList(infra.S.Conn, thread_id),
+	data := map[string]any{
+		"posts":          posts.ThreadPostList(infra.S.Conn, thread_id),
 		"postStatusList": posts.PostStatusList(),
 	}
 	log.Println("list => ", posts.ThreadPostList(infra.S.Conn, thread_id))
@@ -49,7 +49,7 @@ func PostOne(w http.ResponseWriter, r *http.Request) {
 		infra.S.Redirect(w, r, http.StatusNotFound, infra.S.GenerateUrl("/admin/threads/"))
 		return
 	}
-	data := map[string]interface{} {
+	data := map[string]any{
 		"post": posts.PostOne(infra.S.Conn, post_id),
 	}
 

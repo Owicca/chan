@@ -19,7 +19,7 @@ func init() {
 func LoadMd(srv *infra.Server) {
 	srv.Router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		LogRequest(w, r)
-		// res := map[string]interface{}{
+		// res := map[string]any{
 		// 	"success": false,
 		// 	"data":    nil,
 		// 	"message": "Not found!",

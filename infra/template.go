@@ -1,24 +1,23 @@
 package infra
 
 import (
-	"net/http"
 	"bytes"
-	"log"
-	"strings"
-	"fmt"
 	"errors"
+	"fmt"
+	"log"
+	"net/http"
+	"strings"
 	"time"
 
-	stdtemplate "html/template"
 	customtemplate "html/template"
-
+	stdtemplate "html/template"
 	// customtemplate "github.com/alecthomas/template"
 	// blackfriday "gopkg.in/russross/blackfriday.v2"
 )
 
 type Template struct {
 	templates *stdtemplate.Template
-	custom 	  *stdtemplate.Template
+	custom    *stdtemplate.Template
 	funcMap   stdtemplate.FuncMap
 }
 
@@ -33,13 +32,13 @@ func NewTemplate() *Template {
 		"asHTML": func(html string) customtemplate.HTML {
 			return customtemplate.HTML(html)
 		},
-		"params": func(values ...interface{}) (map[string]interface{}, error) {
+		"params": func(values ...any) (map[string]any, error) {
 			if len(values)%2 != 0 {
 				return nil, errors.New("'params' should be called with pairs of values")
 			}
 
-			dict := make(map[string]interface{}, len(values))
-			for i := 0; i < len(values); i+=2 {
+			dict := make(map[string]any, len(values))
+			for i := 0; i < len(values); i += 2 {
 				k, ok := values[i].(string)
 				if !ok {
 					return nil, fmt.Errorf("%d th key is not a string", i/2)
@@ -49,7 +48,7 @@ func NewTemplate() *Template {
 
 			return dict, nil
 		},
-		"len": func(values ...interface{}) int {
+		"len": func(values ...any) int {
 			return len(values)
 		},
 		"unixToUTC": func(timestamp int64) string {
@@ -69,7 +68,7 @@ func NewTemplate() *Template {
 	}
 	var (
 		templates = customtemplate.New("template")
-		tplPages = customtemplate.New("page")
+		tplPages  = customtemplate.New("page")
 	)
 
 	for _, pathGlob := range templatePagePath {
@@ -81,8 +80,8 @@ func NewTemplate() *Template {
 
 	return &Template{
 		templates: templates,
-		custom: tplPages,
-		funcMap: funcMap,
+		custom:    tplPages,
+		funcMap:   funcMap,
 	}
 }
 
@@ -90,13 +89,13 @@ func (t *Template) JSEscapeString(s string) string {
 	return customtemplate.JSEscapeString(s)
 }
 
-func (t *Template) Render(w http.ResponseWriter, status int, name string, data interface{}) error {
+func (t *Template) Render(w http.ResponseWriter, status int, name string, data any) error {
 	w.WriteHeader(status)
 
 	buffer := bytes.NewBufferString("")
 	t.custom.ExecuteTemplate(buffer, name, data)
 
-	content := map[string]interface{}{
+	content := map[string]any{
 		"page": buffer.String(),
 	}
 

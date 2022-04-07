@@ -3,13 +3,13 @@ package logs
 import (
 	"time"
 
-	"upspin.io/errors"
 	"go.uber.org/zap"
+	"upspin.io/errors"
 )
 
 // Use upspin error as a formatter
 // and send it to zap logger.
-func LogInfo(params ...interface{}) error {
+func LogInfo(params ...any) error {
 	err := errors.E(params...)
 	zap.L().Info(err.Error(), zap.Int64("timestamp", time.Now().Unix()))
 
@@ -18,7 +18,7 @@ func LogInfo(params ...interface{}) error {
 
 // Use upspin error as a formatter
 // and send it to zap logger.
-func LogWarn(params ...interface{}) error {
+func LogWarn(params ...any) error {
 	err := errors.E(params...)
 	zap.L().Warn(err.Error(), zap.Int64("timestamp", time.Now().Unix()))
 
@@ -27,7 +27,7 @@ func LogWarn(params ...interface{}) error {
 
 // Use upspin error as a formatter
 // and send it to zap logger.
-func LogErr(params ...interface{}) error {
+func LogErr(params ...any) error {
 	err := errors.E(params...)
 	zap.L().Error(err.Error(), zap.Int64("timestamp", time.Now().Unix()))
 

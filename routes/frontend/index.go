@@ -16,10 +16,10 @@ func init() {
 func Index(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "front.Index"
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"topic_list": topics.TopicListWithBoardList(infra.S.Conn),
-		"site": map[string]interface{}{
-			"name": "Chan",
+		"site": map[string]any{
+			"name":  "Chan",
 			"title": "Home",
 			"welcome": `Chan is a simple image-based bulletin board where anyone can post comments and share images. There are boards dedicated to a variety of topics, from Japanese animation and culture to videogames, music, and photography. Users do not need to register an account before participating in the community. Feel free to click on a board below that interests you and jump right in!
 

@@ -13,21 +13,21 @@ func init() {
 }
 
 type viewPost struct {
-	Name string
+	Name    string
 	Content string
 }
 
 func PostList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "front.PostList"
 
-	data := map[string]interface{} {
+	data := map[string]any{
 		"posts": []viewPost{
 			{
-				Name: "p1",
+				Name:    "p1",
 				Content: "p1",
 			},
 			{
-				Name: "p2",
+				Name:    "p2",
 				Content: "p2",
 			},
 		},

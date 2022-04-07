@@ -2,6 +2,7 @@ package backend
 
 import (
 	"net/http"
+
 	"upspin.io/errors"
 
 	"github.com/Owicca/chan/models/topics"
@@ -17,8 +18,8 @@ func init() {
 func Index(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.Index"
 
-	data := map[string]interface{} {
-		"title": "The title",
+	data := map[string]any{
+		"title":      "The title",
 		"topic_list": topics.TopicListWithBoardList(infra.S.Conn),
 	}
 

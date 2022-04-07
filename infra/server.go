@@ -1,16 +1,16 @@
 package infra
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 	"os"
 	"os/signal"
-	"context"
-	"runtime"
 	"path"
+	"runtime"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
@@ -24,8 +24,8 @@ var S *Server
 
 // To be ran on server closing
 var (
-	undo func()
-	loggerSync func() error
+	undo              func()
+	loggerSync        func() error
 	_, filename, _, _ = runtime.Caller(0)
 )
 
@@ -45,8 +45,8 @@ func init() {
 
 type Server struct {
 	mux.Router
-	Config Config
-	Conn   *gorm.DB
+	Config   Config
+	Conn     *gorm.DB
 	Template *Template
 }
 
@@ -57,9 +57,9 @@ func NewServer(
 ) *Server {
 	if S == nil {
 		S = &Server{
-			Config: cfg,
-			Router: *mux.NewRouter(),
-			Conn:   conn,
+			Config:   cfg,
+			Router:   *mux.NewRouter(),
+			Conn:     conn,
 			Template: tmpl,
 		}
 	}
@@ -73,7 +73,7 @@ func (s *Server) Addr() string {
 }
 
 // Server JSON response.
-func (s *Server) JSON(w http.ResponseWriter, status int, data interface{}) error {
+func (s *Server) JSON(w http.ResponseWriter, status int, data any) error {
 	w.Header().Set("Content-Type", "application/json")
 	if data != nil {
 		json.NewEncoder(w).Encode(data)
@@ -91,7 +91,7 @@ func (s *Server) MEDIA(w http.ResponseWriter, status int, media []byte, mediaTyp
 }
 
 // Server a HTML response.
-func (s *Server) HTML(w http.ResponseWriter, status int, htmlView string, data interface{}) error {
+func (s *Server) HTML(w http.ResponseWriter, status int, htmlView string, data any) error {
 	return s.Template.Render(w, status, htmlView, data)
 }
 
@@ -129,7 +129,7 @@ func (s *Server) ShutdownOnInterrupt(srv *http.Server) {
 	go func() {
 		sigint := make(chan os.Signal, 1)
 		signal.Notify(sigint, os.Interrupt)
-		<- sigint
+		<-sigint
 
 		if err := srv.Shutdown(context.Background()); err != nil {
 			msg := fmt.Sprintf("Shutting down error (%s)", err)
@@ -146,5 +146,5 @@ func (s *Server) ShutdownOnInterrupt(srv *http.Server) {
 		zap.L().Info("Could not listen and serve!", zap.Int64("timestamp", time.Now().Unix()))
 	}
 
-	<- idleConnsClosed
+	<-idleConnsClosed
 }

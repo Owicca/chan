@@ -1,14 +1,16 @@
 package backend
 
 import (
-	"github.com/Owicca/chan/models/users"
+	"net/http"
+
+	"github.com/Owicca/chan/infra"
 	"github.com/Owicca/chan/models/acl"
 	"github.com/Owicca/chan/models/logs"
-	"github.com/Owicca/chan/infra"
-	"net/http"
+	"github.com/Owicca/chan/models/users"
 	"github.com/gorilla/mux"
 
 	"strconv"
+
 	"upspin.io/errors"
 )
 
@@ -21,7 +23,7 @@ func init() {
 
 func UserList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.UserList"
-	data := map[string]interface{} {
+	data := map[string]any{
 		"users": users.UserList(infra.S.Conn),
 	}
 
@@ -39,9 +41,9 @@ func UserOne(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := map[string]interface{} {
-		"user": users.UserOne(infra.S.Conn, user_id),
-		"roles": acl.RoleList(infra.S.Conn),
+	data := map[string]any{
+		"user":       users.UserOne(infra.S.Conn, user_id),
+		"roles":      acl.RoleList(infra.S.Conn),
 		"statusList": users.UserStatusList(),
 	}
 
@@ -66,16 +68,16 @@ func UserOneUpdate(w http.ResponseWriter, r *http.Request) {
 	role_id, _ := strconv.Atoi(r.PostFormValue("role"))
 
 	users.UserOneUpdate(infra.S.Conn, users.User{
-		ID: user_id,
+		ID:       user_id,
 		Username: r.PostFormValue("username"),
-		Email: r.PostFormValue("email"),
-		Status: r.PostFormValue("status"),
-		RoleId: role_id,
+		Email:    r.PostFormValue("email"),
+		Status:   r.PostFormValue("status"),
+		RoleId:   role_id,
 	})
 
-	data := map[string]interface{} {
-		"user": users.UserOne(infra.S.Conn, user_id),
-		"roles": acl.RoleList(infra.S.Conn),
+	data := map[string]any{
+		"user":       users.UserOne(infra.S.Conn, user_id),
+		"roles":      acl.RoleList(infra.S.Conn),
 		"statusList": users.UserStatusList(),
 	}
 
