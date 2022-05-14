@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	infra.S.HandleFunc("/", http.HandlerFunc(Index)).Methods(http.MethodGet).Name("site_index")
+	infra.S.HandleFunc("/", Index).Methods(http.MethodGet).Name("site_index")
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {

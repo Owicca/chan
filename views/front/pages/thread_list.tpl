@@ -6,7 +6,7 @@
 			<div class="postContainer opContainer">
 				<div class="post op">
 					<div class="postInfo desktop">
-						<a href="/{{$.board_code}}/{{$thread.ID}}/">
+						<a href="/boards/{{$.board_code}}/threads/{{$thread.ID}}/">
 							{{$thread.Content}}
 						</a>
 					</div>

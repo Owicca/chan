@@ -7,8 +7,14 @@
 	<title>{{with .title}}{{.title}}{{else}}The Chan{{end}}</title>
 </head>
 <body>
-	{{.page | asHTML}}
-
+	<header>
+		{{template "front/nav" .}}
+	</header>
+	<main>
+		{{.page | asHTML}}
+	</main>
+	<footer class="fixed-bottom">
+	</footer>
 	{{template "front/scripts"}}
 </body>
 </html>

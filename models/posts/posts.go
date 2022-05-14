@@ -14,13 +14,13 @@ type Post struct {
 	Status     string
 	Thread_id  int
 	Content    string
-	Media      media.Media `gorm:"foreignKey:object_id"`
+	Media      media.Media `gorm:"foreignKey:object_id;references:id"`
 }
 
 func ThreadPostList(db *gorm.DB, thread_id int) []Post {
 	var postList []Post
 
-	db.Preload("Thread").Preload("Media", "media.id = posts.id AND media.object_type = 'posts'").Find(&postList, "thread.id = ?", thread_id)
+	db.Preload("Thread").Preload("Media", "media.object_type = 'posts'").Find(&postList, "thread_id = ?", thread_id)
 
 	return postList
 }

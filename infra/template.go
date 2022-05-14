@@ -11,6 +11,8 @@ import (
 
 	customtemplate "html/template"
 	stdtemplate "html/template"
+
+	"github.com/Owicca/chan/models/boards"
 	// customtemplate "github.com/alecthomas/template"
 	// blackfriday "gopkg.in/russross/blackfriday.v2"
 )
@@ -53,6 +55,9 @@ func NewTemplate() *Template {
 
 			return t.Format(time.RFC3339)
 		},
+		"b2s": func(bt int) string {
+			return b2sSI(int64(bt))
+		},
 	}
 
 	templatePagePath := []string{
@@ -93,7 +98,8 @@ func (t *Template) Render(w http.ResponseWriter, status int, name string, data a
 	t.custom.ExecuteTemplate(buffer, name, data)
 
 	content := map[string]any{
-		"page": buffer.String(),
+		"navigation": boards.BoardList(S.Conn),
+		"page":       buffer.String(),
 	}
 
 	baseTplName := "template"

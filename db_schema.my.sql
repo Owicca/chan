@@ -171,14 +171,17 @@ INSERT INTO users(id, username, email, password, salt, status, role_id) VALUES
 
 -- ---
 
-CREATE TABLE media(
+CREATE TABLE media (
 	object_id bigint NOT NULL,
 	object_type varchar(64) NOT NULL,
 	deleted_at int NOT NULL DEFAULT 0,
 	name varchar(64) NOT NULL,-- seo name
 	code varchar(64) NOT NULL DEFAULT 'img',-- img, vid
 	path text NOT NULL,
-	PRIMARY KEY(name)
+	thumb TEXT NOT NULL,
+	x SMALLINT NOT NULL,
+	y SMALLINT NOT NULL,
+	size BIGINT NOT NULL
 );
 
 -- ---
