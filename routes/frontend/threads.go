@@ -8,8 +8,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"upspin.io/errors"
-
-	"log"
 )
 
 func init() {
@@ -21,9 +19,9 @@ func ThreadList(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	data := map[string]any{
-		"threads": threads.BoardThreadListByCode(infra.S.Conn, vars["board_code"]),
+		"thread_list": threads.BoardThreadListByCode(infra.S.Conn, vars["board_code"]),
+		"board_code":  vars["board_code"],
 	}
-	log.Println(threads.BoardThreadListByCode(infra.S.Conn, vars["board_code"]))
 
 	infra.S.HTML(w, http.StatusOK, "front/thread_list", data)
 }

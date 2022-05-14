@@ -2,21 +2,23 @@ package threads
 
 import (
 	"gorm.io/gorm"
-
-	"github.com/Owicca/chan/models/posts"
 )
 
 type Thread struct {
-	ID int `gorm:"primaryKey;column:id"`
+	ID         int `gorm:"primaryKey;column:id"`
 	Deleted_at int64
-	Board_id int
-	Primary posts.Post `gorm:"foreignKey:id"`
+	Board_id   int
+	Content    string
 }
 
 func BoardThreadListByCode(db *gorm.DB, board_code string) []Thread {
 	var threadList []Thread
 
-	db.Joins("INNER JOIN boards ON threads.board_id = boards.id && boards.code = ?", board_code).Preload("Primary", "is_primary = ?", 1).Find(&threadList)
+	db.Raw(`
+	SELECT t.*, p.content FROM threads t
+	INNER JOIN boards b ON t.board_id = b.id AND b.code = ?
+	LEFT JOIN posts p ON t.primary_post_id = p.id
+	`, board_code).Scan(&threadList)
 
 	return threadList
 }

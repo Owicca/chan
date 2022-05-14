@@ -216,13 +216,12 @@ CREATE TABLE threads(
 
 -- ---
 
-CREATE TABLE posts(
+CREATE TABLE posts (
 	id bigint NOT NULL AUTO_INCREMENT,
 	deleted_at int NOT NULL DEFAULT 0,
 	status varchar(10) NOT NULL DEFAULT 'A',
-	content text NOT NULL,
-	is_primary BIT(1) NOT NULL DEFAULT 0,
 	thread_id bigint NOT NULL,
+	content text NOT NULL,
 	FOREIGN KEY(thread_id) REFERENCES threads(id),
 	PRIMARY KEY(id)
 );

@@ -2,20 +2,19 @@ package posts
 
 import (
 	"time"
-	
+
 	"gorm.io/gorm"
 
 	"github.com/Owicca/chan/models/media"
 )
 
 type Post struct {
-	ID int `gorm:"primaryKey;column:id"`
+	ID         int `gorm:"primaryKey;column:id"`
 	Deleted_at int64
-	Status string
-	Content string
-	Is_primary bool
-	Thread_id int
-	Media media.Media `gorm:"foreignKey:object_id"`
+	Status     string
+	Thread_id  int
+	Content    string
+	Media      media.Media `gorm:"foreignKey:object_id"`
 }
 
 func ThreadPostList(db *gorm.DB, thread_id int) []Post {

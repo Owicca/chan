@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	infra.S.HandleFunc("/boards/{board_code:[a-z]+}/", http.HandlerFunc(PostList)).Methods(http.MethodGet).Name("board_list")
+	infra.S.HandleFunc("/boards/{board_code:[a-z]+}/{thread_id:{0-9}+}", http.HandlerFunc(PostList)).Methods(http.MethodGet).Name("board_list")
 	// infra.S.HandleFunc("/boards/{board_code:[a-z]+}/thread/{thread_id:[0-9]+}/", http.HandlerFunc(Thread)).Methods(http.MethodGet).Name("thread_one")
 }
 

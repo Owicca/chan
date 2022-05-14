@@ -1,17 +1,15 @@
 {{define "front/thread_list"}}
 <ul>
-{{range $thread := .threads}}
+{{range $thread := .thread_list}}
 	<li>
 		<div class="thread">
 			<div class="postContainer opContainer">
 				<div class="post op">
 					<div class="postInfo desktop">
-						<a href="/threads/{{$thread.ID}}/">
+						<a href="/{{$.board_code}}/{{$thread.ID}}/">
+							{{$thread.Content}}
 						</a>
 					</div>
-					<blockquote class="postMessage">
-						{{$thread.Primary.Content}}
-					</blockquote>
 				</div>
 			</div>
 		</div>
