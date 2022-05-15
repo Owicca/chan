@@ -17,6 +17,10 @@
 					</div>
 				</div>
 			</li>
+			{{else}}
+			<li class="row">
+				No boards available!
+			</li>
 			{{end}}
 		</ul>
 	</li>

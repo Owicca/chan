@@ -27,8 +27,26 @@ func PostList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	post_list := posts.ThreadPostList(infra.S.Conn, thread_id)
+	reply_count := len(post_list) - 1
+	if reply_count < 0 {
+		reply_count = 0
+	}
+
+	media_count := 0
+	for _, post := range post_list {
+		if post.Media.Object_id > 0 {
+			media_count += 1
+		}
+	}
+
 	data := map[string]any{
 		"post_list": post_list,
+		"stats": map[string]any{
+			"reply_count": reply_count,
+			"media_count": media_count,
+		},
+		"board_code": vars["board_code"],
+		"page_nr":    1,
 	}
 
 	infra.S.HTML(w, http.StatusOK, "front/post_list", data)

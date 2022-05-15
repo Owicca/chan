@@ -91,7 +91,7 @@ func (s *Server) MEDIA(w http.ResponseWriter, status int, media []byte, mediaTyp
 }
 
 // Server a HTML response.
-func (s *Server) HTML(w http.ResponseWriter, status int, htmlView string, data any) error {
+func (s *Server) HTML(w http.ResponseWriter, status int, htmlView string, data map[string]any) error {
 	return s.Template.Render(w, status, htmlView, data)
 }
 

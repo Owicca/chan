@@ -9,12 +9,16 @@ import (
 )
 
 type Post struct {
-	ID         int `gorm:"primaryKey;column:id"`
-	Deleted_at int64
-	Status     string
-	Thread_id  int
-	Content    string
-	Media      media.Media `gorm:"foreignKey:object_id;references:id"`
+	ID             int `gorm:"primaryKey;column:id"`
+	Created_at     int64
+	Deleted_at     int64
+	Tripcode       string
+	SecureTripcode string
+	Status         string
+	Thread_id      int
+	Name           string
+	Content        string
+	Media          media.Media `gorm:"foreignKey:object_id;references:id"`
 }
 
 func ThreadPostList(db *gorm.DB, thread_id int) []Post {

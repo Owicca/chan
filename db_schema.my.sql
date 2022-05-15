@@ -221,10 +221,14 @@ CREATE TABLE threads(
 
 CREATE TABLE posts (
 	id bigint NOT NULL AUTO_INCREMENT,
-	deleted_at int NOT NULL DEFAULT 0,
+	created_at bigint NOT NULL,
+	deleted_at int NOT NULL DEFAULT '0',
+	tripcode varchar(255) DEFAULT NULL,
+	secure_tripcode varchar(255) DEFAULT NULL,
 	status varchar(10) NOT NULL DEFAULT 'A',
 	thread_id bigint NOT NULL,
+	name varchar(255) DEFAULT NULL,
 	content text NOT NULL,
-	FOREIGN KEY(thread_id) REFERENCES threads(id),
-	PRIMARY KEY(id)
+	PRIMARY KEY (id),
+	FOREIGN KEY (thread_id) REFERENCES threads (id)
 );

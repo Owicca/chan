@@ -1,6 +1,16 @@
 package infra
 
-import "fmt"
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"time"
+
+	customtemplate "html/template"
+
+	"github.com/Owicca/chan/models/logs"
+	"upspin.io/errors"
+)
 
 func b2sSI(b int64) string {
 	const unit = 1000
@@ -28,4 +38,69 @@ func b2sIEC(b int64) string {
 	}
 	return fmt.Sprintf("%.1f %ciB",
 		float64(b)/float64(div), "KMGTPE"[exp])
+}
+
+func timestampToUTC(timestamp int64) string {
+	t := time.Unix(timestamp, 0)
+
+	return t.Format(time.RFC3339)
+}
+
+func timestampToCustomDate(timestamp int64) string {
+	t := time.Unix(timestamp, 0)
+
+	return fmt.Sprintf("%d-%d-%d|%d:%d:%d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
+}
+
+func lastInArray(a []int) int {
+	if len(a) == 0 {
+		return -1
+	}
+	return a[len(a)-1]
+}
+
+func objectToJSON(obj any) string {
+	const op errors.Op = "infra.template.asjson"
+	var (
+		results string
+		buff    bytes.Buffer
+	)
+
+	js, err := json.Marshal(obj)
+	if err != nil {
+		logs.LogErr(op, err)
+		return results
+	}
+	if err = json.Indent(&buff, js, "", " "); err != nil {
+		logs.LogErr(op, err)
+		return results
+	}
+	results = string(buff.String())
+
+	return results
+}
+
+func stringToHTML(html string) customtemplate.HTML {
+	return customtemplate.HTML(html)
+}
+
+func generateDict(values ...any) map[string]any {
+	const op errors.Op = "utils.generateDict"
+
+	if len(values)%2 != 0 {
+		logs.LogErr(op, errors.Str("'params' should be called with pairs of values"))
+		return nil
+	}
+
+	dict := make(map[string]any, len(values))
+	for i := 0; i < len(values); i += 2 {
+		k, ok := values[i].(string)
+		if !ok {
+			logs.LogErr(op, errors.Errorf("%d th key is not a string", i/2))
+			return nil
+		}
+		dict[k] = values[i+1]
+	}
+
+	return dict
 }

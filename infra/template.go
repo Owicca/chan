@@ -2,12 +2,9 @@ package infra
 
 import (
 	"bytes"
-	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
-	"time"
 
 	customtemplate "html/template"
 	stdtemplate "html/template"
@@ -25,39 +22,13 @@ type Template struct {
 
 func NewTemplate() *Template {
 	funcMap := customtemplate.FuncMap{
-		"last": func(a []int) int {
-			if len(a) == 0 {
-				return -1
-			}
-			return a[len(a)-1]
-		},
-		"asHTML": func(html string) customtemplate.HTML {
-			return customtemplate.HTML(html)
-		},
-		"params": func(values ...any) (map[string]any, error) {
-			if len(values)%2 != 0 {
-				return nil, errors.New("'params' should be called with pairs of values")
-			}
-
-			dict := make(map[string]any, len(values))
-			for i := 0; i < len(values); i += 2 {
-				k, ok := values[i].(string)
-				if !ok {
-					return nil, fmt.Errorf("%d th key is not a string", i/2)
-				}
-				dict[k] = values[i+1]
-			}
-
-			return dict, nil
-		},
-		"unixToUTC": func(timestamp int64) string {
-			t := time.Unix(timestamp, 0)
-
-			return t.Format(time.RFC3339)
-		},
-		"b2s": func(bt int64) string {
-			return b2sSI(bt)
-		},
+		"last":      lastInArray,
+		"asJSON":    objectToJSON,
+		"asHTML":    stringToHTML,
+		"params":    generateDict,
+		"unixToUTC": timestampToUTC,
+		"b2s":       b2sSI,
+		"u2d":       timestampToCustomDate,
 	}
 
 	templatePagePath := []string{
@@ -91,15 +62,24 @@ func (t *Template) JSEscapeString(s string) string {
 	return customtemplate.JSEscapeString(s)
 }
 
-func (t *Template) Render(w http.ResponseWriter, status int, name string, data any) error {
+func (t *Template) Render(w http.ResponseWriter, status int, name string, data map[string]any) error {
 	w.WriteHeader(status)
 
+	// add data to main template
+	//if data == nil {
+	//	data = map[string]any{}
+	//}
+	//data["is_index"] = false
+	//data["is_thread"] = false
 	buffer := bytes.NewBufferString("")
 	t.custom.ExecuteTemplate(buffer, name, data)
 
+	// maybe I shouldn't hardcode template names in is_index and is_thread
 	content := map[string]any{
 		"navigation": boards.BoardList(S.Conn),
 		"page":       buffer.String(),
+		"is_index":   strings.HasSuffix(name, "thread_list"),
+		"is_thread":  strings.HasSuffix(name, "post_list"),
 	}
 
 	baseTplName := "template"

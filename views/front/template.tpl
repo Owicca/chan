@@ -6,14 +6,17 @@
 	{{template "front/links"}}
 	<title>{{with .title}}{{.title}}{{else}}The Chan{{end}}</title>
 </head>
-<body>
+<body class="{{if .is_index}}is_index{{end}}{{if .is_thread}}is_thread{{end}}">
 	<header>
 		{{template "front/nav" .}}
 	</header>
+	<hr>
 	<main>
 		{{.page | asHTML}}
 	</main>
+	<hr>
 	<footer class="fixed-bottom">
+		{{template "front/nav" .}}
 	</footer>
 	{{template "front/scripts"}}
 </body>
