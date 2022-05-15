@@ -21,7 +21,7 @@
 						({{b2s $post.Media.Size}}, {{$post.Media.X}}x{{$post.Media.Y}})
 					</div>
 					<a class="fileThumb" href="/static/media/{{$post.Media.Path}}" target="_blank">
-						<img src="/static/media/{{$post.Media.Thumb}}" alt="{{b2s $post.Media.X}}" style="height: 66px; width: 125px;" loading="lazy">
+						<img src="/static/media/{{$post.Media.Thumb}}" alt="{{$post.Media.X}}" class="fileThumb--item" loading="lazy">
 						<div class="mFileInfo mobile">{{b2s $post.Media.Size}}</div>
 					</a>
 				</div>

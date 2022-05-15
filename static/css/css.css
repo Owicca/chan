@@ -14,3 +14,8 @@ main {
 	max-width: 200px;
 	max-height: 100px;
 }
+
+.fileThumb--item {
+	height: 66px;
+	width: 125px;
+}
