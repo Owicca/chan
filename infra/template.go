@@ -55,8 +55,8 @@ func NewTemplate() *Template {
 
 			return t.Format(time.RFC3339)
 		},
-		"b2s": func(bt int) string {
-			return b2sSI(int64(bt))
+		"b2s": func(bt int64) string {
+			return b2sSI(bt)
 		},
 	}
 

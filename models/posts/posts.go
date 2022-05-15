@@ -25,6 +25,19 @@ func ThreadPostList(db *gorm.DB, thread_id int) []Post {
 	return postList
 }
 
+func TotalActivePosts(db *gorm.DB) int {
+	var count int
+
+	db.Raw(`
+	SELECT COUNT(p.id) FROM posts p
+	WHERE
+	p.deleted_at = ?
+	AND p.status = ?
+	`, 0, PostStatusActive).Scan(&count)
+
+	return count
+}
+
 func PostList(db *gorm.DB) []Post {
 	var postList []Post
 

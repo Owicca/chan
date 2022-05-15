@@ -14,7 +14,6 @@
   <span id="navtopright">
 		[ <a href="javascript:void(0);" id="settingsWindowLink">Settings</a>]
 		[ <a href="/search" title="Search">Search</a>]
-		[ <a href="//p.4chan.org/" title="Mobile">Mobile</a>]
 		[ <a href="/" target="_top">Home</a>]
 	</span>
 </div>

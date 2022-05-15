@@ -52,6 +52,18 @@
 				</div>
 			</div>
 		</div>
+		<div class="box-outer top-box" id="site-stats">
+			<div class="box-inner">
+				<div class="boxbar">
+					<h2>Stats</h2>
+				</div>
+				<div class="boxcontent">
+					<div class="stat-cell"><b>Total Posts:</b>{{.stats.total_posts}}</div>
+					<div class="stat-cell"><b>Current Users:</b>{{.stats.total_users}}</div>
+					<div class="stat-cell"><b>Active Content:</b>{{b2s .stats.total_active_content}}</div>
+				</div>
+			</div>
+		</div>
 	</main>
 	<footer id="ft">
 		<ul>
