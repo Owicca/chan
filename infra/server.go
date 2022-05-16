@@ -95,8 +95,8 @@ func (s *Server) HTML(w http.ResponseWriter, status int, htmlView string, data m
 	return s.Template.Render(w, status, htmlView, data)
 }
 
-func (s *Server) Redirect(w http.ResponseWriter, r *http.Request, status int, dst string) {
-	http.Redirect(w, r, dst, status)
+func (s *Server) Redirect(w http.ResponseWriter, r *http.Request, dst string) {
+	http.Redirect(w, r, dst, http.StatusSeeOther)
 }
 
 func (s *Server) GenerateUrl(endpoint string) string {

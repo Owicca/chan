@@ -1,11 +1,13 @@
 package posts
 
 import (
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
 
 	"github.com/Owicca/chan/models/media"
+	"github.com/Owicca/chan/models/tripkeys"
 )
 
 type Post struct {
@@ -24,7 +26,7 @@ type Post struct {
 func ThreadPostList(db *gorm.DB, thread_id int) []Post {
 	var postList []Post
 
-	db.Preload("Thread").Preload("Media", "media.object_type = 'posts'").Find(&postList, "thread_id = ?", thread_id)
+	db.Preload("Media", "media.object_type = 'posts'").Find(&postList, "thread_id = ?", thread_id)
 
 	return postList
 }
@@ -72,4 +74,38 @@ func PostOneDelete(db *gorm.DB, id int) error {
 	}
 
 	return db.Model(post).Updates(&Post{Deleted_at: time.Now().Unix()}).Error
+}
+
+func DeconstructInput(inp string) (string, string, string) {
+	var (
+		name   string
+		trip   string
+		secure string
+	)
+
+	if inp != "" {
+		//log.Println("not empty")
+		parts := strings.Split(inp, "##")
+		if len(parts) > 1 {
+			//log.Println("secure", parts)
+			name = parts[0]
+			if parts[1] != "" {
+				secure = tripkeys.Tripkey([]byte(parts[1]))
+			}
+			secure = parts[1]
+		} else {
+			parts = strings.Split(inp, "#")
+			//log.Print("trip parts", parts)
+			if len(parts) > 1 {
+				//log.Println("trip", parts)
+				name = parts[0]
+				if parts[1] != "" {
+					trip = tripkeys.Tripkey([]byte(parts[1]))
+				}
+			}
+		}
+	}
+
+	//log.Println("deconstructed", name, trip, secure)
+	return name, trip, secure
 }

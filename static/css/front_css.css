@@ -1,0 +1,42 @@
+pre {
+	text-align: start;
+}
+
+.image {
+	display: block;
+	width: auto;
+	height: auto;
+	max-width: 200px;
+	max-height: 100px;
+}
+
+.fileThumb--item {
+	height: 66px;
+	width: 125px;
+}
+
+.hidden {
+	display: none;
+}
+
+.postContainer,
+#reply {
+	text-align: left;
+}
+
+.postMessage {
+	margin: 15px 40px;
+}
+
+.navLinks {
+	display: flex;
+	justify-content: space-between;
+}
+
+.tripcode {
+	display: inline-block;
+	vertical-align: bottom;
+	max-width: 100px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

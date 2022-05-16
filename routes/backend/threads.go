@@ -31,7 +31,7 @@ func BoardThreadList(w http.ResponseWriter, r *http.Request) {
 	board_id, err := strconv.Atoi(vars["board_id"])
 	if err != nil || board_id < 1 {
 		logs.LogWarn(op, errors.Str("No board_id provided!"))
-		infra.S.Redirect(w, r, http.StatusNotFound, infra.S.GenerateUrl("/admin/boards/"))
+		infra.S.Redirect(w, r, infra.S.GenerateUrl("/admin/boards/"))
 		return
 	}
 
@@ -59,7 +59,7 @@ func ThreadOne(w http.ResponseWriter, r *http.Request) {
 	thread_id, err := strconv.Atoi(vars["thread_id"])
 	if err != nil || thread_id < 1 {
 		logs.LogWarn(op, errors.Str("No thread_id provided!"))
-		infra.S.Redirect(w, r, http.StatusNotFound, infra.S.GenerateUrl("/admin/threads/"))
+		infra.S.Redirect(w, r, infra.S.GenerateUrl("/admin/threads/"))
 		return
 	}
 

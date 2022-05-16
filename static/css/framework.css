@@ -1253,7 +1253,6 @@ input[type=text],input[type=password],textarea{
 }
 #postForm{
 	width:468px;
-	display:none
 }
 #togglePostFormLink{
 	font-size:22px;

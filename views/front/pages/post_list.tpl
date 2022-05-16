@@ -1,15 +1,7 @@
 {{define "front/post_list"}}
-<div class="navLinks">
-	[<a href="/boards/{{.board_code}}/" accesskey="a">Return</a>]
-	[<a href="/boards/{{.board_code}}/catalog">Catalog</a>]
-	[<a href="#bottom">Bottom</a>]
-	<div class="thread-stats">
-		<span class="ts-replies" data-tip="Replies">{{.stats.reply_count}}</span> /
-		<span class="ts-images" data-tip="Images">{{.stats.media_count}}</span> /
-		<!-- <span data-tip="Posters" class="ts-ips">76</span> / -->
-		<span data-tip="Page" class="ts-page">{{.page_nr}}</span>
-	</div>
-</div>
+{{template "front/create_reply_form" .}}
+<hr>
+{{template "front/post_list_nav_top" .}}
 <hr>
 <div class="board">
 <div class="thread">
@@ -20,21 +12,24 @@
 {{if eq $idx 0}}
 	{{$type = "op"}}
 {{end}}
+{{$trp := ""}}
+{{if $post.SecureTripcode}}
+	{{$trp = (printf "!!%s" $post.SecureTripcode)}}
+{{else if $post.Tripcode}}
+	{{$trp = (printf "!%s" $post.Tripcode)}}
+{{end}}
 	<li id="p{{$post.ID}}">
 		<div class="postContainer {{$type}}Container">
 			<div class="post {{$type}}">
 				<div class="postInfo">
-					<span class="nameBlock"><span class="name">
-					{{if $post.Name}}
-						{{$post.Name}}
-						{{if $post.SecureTripcode}}
-							!!{{$post.SecureTripcode}}
-						{{else if $post.Tripcode}}
-							!{{$post.Tripcode}}
+					<span class="nameBlock">
+						<span class="name">
+						{{if $post.Name}}
+							<span class="theName">{{$post.Name}}</span><span title="{{$trp}}" class="tripcode">{{$trp}}</span>
+						{{else}}
+							Anonymous
 						{{end}}
-					{{else}}
-						Anonymous
-					{{end}}
+						</span>
 					</span>
 					<span class="dateTime" data-utc="{{$post.Created_at}}">{{u2d $post.Created_at}}</span>
 					<span class="postNum">
@@ -64,23 +59,13 @@
 		</div>
 	</li>
 {{end}}
+	<!-- <noscript> -->
+{{template "front/create_reply_form_quick" .}}
+	<!-- </noscript> -->
 </ul>
 
 </div>
 </div>
 <hr>
-<div class="navLinks navLinksBot">
-	<div class="open-qr-wrap">
-		[<a href="#" class="open-qr-link">Post a Reply</a>]
-	</div>
-	[<a href="/boards/{{.board_code}}/" accesskey="a">Return</a>]
-	[<a href="/boards/{{.board_code}}/catalog">Catalog</a>]
-	[<a href="#top">Top</a>]
-	<div class="thread-stats">
-		<span class="ts-replies" data-tip="Replies">{{.stats.reply_count}}</span> /
-		<span class="ts-images" data-tip="Images">{{.stats.media_count}}</span> /
-		<!-- <span data-tip="Posters" class="ts-ips">76</span> / -->
-		<span data-tip="Page" class="ts-page">{{.page_nr}}</span>
-	</div>
-</div>
+{{template "front/post_list_nav_bot" .}}
 {{end}}

@@ -2,24 +2,7 @@ main {
 	margin-top: 70px;
 }
 
-pre {
-	text-align: start;
-}
-
 .col {
 	display: inline;
 	text-decoration: underline;
-}
-
-.image {
-	display: block;
-	width: auto;
-	height: auto;
-	max-width: 200px;
-	max-height: 100px;
-}
-
-.fileThumb--item {
-	height: 66px;
-	width: 125px;
 }

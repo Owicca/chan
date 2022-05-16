@@ -27,7 +27,7 @@ func ThreadPostList(w http.ResponseWriter, r *http.Request) {
 	thread_id, err := strconv.Atoi(vars["thread_id"])
 	if err != nil {
 		logs.LogWarn(op, errors.Str("No thread_id provided!"))
-		infra.S.Redirect(w, r, http.StatusNotFound, infra.S.GenerateUrl("/admin/threads/"))
+		infra.S.Redirect(w, r, infra.S.GenerateUrl("/admin/threads/"))
 		return
 	}
 	data := map[string]any{
@@ -46,7 +46,7 @@ func PostOne(w http.ResponseWriter, r *http.Request) {
 	post_id, err := strconv.Atoi(vars["post_id"])
 	if err != nil {
 		logs.LogWarn(op, errors.Str("No post_id provided!"))
-		infra.S.Redirect(w, r, http.StatusNotFound, infra.S.GenerateUrl("/admin/threads/"))
+		infra.S.Redirect(w, r, infra.S.GenerateUrl("/admin/threads/"))
 		return
 	}
 	data := map[string]any{
@@ -63,10 +63,10 @@ func PostOneDelete(w http.ResponseWriter, r *http.Request) {
 	post_id, err := strconv.Atoi(vars["post_id"])
 	if err != nil {
 		logs.LogWarn(op, errors.Str("No post_id provided!"))
-		infra.S.Redirect(w, r, http.StatusNotFound, infra.S.GenerateUrl("/admin/posts/"))
+		infra.S.Redirect(w, r, infra.S.GenerateUrl("/admin/posts/"))
 		return
 	}
 	posts.PostOneDelete(infra.S.Conn, post_id)
 
-	infra.S.Redirect(w, r, http.StatusOK, infra.S.GenerateUrl("/admin/posts/"))
+	infra.S.Redirect(w, r, infra.S.GenerateUrl("/admin/posts/"))
 }
