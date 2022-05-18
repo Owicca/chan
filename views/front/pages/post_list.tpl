@@ -53,7 +53,11 @@
 				</div>
 				{{end}}
 				<blockquote class="postMessage">
-					{{$post.Content}}
+					{{if eq $post.Deleted_at 0}}
+						{{$post.Content}}
+					{{else}}
+						This post was deleted
+					{{end}}
 				</blockquote>
 			</div>
 		</div>

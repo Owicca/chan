@@ -1,6 +1,7 @@
 package frontend
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/Owicca/chan/infra"
@@ -22,6 +23,7 @@ func ThreadList(w http.ResponseWriter, r *http.Request) {
 		"thread_list": threads.BoardThreadListByCode(infra.S.Conn, vars["board_code"]),
 		"board_code":  vars["board_code"],
 	}
+	log.Println(threads.BoardThreadListByCode(infra.S.Conn, vars["board_code"]), vars["board_code"])
 
 	infra.S.HTML(w, http.StatusOK, "front/thread_list", data)
 }

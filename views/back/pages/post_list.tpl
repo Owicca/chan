@@ -4,8 +4,7 @@
         <tr>
             <td>ID</td>
             <td>Status</td>
-            <td width="50%" colspan="2">Content</td>
-            <td>Is primary</td>
+            <td width="50%">Content</td>
             <td>Thread</td>
             <td></td>
         </tr>
@@ -19,9 +18,13 @@
                 </a>
             </td>
             <td>
-                {{range $label, $val := $.postStatusList}}
-                    {{if eq $val $post.Status}}
-                        {{$label}}
+                {{if gt $post.Deleted_at 0}}
+                    Deleted
+                {{else}}
+                    {{range $label, $val := $.postStatusList}}
+                        {{if eq $val $post.Status}}
+                            {{$label}}
+                        {{end}}
                     {{end}}
                 {{end}}
             </td>
@@ -29,21 +32,16 @@
                 {{$post.Content}}
             </td>
             <td>
-                {{if $post.Is_primary}}
-                Primary
-                {{else}}
-                Not primary
-                {{end}}
-            </td>
-            <td>
                 <a href="/admin/threads/{{$post.Thread_id}}/">
                     {{$post.Thread_id}}
                 </a>
             </td>
             <td>
-                <a href="/admin/posts/{{$post.ID}}/">
-                    Delete
-                </a>
+                <form method="post" action="/admin/posts/{{$post.ID}}/">
+                    <input name="post_id" type="hidden" value="{{$post.ID}}" />
+                    <input name="thread_id" type="hidden" value="{{$post.Thread_id}}" />
+                    <input type="submit" value="Delete" />
+                </form>
             </td>
         </tr>
 {{else}}

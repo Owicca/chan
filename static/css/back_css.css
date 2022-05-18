@@ -1,0 +1,13 @@
+main {
+	margin-top: 70px;
+}
+
+.col {
+	display: inline;
+	text-decoration: underline;
+}
+
+.fileThumb--item {
+	max-width: 250px;
+	height: auto;
+}

@@ -47,7 +47,7 @@ func TotalActivePosts(db *gorm.DB) int {
 func PostList(db *gorm.DB) []Post {
 	var postList []Post
 
-	db.Preload("Thread").Preload("Media", "media.id = posts.id AND media.object_type = 'posts'").Find(&postList)
+	db.Preload("Thread").Preload("Media", "media.object_id = posts.id AND media.object_type = 'posts'").Find(&postList)
 
 	return postList
 }
@@ -55,7 +55,7 @@ func PostList(db *gorm.DB) []Post {
 func PostOne(db *gorm.DB, id int) Post {
 	var post Post
 
-	db.Preload("Thread").Preload("Media", "media.id = ? AND media.object_type = 'posts'", id).First(&post, id)
+	db.Preload("Media", "media.object_id = ? AND media.object_type = 'posts'", id).First(&post, id)
 
 	return post
 }
