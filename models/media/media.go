@@ -36,11 +36,12 @@ func TotalMediaSize(db *gorm.DB) int64 {
 	return count
 }
 
-func CreateMedia(m *Media, f io.Reader) (*Media, error) {
+func CreateMedia(m *Media, f io.ReadSeeker) (*Media, error) {
 	ext := "png"
 
 	buf := make([]byte, 512)
 	f.Read(buf)
+	f.Seek(0, io.SeekStart)
 	mimeType := http.DetectContentType(buf)
 	ext, allowed := AllowedMedia()[mimeType]
 	if !allowed {
