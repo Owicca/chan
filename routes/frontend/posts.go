@@ -70,6 +70,8 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	posts.PostOneCreate(infra.S.Conn, &newPost)
+
 	mediaList, ok := r.MultipartForm.File["media"]
 	if ok {
 		m := mediaList[0]
@@ -81,7 +83,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		newMedia, err := media.CreateMedia(&media.Media{
-			Object_id:   0,
+			Object_id:   newPost.ID,
 			Object_type: media.PostsObject,
 			Name:        m.Filename,
 			Size:        m.Size,
@@ -89,11 +91,9 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			logs.LogErr(op, err)
 		} else {
-			newPost.Media = *newMedia
+			infra.S.Conn.Create(&newMedia)
 		}
 	}
-
-	posts.PostOneCreate(infra.S.Conn, newPost)
 
 	infra.S.Redirect(w, r, redirect_url)
 }

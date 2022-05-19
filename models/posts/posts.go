@@ -60,7 +60,7 @@ func PostOne(db *gorm.DB, id int) Post {
 	return post
 }
 
-func PostOneCreate(db *gorm.DB, post Post) error {
+func PostOneCreate(db *gorm.DB, post *Post) error {
 	return db.Create(&post).Error
 }
 
