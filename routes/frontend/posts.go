@@ -8,6 +8,7 @@ import (
 
 	"github.com/Owicca/chan/infra"
 	"github.com/Owicca/chan/models/logs"
+	"github.com/Owicca/chan/models/media"
 	"github.com/Owicca/chan/models/posts"
 	"github.com/gorilla/mux"
 	"upspin.io/errors"
@@ -66,6 +67,29 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 			logs.LogWarn(op, errors.Str("Invalid name provided!"))
 			infra.S.Redirect(w, r, redirect_url)
 			return
+		}
+	}
+
+	mediaList, ok := r.MultipartForm.File["media"]
+	if ok {
+		m := mediaList[0]
+		mediaFile, err := m.Open()
+		if err != nil {
+			logs.LogErr(op, err)
+
+			infra.S.Redirect(w, r, redirect_url)
+			return
+		}
+		newMedia, err := media.CreateMedia(&media.Media{
+			Object_id:   0,
+			Object_type: media.PostsObject,
+			Name:        m.Filename,
+			Size:        m.Size,
+		}, mediaFile)
+		if err != nil {
+			logs.LogErr(op, err)
+		} else {
+			newPost.Media = *newMedia
 		}
 	}
 

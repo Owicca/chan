@@ -176,7 +176,7 @@ CREATE TABLE media (
 	object_type varchar(64) NOT NULL,
 	deleted_at int NOT NULL DEFAULT 0,
 	name varchar(64) NOT NULL,-- seo name
-	code varchar(64) NOT NULL DEFAULT 'img',-- img, vid
+	type varchar(64) NOT NULL DEFAULT 'img',-- img, vid
 	path text NOT NULL,
 	thumb TEXT NOT NULL,
 	x SMALLINT NOT NULL,

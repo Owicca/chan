@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	customtemplate "html/template"
@@ -103,4 +104,9 @@ func generateDict(values ...any) map[string]any {
 	}
 
 	return dict
+}
+
+func GetStaticDir() string {
+	wd, _ := os.Getwd()
+	return fmt.Sprintf("%s/static/media", wd)
 }
