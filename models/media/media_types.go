@@ -7,11 +7,23 @@ const (
 
 var (
 	ImgMimeTypes map[string]string = map[string]string{
+		"image/gif":  "gif",
+		"image/jpeg": "jpeg",
+		"image/png":  "png",
 		"image/webp": "webp",
-		"video/webm": "webm",
 	}
 	VidMimeTypes map[string]string = map[string]string{
-		"image/webp": "webp",
 		"video/webm": "webm",
+		"video/mp4":  "mp4",
 	}
+	AllowedMedia map[string]string = map[string]string{}
 )
+
+func init() {
+	for id, ext := range ImgMimeTypes {
+		AllowedMedia[id] = ext
+	}
+	for id, ext := range VidMimeTypes {
+		AllowedMedia[id] = ext
+	}
+}

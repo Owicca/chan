@@ -118,3 +118,31 @@
 ### Setup:
 1. `go get github.com/githubnemo/CompileDaemon`
 2. `CompileDaemon.exe -build="go build -o ..\main.exe .\main.go" -command="..\main.exe" -exclude-dir=".git" -exclude-dir="log" -exclude="(.*\.exe)$" -pattern="(.*)$" -verbose`
+
+
+### media potential requirements:
+- type:
+	- image:
+		- gif:
+			- thumb: extract frame and resize
+		- png:
+			- thumb: copy and resize
+		- jpeg:
+			- thumb: copy and resize
+		- jpg:
+			- thumb: copy and resize
+		- webp:
+			- thumb: copy and resize
+	- video:
+		- webm:
+			- thumb: extract frame and resize
+		- mp4:
+			- thumb: extract frame and resize
+- size:
+	- min size
+	- max size
+	- min resolution
+	- max resolution
+
+
+closed threads?
