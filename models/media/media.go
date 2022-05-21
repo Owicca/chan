@@ -70,7 +70,12 @@ func CreateMedia(m *Media, f io.ReadSeeker) (*Media, error) {
 	if err != nil {
 		return m, err
 	}
-	defer osF.Close()
+	if mimeType != "video/webm" {
+		// TODO: this is such a hack!
+		// Webm lib does a seek after the file is closed, causing a panic.
+		// So I let the runtime Close when it closes all the fd's on ps close.
+		defer osF.Close()
+	}
 
 	osThumb := fmt.Sprintf("%s/%s", staticDir, m.Thumb)
 	osT, err := os.Create(osThumb)
@@ -106,31 +111,9 @@ func GetMediaXY(f io.ReadSeeker, mime string) (int, int) {
 	if IsVid(mime) {
 		log.Println("getmediaxy is vid", mime)
 		if mime == "video/webm" {
-			m := webm.WebM{}
-			_, err := webm.Parse(f, &m)
-			if err != nil {
-				logs.LogErr(op, errors.Errorf("err while parsing %s (%s)", mime, err))
-				return x, y
-			}
-			vidTrack := m.FindFirstVideoTrack()
-			if vidTrack == nil {
-				logs.LogErr(op, errors.Str("no video track found"))
-				return x, y
-			}
-			x, y = int(vidTrack.Video.DisplayHeight), int(vidTrack.Video.DisplayWidth)
+			x, y = GetMediaXYWebm(f, mime)
 		} else if mime == "video/mp4" {
-			// TODO: run ffmpeg from cli until I research https://pkg.go.dev/github.com/abema/go-mp4
-			probe, err := mp4.Probe(f)
-			if err != nil {
-				logs.LogErr(op, errors.Errorf("error on probing (%s)", err))
-				return x, y
-			}
-			for _, track := range probe.Tracks {
-				if track.AVC != nil {
-					x, y = int(track.AVC.Width), int(track.AVC.Height)
-					break
-				}
-			}
+			x, y = GetMediaXYMp4(f, mime)
 		}
 	} else {
 		res, err := Decode(f, mime)
@@ -143,6 +126,45 @@ func GetMediaXY(f io.ReadSeeker, mime string) (int, int) {
 	}
 
 	return x, y
+}
+
+func GetMediaXYMp4(f io.ReadSeeker, mime string) (int, int) {
+	const op errors.Op = "models.media.GetMediaXYMp4"
+	x, y := -1, -1
+
+	probe, err := mp4.Probe(f)
+	if err != nil {
+		logs.LogErr(op, errors.Errorf("error on probing (%s)", err))
+		return x, y
+	}
+	for _, track := range probe.Tracks {
+		if track.AVC != nil {
+			x, y = int(track.AVC.Width), int(track.AVC.Height)
+			break
+		}
+	}
+
+	return x, y
+}
+
+func GetMediaXYWebm(f io.ReadSeeker, mime string) (int, int) {
+	const op errors.Op = "models.media.GetMediaXYWebm"
+	x, y := -1, -1
+
+	m := webm.WebM{}
+	r, err := webm.Parse(f, &m)
+	if err != nil {
+		logs.LogErr(op, errors.Errorf("err while parsing %s (%s)", mime, err))
+		return x, y
+	}
+	defer r.Shutdown()
+	vidTrack := m.FindFirstVideoTrack()
+	if vidTrack == nil {
+		logs.LogErr(op, errors.Str("no video track found"))
+		return x, y
+	}
+
+	return int(vidTrack.Video.DisplayHeight), int(vidTrack.Video.DisplayWidth)
 }
 
 func GetStaticDir() string {
