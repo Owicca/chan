@@ -4,6 +4,7 @@ dev_reload=CompileDaemon \
 					 -command="./chan.exe" \
 					 -exclude-dir=".git" \
 					 -exclude-dir="log" \
+					 -exclude-dir="./static/media" \
 					 -exclude-dir="./db" \
 					 -exclude="(.*\.exe)" \
 					 -pattern="(.*)" \
@@ -23,3 +24,12 @@ build:
 
 dev_reload:
 	$(dev_reload)
+
+clean_media:
+	-rm static/media/*.png
+	-rm static/media/*.jpg
+	-rm static/media/*.jpeg
+	-rm static/media/*.webp
+	-rm static/media/*.gif
+	-rm static/media/*.mp4
+	-rm static/media/*.webm

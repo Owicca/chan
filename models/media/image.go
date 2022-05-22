@@ -7,6 +7,7 @@ import (
 	"image/png"
 	"io"
 
+	"golang.org/x/image/draw"
 	"golang.org/x/image/webp"
 )
 
@@ -48,4 +49,14 @@ func Encode(w io.Writer, m image.Image, mime string) error {
 	}
 
 	return nil
+}
+
+// Rescale `src` to `rect` using `scale`,
+// Rescaling is done inplace
+func ScaleTo(src image.Image, rect image.Rectangle, scale draw.Scaler) image.Image {
+	dst := image.NewRGBA(rect)
+
+	scale.Scale(dst, rect, src, src.Bounds(), draw.Over, nil)
+
+	return dst
 }

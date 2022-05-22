@@ -27,3 +27,8 @@ func init() {
 		AllowedMedia[id] = ext
 	}
 }
+
+func IsVid(mime string) bool {
+	_, ok := VidMimeTypes[mime]
+	return ok
+}

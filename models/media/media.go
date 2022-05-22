@@ -1,18 +1,18 @@
 package media
 
 import (
+	"bytes"
 	"fmt"
 	"image"
-	"image/png"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/Owicca/chan/models/logs"
-	"github.com/abema/go-mp4"
-	"github.com/ebml-go/webm"
 	"golang.org/x/image/draw"
 	"gorm.io/gorm"
 	"upspin.io/errors"
@@ -59,7 +59,7 @@ func CreateMedia(m *Media, f io.ReadSeeker) (*Media, error) {
 	staticDir := GetStaticDir()
 
 	m.Path = fmt.Sprintf("%d.%s", name, ext)
-	m.Thumb = fmt.Sprintf("%d_thumb.%s", name, ext)
+	m.Thumb = fmt.Sprintf("%d_thumb.%s", name, "png")
 	m.Type = Img
 	if IsVid(mimeType) {
 		m.Type = Vid
@@ -78,18 +78,16 @@ func CreateMedia(m *Media, f io.ReadSeeker) (*Media, error) {
 	}
 
 	osThumb := fmt.Sprintf("%s/%s", staticDir, m.Thumb)
-	osT, err := os.Create(osThumb)
-	if err != nil {
-		return m, err
-	}
-	defer osT.Close()
 
 	io.Copy(osF, f)
 	f.Seek(0, io.SeekStart)
-	io.Copy(osT, f)
 
 	osF.Seek(0, io.SeekStart)
 	m.X, m.Y = GetMediaXY(osF, mimeType)
+
+	width, height := 200, 200
+
+	defer ResizeMedia(osF, osPath, osThumb, width, height, mimeType)
 
 	return m, nil
 }
@@ -109,13 +107,14 @@ func GetMediaXY(f io.ReadSeeker, mime string) (int, int) {
 	x, y := -1, -1
 
 	if IsVid(mime) {
-		log.Println("getmediaxy is vid", mime)
+		//log.Println("getmediaxy is vid", mime)
 		if mime == "video/webm" {
 			x, y = GetMediaXYWebm(f, mime)
 		} else if mime == "video/mp4" {
 			x, y = GetMediaXYMp4(f, mime)
 		}
 	} else {
+		//log.Println("getmediaxy is img", mime)
 		res, err := Decode(f, mime)
 		if err != nil {
 			logs.LogErr(op, errors.Errorf("err on image decoding (%s)", mime, err))
@@ -128,90 +127,56 @@ func GetMediaXY(f io.ReadSeeker, mime string) (int, int) {
 	return x, y
 }
 
-func GetMediaXYMp4(f io.ReadSeeker, mime string) (int, int) {
-	const op errors.Op = "models.media.GetMediaXYMp4"
-	x, y := -1, -1
-
-	probe, err := mp4.Probe(f)
-	if err != nil {
-		logs.LogErr(op, errors.Errorf("error on probing (%s)", err))
-		return x, y
-	}
-	for _, track := range probe.Tracks {
-		if track.AVC != nil {
-			x, y = int(track.AVC.Width), int(track.AVC.Height)
-			break
-		}
-	}
-
-	return x, y
-}
-
-func GetMediaXYWebm(f io.ReadSeeker, mime string) (int, int) {
-	const op errors.Op = "models.media.GetMediaXYWebm"
-	x, y := -1, -1
-
-	m := webm.WebM{}
-	r, err := webm.Parse(f, &m)
-	if err != nil {
-		logs.LogErr(op, errors.Errorf("err while parsing %s (%s)", mime, err))
-		return x, y
-	}
-	defer r.Shutdown()
-	vidTrack := m.FindFirstVideoTrack()
-	if vidTrack == nil {
-		logs.LogErr(op, errors.Str("no video track found"))
-		return x, y
-	}
-
-	return int(vidTrack.Video.DisplayHeight), int(vidTrack.Video.DisplayWidth)
-}
-
 func GetStaticDir() string {
 	wd, _ := os.Getwd()
 	return fmt.Sprintf("%s/static/media", wd)
 }
 
-func IsVid(mime string) bool {
-	_, ok := VidMimeTypes[mime]
-	return ok
-}
+func ResizeMedia(f io.ReadSeeker, from string, to string, width int, height int, mime string) {
+	const op errors.Op = "models.media.ResizeMedia"
 
-func ResizeMedia(ff *io.Reader, mime string) {
-	name := "1652969265523"
-	ext := "png"
-	pth := fmt.Sprintf("%s/%s.%s", GetStaticDir(), name, ext)
-	th := fmt.Sprintf("%s/%s_thumb.%s", GetStaticDir(), name, ext)
-	f, _ := os.Open(pth)
-	defer f.Close()
-	//mime := "image/png"
-	src, _, err := image.Decode(f)
-	if err != nil {
-		log.Println("err on image decoding", err)
-		return
+	if IsVid(mime) {
+		//log.Println("is vid")
+
+		// -y: force overwrite
+		// -i: input file
+		// -an: only video
+		// -q 0: get 0th track
+		// scale: scale video to specified w and h
+		// -frames:v : get N frames
+		filter := `-y -i %s -an -q 0 -vf scale=w=%[2]d:h=%[3]d -frames:v 1 %s`
+		params := fmt.Sprintf(filter, from, width, height, to)
+
+		cmd := exec.Command("ffmpeg", strings.Fields(params)...)
+
+		var errOut bytes.Buffer
+		cmd.Stderr = &errOut
+
+		_, err := cmd.Output()
+		if err != nil {
+			logs.LogErr(op, errors.Errorf("could not read output for vid thumbnail cmd (%s)", err))
+			log.Println(errOut.String())
+			return
+		}
+	} else {
+		//log.Println("is image")
+		f.Seek(0, io.SeekStart)
+		dec, err := Decode(f, mime)
+		if err != nil {
+			logs.LogErr(op, errors.Errorf("err on image decoding (%s)", err))
+			return
+		}
+
+		dr := image.Rect(0, 0, dec.Bounds().Max.X/2, dec.Bounds().Max.Y/2)
+		dst, _ := os.Create(to)
+		defer dst.Close()
+
+		var res image.Image = ScaleTo(dec, dr, draw.NearestNeighbor)
+
+		err = Encode(dst, res, mime)
+		if err != nil {
+			logs.LogErr(op, errors.Errorf("err on image encoding (%s)", err))
+			return
+		}
 	}
-
-	dr := image.Rect(0, 0, src.Bounds().Max.X/2, src.Bounds().Max.Y/2)
-	dst, _ := os.Create(th)
-	defer dst.Close()
-
-	var res image.Image = scaleTo(src, dr, draw.NearestNeighbor)
-
-	err = png.Encode(dst, res)
-	if err != nil {
-		log.Println("err on png encode", err)
-		return
-	}
-	cmdStr := `ffmpeg -i "%s" -an -q 0 -vf scale="'if(gt(iw,ih),-1,200):if(gt(iw,ih),200,-1)', crop=200:200:exact=1" -vframes 1 "%s"`
-	_ = fmt.Sprintf(cmdStr, pth, th)
-}
-
-// Rescale `src` to `rect` using `scale`,
-// Rescaling is done inplace
-func scaleTo(src image.Image, rect image.Rectangle, scale draw.Scaler) image.Image {
-	dst := image.NewRGBA(rect)
-
-	scale.Scale(dst, rect, src, src.Bounds(), draw.Over, nil)
-
-	return dst
 }
