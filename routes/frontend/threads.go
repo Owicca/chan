@@ -91,6 +91,9 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
 
 	posts.PostOneCreate(infra.S.Conn, &newPost)
 
+	thread.Primary_post_id = newPost.ID
+	threads.ThreadOneUpdate(infra.S.Conn, thread)
+
 	m := mediaList[0]
 	mediaFile, err := m.Open()
 	if err != nil {

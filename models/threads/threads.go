@@ -6,12 +6,13 @@ import (
 )
 
 type Thread struct {
-	ID         int `gorm:"primaryKey;column:id"`
-	Deleted_at int64
-	Board_id   int
-	Subject    string
-	Content    string       `gorm:"-"`
-	Preview    []posts.Post `gorm:"foreignKey:thread_id;references:id"`
+	ID              int `gorm:"primaryKey;column:id"`
+	Deleted_at      int64
+	Board_id        int
+	Primary_post_id int
+	Subject         string
+	Content         string       `gorm:"-"`
+	Preview         []posts.Post `gorm:"foreignKey:thread_id;references:id"`
 }
 
 func BoardThreadListByCode(db *gorm.DB, board_code string) []Thread {
