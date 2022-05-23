@@ -1,5 +1,7 @@
 {{define "front/post_list"}}
-{{template "front/create_reply_form" .}}
+{{$form_action := (printf "/boards/%s/threads/%s/" .board_code .thread_id)}}
+{{$form_params := (params "form_action" $form_action "form_button_label" "Post a Reply")}}
+{{template "front/create_reply_form" $form_params}}
 <hr>
 {{template "front/post_list_nav_top" .}}
 <hr>

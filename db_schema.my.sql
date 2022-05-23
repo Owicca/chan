@@ -208,11 +208,12 @@ CREATE TABLE boards(
 
 -- ---
 
-CREATE TABLE threads(
+CREATE TABLE threads (
 	id bigint NOT NULL AUTO_INCREMENT,
 	deleted_at int NOT NULL DEFAULT 0,
-	primary_post_id bigint NOT NULL,
 	board_id bigint NOT NULL,
+	subject varchar(255) NOT NULL,
+	primary_post_id bigint NOT NULL,
 	FOREIGN KEY(board_id) REFERENCES boards(id),
 	PRIMARY KEY(id)
 );

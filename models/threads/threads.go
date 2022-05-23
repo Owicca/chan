@@ -9,7 +9,8 @@ type Thread struct {
 	ID         int `gorm:"primaryKey;column:id"`
 	Deleted_at int64
 	Board_id   int
-	Content    string
+	Subject    string
+	Content    string       `gorm:"-"`
 	Preview    []posts.Post `gorm:"foreignKey:thread_id;references:id"`
 }
 
@@ -61,7 +62,7 @@ func ThreadOne(db *gorm.DB, id int) Thread {
 	return thread
 }
 
-func ThreadOneCreate(db *gorm.DB, thread Thread) error {
+func ThreadOneCreate(db *gorm.DB, thread *Thread) error {
 	return db.Create(&thread).Error
 }
 

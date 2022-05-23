@@ -8,17 +8,17 @@ import (
 )
 
 type Board struct {
-	ID int `gorm:"primaryKey;column:id"`
-	Deleted_at int64
-	Name string
-	Code string
+	ID          int `gorm:"primaryKey;column:id"`
+	Deleted_at  int64
+	Name        string
+	Code        string
 	Description string
-	Topic_id int
-	MediaList []media.Media `gorm:"foreignKey:object_id"`
-	ThreadList []threads.Thread
+	Topic_id    int
+	MediaList   []media.Media `gorm:"foreignKey:object_id"`
+	ThreadList  []threads.Thread
 }
 
-type BoardWithThreadCount struct{
+type BoardWithThreadCount struct {
 	Board
 	Thread_count int
 }
@@ -31,6 +31,16 @@ func BoardListWithThreadCount(db *gorm.DB) []BoardWithThreadCount {
 	return boards
 }
 
+func BoardIdByCode(db *gorm.DB, board_code string) int {
+	var board_id int
+
+	db.Raw(`
+	SELECT id FROM boards
+	WHERE code = ?
+	`, board_code).Scan(&board_id)
+
+	return board_id
+}
 
 func BoardList(db *gorm.DB) []Board {
 	var boards []Board

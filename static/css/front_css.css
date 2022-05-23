@@ -48,3 +48,7 @@ pre {
 .board {
 	margin-left: 20px;
 }
+
+table.postForm > tbody > tr > td > input[name="subject"] {
+	width: 244px;
+}

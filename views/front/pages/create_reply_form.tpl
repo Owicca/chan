@@ -1,6 +1,6 @@
 {{define "front/create_reply_form"}}
-<form id="reply" action="/boards/{{.board_code}}/threads/{{.thread_id}}/" method="post" enctype="multipart/form-data">
-	<div id="togglePostFormLink">[<a href="#">Post a Reply</a>]</div>
+<form id="reply" action="{{.form_action}}" method="post" enctype="multipart/form-data">
+	<div id="togglePostFormLink">[<a href="#">{{.form_button_label}}</a>]</div>
 	<table class="postForm hidden" id="postForm">
 		<tbody>
 			<tr data-type="Name">
@@ -10,6 +10,14 @@
 					<input type="submit" value="Post" tabindex="6">
 				</td>
 			</tr>
+			{{if .create_thread}}
+				<tr data-type="Subject">
+					<td>Subject</td>
+					<td>
+						<input name="subject" type="text" tabindex="3">
+					</td>
+				</tr>
+			{{end}}
 			<tr data-type="Content">
 				<td>Content</td>
 				<td>
@@ -19,7 +27,7 @@
 			<tr data-type="File">
 				<td>File</td>
 				<td>
-					<input id="postFile" name="media" type="file" tabindex="7">
+					<input id="postFile" name="media" type="file" tabindex="7" {{if .create_thread}}required="required"{{end}}>
 				</td>
 			</tr>
 			<tr class="rules">

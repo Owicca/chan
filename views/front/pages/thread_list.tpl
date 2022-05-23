@@ -1,5 +1,7 @@
 {{define "front/thread_list"}}
-{{template "front/create_reply_form" .}}
+{{$form_action := (printf "/boards/%s/" .board_code)}}
+{{$form_params := (params "form_action" $form_action "form_button_label" "Start a New Thread" "create_thread" true)}}
+{{template "front/create_reply_form" $form_params}}
 <hr>
 {{template "front/post_list_nav_top" .}}
 {{/* remove return, add search box instead */}}
@@ -10,6 +12,9 @@
 {{$previewLen := (len $thread.Preview)}}
 {{if eq $previewLen 0}}
 	{{continue}}
+{{end}}
+{{if gt $t_idx 0}}
+	<hr>
 {{end}}
 <div class="thread">
 
@@ -40,9 +45,6 @@
 </ul>
 
 </div>
-{{if gt $t_idx 0}}
-	<hr>
-{{end}}
 {{end}}
 </div>
 	<!-- <noscript> -->
