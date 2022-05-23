@@ -34,4 +34,5 @@
 </div>
 <hr>
 {{template "front/post_list_nav_bot" .}}
+{{/* pagination here */}}
 {{end}}

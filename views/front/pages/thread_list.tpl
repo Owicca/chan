@@ -3,7 +3,7 @@
 {{$form_params := (params "form_action" $form_action "form_button_label" "Start a New Thread" "create_thread" true)}}
 {{template "front/create_reply_form" $form_params}}
 <hr>
-{{template "front/post_list_nav_top" .}}
+{{template "front/thread_list_nav_top" .}}
 {{/* remove return, add search box instead */}}
 {{/* remove post/media count */}}
 <hr>
@@ -33,6 +33,9 @@
 	{{end}}
 
 	{{$pipe := (params "post" $post "type" $type "trp" $trp)}}
+	{{if eq $idx 0}}
+		{{$pipe = (params "post" $post "type" $type "trp" $trp "subject" $thread.Subject)}}
+	{{end}}
 	{{template "front/post_one" $pipe}}
 	{{if eq $idx 0}}
 		<li class="al_left">
@@ -51,7 +54,5 @@
 {{template "front/create_reply_form_quick" .}}
 	<!-- </noscript> -->
 <hr>
-{{template "front/post_list_nav_bot" .}}
-{{/* remove return, add search box instead */}}
-{{/* remove post/media count */}}
+{{/* pagination here */}}
 {{end}}

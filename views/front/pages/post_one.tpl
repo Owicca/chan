@@ -4,6 +4,9 @@
 		<div class="post {{.type}}">
 			<div class="postInfo">
 				<span class="nameBlock">
+					{{if .subject}}
+						<span class="subject">{{.subject}}</span>
+					{{end}}
 					<span class="name">
 					{{if .post.Name}}
 						<span class="theName">{{.post.Name}}</span><span title="{{.trp}}" class="tripcode">{{.trp}}</span>
