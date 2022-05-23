@@ -5,6 +5,10 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	ThreadPageLimit = 2
+)
+
 type Thread struct {
 	ID              int `gorm:"primaryKey;column:id"`
 	Deleted_at      int64
@@ -27,16 +31,37 @@ func BoardThreadListByCode(db *gorm.DB, board_code string) []Thread {
 	return threadList
 }
 
-func ThreadPreviewByCode(db *gorm.DB, board_code string, limit int) []Thread {
+func ThreadPreviewByCode(db *gorm.DB, board_code string, limit int, offset int) []Thread {
 	var (
 		threadList []Thread
 		board_id   int
 	)
 
 	db.Raw("SELECT id FROM boards WHERE code = ?", board_code).Scan(&board_id)
-	db.Preload("Preview").Find(&threadList, "board_id = ?", board_id)
+	stmt := db.Preload("Preview")
+	if limit > 0 {
+		stmt = stmt.Limit(limit)
+	}
+	if offset > 0 {
+		stmt = stmt.Offset(offset)
+	}
+
+	stmt.Find(&threadList, "board_id = ?", board_id)
 
 	return threadList
+}
+
+func TotalActiveThreads(db *gorm.DB, board_code string) int {
+	var count int
+
+	db.Raw(`
+	SELECT COUNT(t.id) FROM threads t
+	LEFT JOIN boards b ON b.id = t.board_id AND b.code = ?
+	WHERE
+	t.deleted_at = ?
+	`, board_code, 0).Scan(&count)
+
+	return count
 }
 
 func BoardThreadList(db *gorm.DB, board_id int) []Thread {

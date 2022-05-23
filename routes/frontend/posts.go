@@ -16,6 +16,7 @@ import (
 
 func init() {
 	infra.S.HandleFunc("/boards/{board_code:[a-z0-9]+}/threads/{thread_id:[0-9]+}/", PostList).Methods(http.MethodGet).Name("f_post_list")
+	infra.S.HandleFunc("/boards/{board_code:[a-z0-9]+}/threads/{thread_id:[0-9]+}/{page:[0-9]+}/", PostList).Methods(http.MethodGet).Name("f_post_list")
 	infra.S.HandleFunc("/boards/{board_code:[a-z0-9]+}/threads/{thread_id:[0-9]+}/", CreatePost).Methods(http.MethodPost).Name("f_create_post")
 }
 
@@ -108,7 +109,7 @@ func PostList(w http.ResponseWriter, r *http.Request) {
 		infra.S.Redirect(w, r, infra.S.GenerateUrl(fmt.Sprintf("/boards/%s/threads/", vars["board_code"])))
 		return
 	}
-	post_list := posts.ThreadPostList(infra.S.Conn, thread_id)
+	post_list := posts.ThreadPostList(infra.S.Conn, thread_id, 0, 0)
 	reply_count := len(post_list) - 1
 	if reply_count < 0 {
 		reply_count = 0
@@ -129,7 +130,6 @@ func PostList(w http.ResponseWriter, r *http.Request) {
 		},
 		"board_code": vars["board_code"],
 		"thread_id":  vars["thread_id"],
-		"page_nr":    1,
 	}
 
 	infra.S.HTML(w, http.StatusOK, "front/post_list", data)

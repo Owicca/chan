@@ -29,6 +29,8 @@ func NewTemplate() *Template {
 		"unixToUTC": timestampToUTC,
 		"b2s":       b2sSI,
 		"u2d":       timestampToCustomDate,
+		"inc":       Increment,
+		"dec":       Decrement,
 	}
 
 	templatePagePath := []string{

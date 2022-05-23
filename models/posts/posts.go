@@ -23,10 +23,18 @@ type Post struct {
 	Media          media.Media `gorm:"foreignKey:object_id;references:id"`
 }
 
-func ThreadPostList(db *gorm.DB, thread_id int) []Post {
+func ThreadPostList(db *gorm.DB, thread_id int, limit int, offset int) []Post {
 	var postList []Post
 
-	db.Preload("Media", "media.object_type = 'posts'").Find(&postList, "thread_id = ?", thread_id)
+	stmt := db.Preload("Media", "media.object_type = 'posts'")
+	if limit > 0 {
+		stmt = stmt.Limit(limit)
+	}
+	if offset > 0 {
+		stmt = stmt.Offset(offset)
+	}
+
+	stmt.Find(&postList, "thread_id = ?", thread_id)
 
 	return postList
 }

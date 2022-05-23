@@ -3,6 +3,7 @@ package frontend
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/Owicca/chan/infra"
@@ -18,6 +19,7 @@ import (
 
 func init() {
 	infra.S.HandleFunc("/boards/{board_code:[a-z0-9]+}/", ThreadList).Methods(http.MethodGet).Name("board_thread_list")
+	infra.S.HandleFunc("/boards/{board_code:[a-z0-9]+}/{page:[0-9]+}/", ThreadList).Methods(http.MethodGet).Name("board_thread_list_page")
 	infra.S.HandleFunc("/boards/{board_code:[a-z0-9]+}/", ThreadCreate).Methods(http.MethodPost).Name("f_board_create")
 }
 
@@ -121,11 +123,18 @@ func ThreadList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "front.ThreadList"
 	vars := mux.Vars(r)
 
-	limit := 5
+	offset, _ := strconv.Atoi(vars["page"])
+
+	totalThreads := threads.TotalActiveThreads(infra.S.Conn, vars["board_code"])
+
+	pageCount, pageHelper := infra.GeneratePagination(totalThreads, threads.ThreadPageLimit)
 
 	data := map[string]any{
-		"thread_list": threads.ThreadPreviewByCode(infra.S.Conn, vars["board_code"], limit),
+		"thread_list": threads.ThreadPreviewByCode(infra.S.Conn, vars["board_code"], threads.ThreadPageLimit, offset),
 		"board_code":  vars["board_code"],
+		"page_count":  pageCount,
+		"page_helper": pageHelper,
+		"page":        offset,
 	}
 
 	infra.S.HTML(w, http.StatusOK, "front/thread_list", data)

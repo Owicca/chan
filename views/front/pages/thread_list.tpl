@@ -54,5 +54,5 @@
 {{template "front/create_reply_form_quick" .}}
 	<!-- </noscript> -->
 <hr>
-{{/* pagination here */}}
+{{template "front/pagination" .}}
 {{end}}

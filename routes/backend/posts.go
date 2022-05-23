@@ -31,7 +31,7 @@ func ThreadPostList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	data := map[string]any{
-		"posts":          posts.ThreadPostList(infra.S.Conn, thread_id),
+		"posts":          posts.ThreadPostList(infra.S.Conn, thread_id, 0, 0),
 		"postStatusList": posts.PostStatusList(),
 	}
 

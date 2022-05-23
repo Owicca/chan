@@ -110,3 +110,26 @@ func GetStaticDir() string {
 	wd, _ := os.Getwd()
 	return fmt.Sprintf("%s/static/media", wd)
 }
+
+func GeneratePagination(total int, limit int) (int, []any) {
+	pageCount := total / limit
+
+	if (total % 2) != 0 {
+		pageCount += 1
+	}
+
+	pageHelper := make([]any, pageCount)
+	for idx, _ := range pageHelper {
+		pageHelper[idx] = idx + 1
+	}
+
+	return pageCount, pageHelper
+}
+
+func Decrement(i int) int {
+	return i - 1
+}
+
+func Increment(i int) int {
+	return i + 1
+}
