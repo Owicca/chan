@@ -1,7 +1,6 @@
 package frontend
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/Owicca/chan/infra"
@@ -19,11 +18,12 @@ func ThreadList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "front.ThreadList"
 	vars := mux.Vars(r)
 
+	limit := 5
+
 	data := map[string]any{
-		"thread_list": threads.BoardThreadListByCode(infra.S.Conn, vars["board_code"]),
+		"thread_list": threads.ThreadPreviewByCode(infra.S.Conn, vars["board_code"], limit),
 		"board_code":  vars["board_code"],
 	}
-	log.Println(threads.BoardThreadListByCode(infra.S.Conn, vars["board_code"]), vars["board_code"])
 
 	infra.S.HTML(w, http.StatusOK, "front/thread_list", data)
 }

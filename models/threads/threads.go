@@ -1,6 +1,7 @@
 package threads
 
 import (
+	"github.com/Owicca/chan/models/posts"
 	"gorm.io/gorm"
 )
 
@@ -9,6 +10,7 @@ type Thread struct {
 	Deleted_at int64
 	Board_id   int
 	Content    string
+	Preview    []posts.Post `gorm:"foreignKey:thread_id;references:id"`
 }
 
 func BoardThreadListByCode(db *gorm.DB, board_code string) []Thread {
@@ -19,6 +21,18 @@ func BoardThreadListByCode(db *gorm.DB, board_code string) []Thread {
 	INNER JOIN boards b ON t.board_id = b.id AND b.code = ?
 	LEFT JOIN posts p ON t.primary_post_id = p.id
 	`, board_code).Scan(&threadList)
+
+	return threadList
+}
+
+func ThreadPreviewByCode(db *gorm.DB, board_code string, limit int) []Thread {
+	var (
+		threadList []Thread
+		board_id   int
+	)
+
+	db.Raw("SELECT id FROM boards WHERE code = ?", board_code).Scan(&board_id)
+	db.Preload("Preview").Find(&threadList, "board_id = ?", board_id)
 
 	return threadList
 }

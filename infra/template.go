@@ -23,7 +23,7 @@ type Template struct {
 func NewTemplate() *Template {
 	funcMap := customtemplate.FuncMap{
 		"last":      lastInArray,
-		"asJSON":    objectToJSON,
+		"toJSON":    objectToJSON,
 		"asHTML":    stringToHTML,
 		"params":    generateDict,
 		"unixToUTC": timestampToUTC,
