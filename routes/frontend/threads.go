@@ -34,7 +34,14 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
 
 	subject := r.PostFormValue("subject")
 	if subject == "" {
-		logs.LogWarn(op, errors.Str("A subject is required!"))
+		logs.LogWarn(op, errors.Str("A subject is required when creating a thread!"))
+		infra.S.Redirect(w, r, redirect_url)
+		return
+	}
+	mediaList, ok := r.MultipartForm.File["media"]
+	if !ok || len(mediaList) == 0 {
+		logs.LogErr(op, errors.Errorf("Media is required when creating a thread!"))
+
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
@@ -84,27 +91,24 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
 
 	posts.PostOneCreate(infra.S.Conn, &newPost)
 
-	mediaList, ok := r.MultipartForm.File["media"]
-	if ok {
-		m := mediaList[0]
-		mediaFile, err := m.Open()
-		if err != nil {
-			logs.LogErr(op, err)
+	m := mediaList[0]
+	mediaFile, err := m.Open()
+	if err != nil {
+		logs.LogErr(op, err)
 
-			infra.S.Redirect(w, r, redirect_url)
-			return
-		}
-		newMedia, err := media.CreateMedia(&media.Media{
-			Object_id:   newPost.ID,
-			Object_type: media.PostsObject,
-			Name:        m.Filename,
-			Size:        m.Size,
-		}, mediaFile)
-		if err != nil {
-			logs.LogErr(op, err)
-		} else {
-			infra.S.Conn.Create(&newMedia)
-		}
+		infra.S.Redirect(w, r, redirect_url)
+		return
+	}
+	newMedia, err := media.CreateMedia(&media.Media{
+		Object_id:   newPost.ID,
+		Object_type: media.PostsObject,
+		Name:        m.Filename,
+		Size:        m.Size,
+	}, mediaFile)
+	if err != nil {
+		logs.LogErr(op, err)
+	} else {
+		infra.S.Conn.Create(&newMedia)
 	}
 
 	infra.S.Redirect(w, r, redirect_url)
