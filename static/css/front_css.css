@@ -52,3 +52,7 @@ pre {
 table.postForm > tbody > tr > td > input[name="subject"] {
 	width: 244px;
 }
+
+pre {
+	text-align: left;
+}

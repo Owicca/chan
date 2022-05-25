@@ -1,27 +1,32 @@
 {{define "back/post_one"}}
-<table>
+<table class="table table-sm table-striped align-middle text-start">
 	<thead>
-		<th></th>
-			<th>ID</th>
-			<th>Created_at</th>
-			<th>Deleted_at</th>
-			<th>Tripcode</th>
-			<th>SecureTripcode</th>
-			<th>Status</th>
-			<th>Thread_id</th>
-			<th>Name</th>
-			<th>Content</th>
-			<th>Media</th>
+		<tr>
+			<th scope="col">#</th>
+			<th scope="col">Created at</th>
+			<th scope="col">Deleted at</th>
+			<th scope="col">Tripcode</th>
+			<th scope="col">Secure Tripcode</th>
+			<th scope="col">Status</th>
+			<th scope="col">Thread</th>
+			<th scope="col">Name</th>
+			<th scope="col">Content</th>
+			<th scope="col">Media</th>
+		</tr>
 	</thead>
 	<tbody>
 		<tr>
 			<td>{{.post.ID}}</td>
-			<td>{{.post.Created_at}}</td>
-			<td>{{.post.Deleted_at}}</td>
+			<td>{{unixToUTC .post.Created_at}}</td>
+			<td>{{unixToUTC .post.Deleted_at}}</td>
 			<td>{{.post.Tripcode}}</td>
 			<td>{{.post.SecureTripcode}}</td>
 			<td>{{.post.Status}}</td>
-			<td>{{.post.Thread_id}}</td>
+			<td>
+				<a href="/admin/threads/{{.post.Thread_id}}/">
+					{{.post.Thread_id}}
+				</a>
+			</td>
 			<td>{{.post.Name}}</td>
 			<td>{{.post.Content}}</td>
 			<td>

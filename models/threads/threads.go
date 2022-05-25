@@ -72,10 +72,26 @@ func BoardThreadList(db *gorm.DB, board_id int) []Thread {
 	return threadList
 }
 
+func BoardThreadPreviewList(db *gorm.DB, board_id int) []Thread {
+	var threadList []Thread
+
+	db.Preload("Preview").Find(&threadList, "board_id = ?", board_id)
+
+	return threadList
+}
+
 func ThreadList(db *gorm.DB) []Thread {
 	threadList := []Thread{}
 
 	db.Find(&threadList)
+
+	return threadList
+}
+
+func ThreadPreviewList(db *gorm.DB) []Thread {
+	var threadList []Thread
+
+	db.Preload("Preview").Find(&threadList)
 
 	return threadList
 }

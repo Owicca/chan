@@ -5,12 +5,12 @@ import (
 	"strconv"
 	"time"
 
-	"upspin.io/errors"
 	"github.com/gorilla/mux"
+	"upspin.io/errors"
 
 	"github.com/Owicca/chan/infra"
-	"github.com/Owicca/chan/models/logs"
 	"github.com/Owicca/chan/models/boards"
+	"github.com/Owicca/chan/models/logs"
 	"github.com/Owicca/chan/models/threads"
 	"github.com/Owicca/chan/models/topics"
 )
@@ -31,7 +31,7 @@ func init() {
 func BoardList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.BoardList"
 
-	data := map[string]any {
+	data := map[string]any{
 		"board_list": boards.BoardListWithThreadCount(infra.S.Conn),
 	}
 
@@ -49,8 +49,8 @@ func BoardListThreadList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := map[string]any {
-		"thread_list": threads.BoardThreadList(infra.S.Conn, board_id),
+	data := map[string]any{
+		"thread_list": threads.BoardThreadPreviewList(infra.S.Conn, board_id),
 	}
 
 	infra.S.HTML(w, http.StatusOK, "back/board_list_thread_list", data)
@@ -59,8 +59,8 @@ func BoardListThreadList(w http.ResponseWriter, r *http.Request) {
 func BoardOneAdd(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.BoardOneAdd"
 
-	data := map[string]any {
-		"board": boards.Board{},
+	data := map[string]any{
+		"board":      boards.Board{},
 		"topic_list": topics.TopicList(infra.S.Conn),
 	}
 
@@ -78,8 +78,8 @@ func BoardOne(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := map[string]any {
-		"board": boards.BoardOne(infra.S.Conn, id),
+	data := map[string]any{
+		"board":      boards.BoardOne(infra.S.Conn, id),
 		"topic_list": topics.TopicList(infra.S.Conn),
 	}
 
@@ -97,10 +97,9 @@ func BoardOneUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 	topic_id, _ := strconv.Atoi(r.PostFormValue("topic_id"))
 
-
 	val, ok := vars["id"]
 	the_id := 0
-	if ok {// update
+	if ok { // update
 		id, err := strconv.Atoi(val)
 		if err != nil || id < 1 {
 			logs.LogWarn(op, errors.Str("No id provided!"))
@@ -110,25 +109,25 @@ func BoardOneUpdate(w http.ResponseWriter, r *http.Request) {
 		the_id = id
 
 		boards.BoardOneUpdate(infra.S.Conn, boards.Board{
-			ID: id,
-			Name: r.PostFormValue("name"),
-			Topic_id: topic_id,
-			Code: r.PostFormValue("code"),
+			ID:          id,
+			Name:        r.PostFormValue("name"),
+			Topic_id:    topic_id,
+			Code:        r.PostFormValue("code"),
 			Description: r.PostFormValue("description"),
-			Deleted_at: deleted_at,
+			Deleted_at:  deleted_at,
 		})
-	} else {// create
+	} else { // create
 		boards.BoardOneCreate(infra.S.Conn, boards.Board{
-			Name: r.PostFormValue("name"),
-			Topic_id: topic_id,
-			Code: r.PostFormValue("code"),
+			Name:        r.PostFormValue("name"),
+			Topic_id:    topic_id,
+			Code:        r.PostFormValue("code"),
 			Description: r.PostFormValue("description"),
-			Deleted_at: 0,
+			Deleted_at:  0,
 		})
 	}
 
-	data := map[string]any {
-		"board": boards.BoardOne(infra.S.Conn, the_id),
+	data := map[string]any{
+		"board":      boards.BoardOne(infra.S.Conn, the_id),
 		"topic_list": topics.TopicList(infra.S.Conn),
 	}
 

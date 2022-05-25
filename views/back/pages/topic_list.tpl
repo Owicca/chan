@@ -1,19 +1,23 @@
 {{define "back/topic_list"}}
 <a href="/admin/topics/add/">Add new</a>
-<table>
+<table class="table table-sm table-striped align-middle">
 	<thead>
 		<tr>
-			<td>ID</td>
-			<td>Name</td>
-			<td>Deleted</td>
-			<td></td>
+			<td scope="col">#</td>
+			<td scope="col">Name</td>
+			<td scope="col">Deleted</td>
+			<td scope="col">Actions</td>
 		</tr>
 	</thead>
 	<tbody>
 {{range $topic := .topic_list}}
 	<tr>
-		<td><a href="/admin/topics/{{$topic.ID}}/">{{$topic.ID}}</a></td>
-		<td>{{$topic.Name}}</td>
+		<th scope="row">
+			{{$topic.ID}}
+		</th>
+		<td>
+			<a href="/admin/topics/{{$topic.ID}}/">{{$topic.Name}}</a>
+		</td>
 		<td>
 			{{if gt $topic.Deleted_at 0}}
 				{{unixToUTC $topic.Deleted_at}}
@@ -21,7 +25,9 @@
 				Active
 			{{end}}
 		</td>
-		<td>{{template "back/actions" params "Name" "topics" "ID" $topic.ID}}</td>
+		<td>
+			{{template "back/actions" params "update_name" "topics" "update_id" $topic.ID}}
+		</td>
 	</tr>
 {{else}}
 	<tr>

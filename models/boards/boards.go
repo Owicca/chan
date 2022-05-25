@@ -26,7 +26,11 @@ type BoardWithThreadCount struct {
 func BoardListWithThreadCount(db *gorm.DB) []BoardWithThreadCount {
 	var boards []BoardWithThreadCount
 
-	db.Table("boards AS b").Select("b.*", "COUNT(t.id) AS thread_count").Joins("LEFT JOIN threads AS t ON t.id=b.topic_id").Group("b.id").Preload("MediaList", "object_type = 'boards'").Find(&boards)
+	db.Preload("MediaList", "object_type = 'boards'").Raw(`
+		SELECT b.*, COUNT(t.id) as thread_count FROM boards AS b
+		LEFT JOIN threads AS t ON t.board_id=b.id
+		GROUP BY b.id
+	`).Find(&boards)
 
 	return boards
 }

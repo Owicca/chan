@@ -12,10 +12,6 @@ main {
 	height: auto;
 }
 
-.al_left {
+pre {
 	text-align: left;
-}
-
-.al_center {
-	text-align: center;
 }

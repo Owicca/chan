@@ -1,19 +1,11 @@
 {{define "back/thread_list"}}
-<table>
+<table class="table table-sm table-striped align-middle">
     <thead>
         <tr>
-            <tr>
-                ID
-            </tr>
-            <tr>
-                Status
-            </tr>
-            <tr>
-                Posts
-            </tr>
-            <tr>
-                Thread
-            </tr>
+            <td scope="col">#</td>
+            <td scope="col">Status</td>
+            <td scope="col">Posts</td>
+            <td scope="col">Actions</td>
         </tr>
     </thead>
     <tbody>
@@ -26,25 +18,23 @@
         </td>
         <td> 
             {{if gt $thread.Deleted_at 0}}
-            Deleted at {{$thread.Deleted_at}}
+                Deleted at: {{unixToUTC $thread.Deleted_at}}
             {{else}}
-            Active
+                Active
             {{end}}
         </td>
         <td> 
             <a href="/admin/threads/{{$thread.ID}}/posts/">
-                Posts
+                {{len $thread.Preview}}
             </a>
         </td>
-        <td> 
-            <a href="/admin/threads/{{$thread.ID}}/">
-                Update
-            </a>
+        <td>
+            {{template "back/actions" params "update_name" "threads" "update_id" $thread.ID}}
         </td>
     </tr>
 {{else}}
     <tr>
-        <td>No threads available!</td>
+        <td colspan="4">No threads available!</td>
     </tr>
 {{end}}
     </tbody>

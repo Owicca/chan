@@ -1,18 +1,20 @@
 {{define "back/index"}}
 <ul class="container">
 {{range $idx, $topic := .topic_list}}
-	<li class="row row-topic al_left">
+	<li class="row row-topic text-start">
 		<h3 class="">{{$topic.Name}}</h3>
 		<ul class="container">
 			<li class="row row--board">
 				<table class="table table-sm table-striped align-middle">
 					<thead>
-						<th scope="col">#</th>
-						<th scope="col">Status</th>
-						<th scope="col">Image</th>
-						<th scope="col">Name</th>
-						<th scope="col">Description</th>
-						<th scope="col">Actions</th>
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">Status</th>
+							<th scope="col">Image</th>
+							<th scope="col">Name</th>
+							<th scope="col">Description</th>
+							<th scope="col">Actions</th>
+						</tr>
 					</thead>
 					<tbody>
 						{{range $board := $topic.BoardList}}
@@ -39,7 +41,7 @@
 								{{$board.Description}}
 							</td>
 							<td>
-								<a href="/admin/boards/{{$board.ID}}/" class="btn btn-primary">View</a>
+								{{template "back/actions" params "view_name" "boards" "view_id" $board.ID}}
 							</td>
 						</tr>
 						{{else}}

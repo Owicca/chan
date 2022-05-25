@@ -1,12 +1,12 @@
 {{define "back/post_list"}}
-<table>
+<table class="table table-sm table-striped align-middle">
     <thead>
         <tr>
-            <td>ID</td>
-            <td>Status</td>
-            <td width="50%">Content</td>
-            <td>Thread</td>
-            <td></td>
+            <td scope="col">#</td>
+            <td scope="col">Status</td>
+            <td scope="col" width="50%">Content</td>
+            <td scope="col">Thread</td>
+            <td scope="col">Actions</td>
         </tr>
     </thead>
     <tbody>
@@ -46,7 +46,7 @@
         </tr>
 {{else}}
         <tr>
-            <p>No posts found!</p>
+            <td colspan="5">No posts found!</td>
         </tr>
 {{end}}
     </tbody>

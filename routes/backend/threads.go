@@ -46,7 +46,7 @@ func ThreadList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.ThreadList"
 
 	data := map[string]any{
-		"threads": threads.ThreadList(infra.S.Conn),
+		"threads": threads.ThreadPreviewList(infra.S.Conn),
 	}
 
 	infra.S.HTML(w, http.StatusOK, "back/thread_list", data)

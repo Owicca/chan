@@ -146,3 +146,7 @@
 
 
 closed threads?
+
+### reporting:
+- board: # of threads in a daterange
+- topic: # of threads in a daterange
