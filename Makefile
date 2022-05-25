@@ -1,15 +1,29 @@
 bin=./chan.exe
 dev_reload=CompileDaemon \
-					 -build="go build -o ./chan.exe ./main.go" \
-					 -command="./chan.exe" \
+					 -build="go build -o ../chan.exe ./main.go" \
+					 -command="../chan.exe" \
 					 -exclude-dir=".git" \
 					 -exclude-dir="log" \
 					 -exclude-dir="./static/media" \
 					 -exclude-dir="./db" \
-					 -exclude="(.*\.exe)" \
+					 -exclude="./chan.exe" \
 					 -pattern="(.*)" \
+					 -polling=true \
+					 -polling-interval=300 \
+					 -color \
 					 -verbose
 
+dev_reload_no_pool=CompileDaemon \
+					 -build="go build -o ../chan.exe ./main.go" \
+					 -command="../chan.exe" \
+					 -exclude-dir=".git" \
+					 -exclude-dir="log" \
+					 -exclude-dir="./static/media" \
+					 -exclude-dir="./db" \
+					 -exclude="./chan.exe" \
+					 -pattern="(.*)" \
+					 -color \
+					 -verbose
 
 all: run
 
