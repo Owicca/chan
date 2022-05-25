@@ -11,3 +11,11 @@ main {
 	max-width: 250px;
 	height: auto;
 }
+
+.al_left {
+	text-align: left;
+}
+
+.al_center {
+	text-align: center;
+}

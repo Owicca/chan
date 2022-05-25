@@ -25,13 +25,18 @@ func LoadMd(srv *infra.Server) {
 		// 	"message": "Not found!",
 		// }
 		// srv.JSON(w, http.StatusNotFound, res)
-		srv.HTML(w, http.StatusNotFound, "back/404", nil)
+		template404Path := "front/404"
+		if strings.HasPrefix(r.URL.Path, "/admin") {
+			template404Path = "back/404"
+		}
+		srv.HTML(w, http.StatusNotFound, template404Path, nil)
 		return
 	})
 	srv.Router.Use(setCSPHeader)
 
 	// assets
-	srv.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/")))).Methods(http.MethodGet).Name("static")
+	// web server will handle assets from now on
+	//srv.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/")))).Methods(http.MethodGet).Name("static")
 
 	srv.Router.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
