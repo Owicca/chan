@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,6 +14,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"gorm.io/gorm"
 
 	"github.com/Owicca/chan/models/acl"
@@ -32,12 +34,13 @@ var (
 // Get config, db, logger
 // set up settings and create Server
 func init() {
-	cfg, conn, logger := Setup(path.Join(path.Dir(filename), "../config.json"))
+	cfg, store, conn, logger := Setup(path.Join(path.Dir(filename), "../config.json"))
 	loggerSync = logger.Sync
 	undo = zap.ReplaceGlobals(logger)
 
 	S = NewServer(
 		cfg,
+		store,
 		conn,
 		NewTemplate(),
 	)
@@ -45,22 +48,27 @@ func init() {
 
 type Server struct {
 	mux.Router
-	Config   Config
-	Conn     *gorm.DB
-	Template *Template
+	SessionStore *sessions.CookieStore
+	Config       Config
+	Conn         *gorm.DB
+	Template     *Template
+	Data         map[string]any
 }
 
 func NewServer(
 	cfg Config,
+	store sessions.Store,
 	conn *gorm.DB,
 	tmpl *Template,
 ) *Server {
 	if S == nil {
 		S = &Server{
-			Config:   cfg,
-			Router:   *mux.NewRouter(),
-			Conn:     conn,
-			Template: tmpl,
+			Config:       cfg,
+			SessionStore: store.(*sessions.CookieStore),
+			Router:       *mux.NewRouter(),
+			Conn:         conn,
+			Template:     tmpl,
+			Data:         map[string]any{},
 		}
 	}
 
@@ -73,7 +81,10 @@ func (s *Server) Addr() string {
 }
 
 // Server JSON response.
-func (s *Server) JSON(w http.ResponseWriter, status int, data any) error {
+func (s *Server) JSON(w http.ResponseWriter, status int, data map[string]any) error {
+	if data != nil {
+		data = MergeMaps(s.Data, data)
+	}
 	w.Header().Set("Content-Type", "application/json")
 	if data != nil {
 		json.NewEncoder(w).Encode(data)
@@ -92,6 +103,9 @@ func (s *Server) MEDIA(w http.ResponseWriter, status int, media []byte, mediaTyp
 
 // Server a HTML response.
 func (s *Server) HTML(w http.ResponseWriter, status int, htmlView string, data map[string]any) error {
+	if data != nil {
+		data = MergeMaps(s.Data, data)
+	}
 	return s.Template.Render(w, status, htmlView, data)
 }
 
@@ -147,4 +161,25 @@ func (s *Server) ShutdownOnInterrupt(srv *http.Server) {
 	}
 
 	<-idleConnsClosed
+}
+
+func Setup(configPath string) (Config, sessions.Store, *gorm.DB, *zap.Logger) {
+	cfg, err := LoadConfig(configPath)
+	if err != nil {
+		log.Fatalf("{\"level\":\"fatal\", \"message\":\"Could not load configuration (%s)\", \"timestamp\": %d", err, time.Now().Unix())
+	}
+	logger, err := cfg.Logger.Build()
+	if err != nil {
+		log.Fatalf("{\"level\":\"fatal\", \"message\":\"Can't initialize zap logger (%s)\", \"timestamp\": %d", err, time.Now().Unix())
+	}
+
+	conn, err := GetDbConn(cfg.DbHost, cfg.DbPort, cfg.DbName, cfg.DbUser, cfg.DbPassword)
+	if err != nil {
+		errMsg := fmt.Sprintf("Error while connecting to db (%s)", err)
+		logger.Fatal(errMsg, zap.Int64("timestamp", time.Now().Unix()))
+	}
+
+	store := sessions.NewCookieStore([]byte(cfg.Sessions.AuthenticationKey), []byte(cfg.Sessions.EncryptionKey))
+
+	return cfg, store, conn, logger
 }

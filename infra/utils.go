@@ -13,6 +13,30 @@ import (
 	"upspin.io/errors"
 )
 
+func MergeMaps(m1, m2 map[string]any) map[string]any {
+	for k, v := range m2 {
+		m1[k] = v
+	}
+
+	return m1
+}
+
+func MergeMapsInterface(m1 map[string]any, m2 map[any]any) map[string]any {
+	for k, v := range m2 {
+		m1[k.(string)] = v
+	}
+
+	return m1
+}
+
+func MergeMapsInterfaceReverse(m1 map[any]any, m2 map[string]any) map[any]any {
+	for k, v := range m2 {
+		m1[k] = v
+	}
+
+	return m1
+}
+
 func b2sSI(b int64) string {
 	const unit = 1000
 	if b < unit {

@@ -10,11 +10,21 @@
 		</div>
 		<div class="offcanvas-body">
 			<ul class="container navbar-nav">
-				<li class="navbar-item"><a href="/admin/">Home</a></li>
-				<li class="navbar-item"><a href="/admin/users/">Users</a></li>
-				<li class="navbar-item"><a href="/admin/topics/">Topics</a></li>
-				<li class="navbar-item"><a href="/admin/boards/">Boards</a></li>
-				<li class="navbar-item"><a href="/admin/threads/">Threads</a></li>
+				{{if (or (not .data.user) (and .data.user (eq .data.user.ID 0)))}}
+					<li class="navbar-item"><a href="/admin/login/">Login</a></li>
+				{{else}}
+					<li class="navbar-item"><a href="/admin/">Home</a></li>
+					<li class="navbar-item"><a href="/admin/users/">Users</a></li>
+					<li class="navbar-item"><a href="/admin/topics/">Topics</a></li>
+					<li class="navbar-item"><a href="/admin/boards/">Boards</a></li>
+					<li class="navbar-item"><a href="/admin/threads/">Threads</a></li>
+					<li class="navbar-item">
+						<form method="POST" action="/admin/logout/">
+							<input type="hidden" name="logout" value="1">
+							<input type="submit" value="Logout">
+						</form>
+					</li>
+				{{end}}
 			</ul>
 		</div>
 	</div>

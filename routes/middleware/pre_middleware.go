@@ -3,28 +3,24 @@ package middleware
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/Owicca/chan/infra"
+	"github.com/Owicca/chan/models/sessions"
 
 	"go.uber.org/zap"
 )
 
 func init() {
-	LoadMd(infra.S)
+	LoadPreMd(infra.S)
 }
 
 // Load middlewares
-func LoadMd(srv *infra.Server) {
+func LoadPreMd(srv *infra.Server) {
 	srv.Router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		LogRequest(w, r)
-		// res := map[string]any{
-		// 	"success": false,
-		// 	"data":    nil,
-		// 	"message": "Not found!",
-		// }
-		// srv.JSON(w, http.StatusNotFound, res)
 		template404Path := "front/404"
 		if strings.HasPrefix(r.URL.Path, "/admin") {
 			template404Path = "back/404"
@@ -41,6 +37,49 @@ func LoadMd(srv *infra.Server) {
 	srv.Router.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			LogRequest(w, r)
+			next.ServeHTTP(w, r)
+		})
+	})
+
+	srv.Router.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			session, _ := infra.S.SessionStore.Get(r, infra.S.Config.Sessions.Key)
+			//log.Println("get session pre", session.Values["user"])
+			infra.S.Data = infra.MergeMapsInterface(infra.S.Data, session.Values)
+			next.ServeHTTP(w, r)
+		})
+	})
+
+	srv.Router.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			user, ok := srv.Data["user"]
+			if !ok {
+				for _, url := range sessions.PublicUrl {
+					if url == r.URL.Path {
+						next.ServeHTTP(w, r)
+						return
+					}
+				}
+				infra.S.Redirect(w, r, "/admin/login/")
+				return
+			}
+			user_id, ok := user.(map[string]any)["ID"]
+			if !ok || user_id == "0" {
+				for _, url := range sessions.PublicUrl {
+					if url == r.URL.Path {
+						next.ServeHTTP(w, r)
+						return
+					}
+				}
+				infra.S.Redirect(w, r, "/admin/login/")
+				return
+			}
+
+			session, _ := srv.SessionStore.Get(r, strconv.Itoa(user_id.(int)))
+			flashList := session.Flashes()
+			if len(flashList) > 0 {
+				srv.Data["flash_list"] = flashList
+			}
 			next.ServeHTTP(w, r)
 		})
 	})

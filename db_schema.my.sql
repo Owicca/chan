@@ -160,14 +160,14 @@ CREATE TABLE users(
 	deleted_at int NOT NULL DEFAULT 0,
 	username varchar(255) NOT NULL,
 	email varchar(255) NOT NULL,
-	password varchar(255) NOT NULL,
-	salt varchar(255) NOT NULL,
+	password varchar(255) NOT NULL,-- bcrypt(pepper + pass)
+	pepper varchar(255) NOT NULL,
 	status varchar(2) NOT NULL,
 	role_id integer REFERENCES roles(id)
 );
 
 INSERT INTO users(id, username, email, password, salt, status, role_id) VALUES
-(1, 'root', 'root@root.com', '$2a$10$KI4EmNCFlvYteYeI//1s2OhR5jNmIJlEdrgLOzYINyuf8MrUNbaAC', 'salt', "A", 5);-- password: password; salt: salt
+(1, 'root', 'root@root.com', '$2a$10$ILRgDxBKyNyBdGP9969PuO7Egb5naBWgQeAJwjrHvw39mzaFwtDU2', 'pepper', "A", 5);-- password: password; pepper: pepper
 
 -- ---
 

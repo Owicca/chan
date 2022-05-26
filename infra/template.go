@@ -82,6 +82,7 @@ func (t *Template) Render(w http.ResponseWriter, status int, name string, data m
 		"page":       buffer.String(),
 		"is_index":   strings.HasSuffix(name, "thread_list"),
 		"is_thread":  strings.HasSuffix(name, "post_list"),
+		"data":       S.Data,
 	}
 
 	baseTplName := "template"

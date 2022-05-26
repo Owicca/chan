@@ -3,13 +3,16 @@ package infra
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
-	"time"
 
-	"gorm.io/gorm"
 	"go.uber.org/zap"
 )
+
+type SessionsConfig struct {
+	AuthenticationKey string
+	EncryptionKey     string
+	Key               string
+}
 
 type Config struct {
 	CfgPath    string
@@ -21,7 +24,7 @@ type Config struct {
 	DbUser     string
 	DbPassword string
 	Logger     zap.Config
-	StoreKey   string
+	Sessions   SessionsConfig
 }
 
 func (c Config) String() string {
@@ -55,23 +58,4 @@ func NewConfig(path string) Config {
 	}
 
 	return cfg
-}
-
-func Setup(configPath string) (Config, *gorm.DB, *zap.Logger) {
-	cfg, err := LoadConfig(configPath)
-	if err != nil {
-		log.Fatalf("{\"level\":\"fatal\", \"message\":\"Could not load configuration (%s)\", \"timestamp\": %d", err, time.Now().Unix())
-	}
-	logger, err := cfg.Logger.Build()
-	if err != nil {
-		log.Fatalf("{\"level\":\"fatal\", \"message\":\"Can't initialize zap logger (%s)\", \"timestamp\": %d", err, time.Now().Unix())
-	}
-
-	conn, err := GetDbConn(cfg.DbHost, cfg.DbPort, cfg.DbName, cfg.DbUser, cfg.DbPassword)
-	if err != nil {
-		errMsg := fmt.Sprintf("Error while connecting to db (%s)", err)
-		logger.Fatal(errMsg, zap.Int64("timestamp", time.Now().Unix()))
-	}
-
-	return cfg, conn, logger
 }

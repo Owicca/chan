@@ -1,5 +1,5 @@
 {{define "front/create_reply_form"}}
-<form id="reply" action="{{.form_action}}" method="post" enctype="multipart/form-data">
+<form id="reply" action="{{.form_action}}" method="POST" enctype="multipart/form-data">
 	<div id="togglePostFormLink">[<a href="#">{{.form_button_label}}</a>]</div>
 	<table class="postForm hidden" id="postForm">
 		<tbody>

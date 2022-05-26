@@ -15,3 +15,9 @@ main {
 pre {
 	text-align: left;
 }
+
+#alerts {
+  position: sticky;
+  bottom: 0;
+  right: 0;
+}

@@ -1,8 +1,19 @@
 package users
 
 import (
+	"regexp"
+
+	"golang.org/x/crypto/bcrypt"
+
+	"github.com/Owicca/chan/infra"
 	"github.com/Owicca/chan/models/acl"
 	"gorm.io/gorm"
+	"upspin.io/errors"
+)
+
+const (
+	UserPassMin = 1
+	UserPassMax = 50
 )
 
 type User struct {
@@ -43,6 +54,50 @@ func UserOne(db *gorm.DB, id int) User {
 	db.Preload("Role").First(&user, id)
 
 	return user
+}
+
+func UserOneByEmail(db *gorm.DB, email string) User {
+	user := User{}
+
+	db.Preload("Role").First(&user, "email = ?", email)
+
+	return user
+}
+
+func UserValidate(email string, pass1 string, pass2 string) error {
+	if email == "" || pass1 == "" || pass2 == "" {
+		return errors.Str("Email and password are required!")
+	}
+
+	rule := `.*\@.*\..*`
+	emailReg := regexp.MustCompile(rule)
+	if !emailReg.MatchString(email) {
+		return errors.Str("Provided email is not valid!")
+	}
+	if pass1 != pass2 {
+		return errors.Str("Passwords do not match!")
+	}
+	ln := len(pass1)
+	if ln < UserPassMin || ln > UserPassMax {
+		return errors.Str("Invalid password size!")
+	}
+
+	return nil
+}
+
+func UserGetByCredentials(db *gorm.DB, email string, password string) (User, error) {
+	user := UserOneByEmail(infra.S.Conn, email)
+
+	if user.ID == 0 {
+		return user, errors.Errorf("Couldn't find an user with the email '%s'!", email)
+	}
+
+	pepper := "pepper"
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pepper+password)); err != nil {
+		return user, errors.Errorf("Wrong password! (%s)", err)
+	}
+
+	return user, nil
 }
 
 func UserOneCreate(db *gorm.DB, user User) error {
