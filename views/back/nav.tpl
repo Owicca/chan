@@ -11,16 +11,16 @@
 		<div class="offcanvas-body">
 			<ul class="container navbar-nav">
 				{{/*{{if .data.user}}*/}}
-					<li class="navbar-item"><a href="/admin/">Home</a></li>
-					<li class="navbar-item"><a href="/admin/users/">Users</a></li>
-					<li class="navbar-item"><a href="/admin/topics/">Topics</a></li>
-					<li class="navbar-item"><a href="/admin/boards/">Boards</a></li>
-					<li class="navbar-item"><a href="/admin/threads/">Threads</a></li>
+					<li class="navbar-item"><a class="nav-link" href="/admin/">Home</a></li>
+					<li class="navbar-item"><a class="nav-link" href="/admin/users/">Users</a></li>
+					<li class="navbar-item"><a class="nav-link" href="/admin/topics/">Topics</a></li>
+					<li class="navbar-item"><a class="nav-link" href="/admin/boards/">Boards</a></li>
+					<li class="navbar-item"><a class="nav-link" href="/admin/threads/">Threads</a></li>
 					<li class="navbar-item">
-						<form method="POST" action="/admin/logout/">
-							<input type="hidden" name="logout" value="1">
-							<input type="submit" value="Logout">
-						</form>
+							<form method="POST" action="/admin/logout/" class="nav-link">
+								<input type="hidden" name="logout" value="1">
+								<input type="submit" value="Logout">
+							</form>
 					</li>
 				{{/*{{else}}
 					<li class="navbar-item"><a href="/admin/login/">Login</a></li>

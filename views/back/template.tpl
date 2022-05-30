@@ -14,7 +14,6 @@
 		{{.page | asHTML}}
 	</main>
 	<footer class="fixed-bottom">
-		footer
 	</footer>
 	{{/*{{template "back/alerts" .}}*/}}
 	{{template "back/scripts" .}}

@@ -1,9 +1,9 @@
 {{define "front/pagination"}}
 <div class="pagelist desktop">
 	{{if gt .page 1 }}
-	<div class="prev">
-		<a href="/boards/{{$.board_code}}/{{dec .page}}/">Previous</a>
-	</div>
+		<div class="prev">
+			<a href="/boards/{{$.board_code}}/{{dec .page}}/">Previous</a>
+		</div>
 	{{end}}
 	<div class="pages">
 		{{range $idx, $e := .page_helper}}

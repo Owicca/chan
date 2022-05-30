@@ -56,9 +56,10 @@ func TotalActiveThreads(db *gorm.DB, board_code string) int {
 
 	db.Raw(`
 	SELECT COUNT(t.id) FROM threads t
-	LEFT JOIN boards b ON b.id = t.board_id AND b.code = ?
+	LEFT JOIN boards b ON b.id = t.board_id
 	WHERE
-	t.deleted_at = ?
+	b.code = ?
+	AND t.deleted_at = ?
 	`, board_code, 0).Scan(&count)
 
 	return count
