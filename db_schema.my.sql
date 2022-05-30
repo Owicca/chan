@@ -166,7 +166,7 @@ CREATE TABLE users(
 	role_id integer REFERENCES roles(id)
 );
 
-INSERT INTO users(id, username, email, password, salt, status, role_id) VALUES
+INSERT INTO users(id, username, email, password, pepper, status, role_id) VALUES
 (1, 'root', 'root@root.com', '$2a$10$ILRgDxBKyNyBdGP9969PuO7Egb5naBWgQeAJwjrHvw39mzaFwtDU2', 'pepper', "A", 5);-- password: password; pepper: pepper
 
 -- ---

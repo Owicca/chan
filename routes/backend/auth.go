@@ -61,9 +61,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
+	const op errors.Op = "auth.Logout"
 	session, _ := infra.S.SessionStore.Get(r, infra.S.Config.Sessions.Key)
 
 	delete(session.Values, "user")
+	if err := session.Save(r, w); err != nil {
+		logs.LogErr(op, errors.Errorf("Could not save session on logout (%s)!", err))
+	}
 
 	infra.S.Redirect(w, r, "/admin/login/")
 }

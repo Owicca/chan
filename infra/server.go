@@ -16,8 +16,10 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"gorm.io/gorm"
+	"upspin.io/errors"
 
 	"github.com/Owicca/chan/models/acl"
+	"github.com/Owicca/chan/models/logs"
 
 	"go.uber.org/zap"
 )
@@ -103,9 +105,19 @@ func (s *Server) MEDIA(w http.ResponseWriter, status int, media []byte, mediaTyp
 
 // Server a HTML response.
 func (s *Server) HTML(w http.ResponseWriter, status int, htmlView string, data map[string]any) error {
+	const op errors.Op = "server.HTML"
 	if data != nil {
-		data = MergeMaps(s.Data, data)
+		data = MergeMaps(data, s.Data)
 	}
+
+	if r, ok := data["request"]; ok {
+		req := r.(*http.Request)
+		session, _ := S.SessionStore.Get(req, S.Config.Sessions.Key)
+		if err := session.Save(req, w); err != nil {
+			logs.LogErr(op, errors.Errorf("Could not save post session (%s)!", err))
+		}
+	}
+
 	return s.Template.Render(w, status, htmlView, data)
 }
 

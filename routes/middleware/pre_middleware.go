@@ -37,6 +37,7 @@ func LoadPreMd(srv *infra.Server) {
 	srv.Router.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			LogRequest(w, r)
+			infra.S.Data["request"] = r
 			next.ServeHTTP(w, r)
 		})
 	})
@@ -52,10 +53,10 @@ func LoadPreMd(srv *infra.Server) {
 
 	srv.Router.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			user, ok := srv.Data["user"]
-			if !ok {
+			if _, ok := srv.Data["user"]; !ok {
+				urlPath := r.URL.Path
 				for _, url := range sessions.PublicUrl {
-					if url == r.URL.Path {
+					if url == urlPath {
 						next.ServeHTTP(w, r)
 						return
 					}
@@ -63,17 +64,8 @@ func LoadPreMd(srv *infra.Server) {
 				infra.S.Redirect(w, r, "/admin/login/")
 				return
 			}
-			user_id, ok := user.(map[string]any)["ID"]
-			if !ok || user_id == "0" {
-				for _, url := range sessions.PublicUrl {
-					if url == r.URL.Path {
-						next.ServeHTTP(w, r)
-						return
-					}
-				}
-				infra.S.Redirect(w, r, "/admin/login/")
-				return
-			}
+
+			user_id := srv.Data["user"].(map[string]any)["ID"]
 
 			session, _ := srv.SessionStore.Get(r, strconv.Itoa(user_id.(int)))
 			flashList := session.Flashes()
