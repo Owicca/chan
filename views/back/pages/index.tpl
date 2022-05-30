@@ -2,7 +2,7 @@
 <ul class="container">
 {{range $idx, $topic := .topic_list}}
 	<li class="row row-topic text-start">
-		<h3 class="">{{$topic.Name}}</h3>
+		<h3 class=""><a href="/admin/topics/{{$topic.ID}}/">{{$topic.Name}}</a></h3>
 		<ul class="container">
 			<li class="row row--board">
 				<table class="table table-sm table-striped align-middle">

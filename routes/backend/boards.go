@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -20,7 +21,7 @@ func init() {
 	adminRouter.HandleFunc("/boards/", http.HandlerFunc(BoardList)).Methods(http.MethodGet).Name("board_list")
 
 	adminRouter.HandleFunc("/boards/add/", http.HandlerFunc(BoardOneAdd)).Methods(http.MethodGet).Name("board_one_add")
-	adminRouter.HandleFunc("/boards/", http.HandlerFunc(BoardOneUpdate)).Methods(http.MethodPost).Name("topic_one_add_post")
+	adminRouter.HandleFunc("/boards/", http.HandlerFunc(BoardOneCreate)).Methods(http.MethodPost).Name("topic_one_create")
 
 	adminRouter.HandleFunc("/boards/{id:[0-9]+}/", http.HandlerFunc(BoardOne)).Methods(http.MethodGet).Name("board_one")
 	adminRouter.HandleFunc("/boards/{id:[0-9]+}/", http.HandlerFunc(BoardOneUpdate)).Methods(http.MethodPost).Name("board_one_update")
@@ -69,12 +70,13 @@ func BoardOneAdd(w http.ResponseWriter, r *http.Request) {
 
 func BoardOne(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.BoardOne"
+	redirect_url := "/admin/boards/"
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil || id < 1 {
 		logs.LogWarn(op, errors.Str("No id provided!"))
-		infra.S.HTML(w, http.StatusOK, "back/board_one", nil)
+		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
 
@@ -96,40 +98,45 @@ func BoardOneUpdate(w http.ResponseWriter, r *http.Request) {
 		deleted_at = time.Now().Unix()
 	}
 	topic_id, _ := strconv.Atoi(r.PostFormValue("topic_id"))
+	bd := boards.Board{
+		Name:        r.PostFormValue("name"),
+		Topic_id:    topic_id,
+		Code:        r.PostFormValue("code"),
+		Description: r.PostFormValue("description"),
+		Deleted_at:  deleted_at,
+	}
 
 	val, ok := vars["id"]
-	the_id := 0
 	if ok { // update
 		id, err := strconv.Atoi(val)
 		if err != nil || id < 1 {
 			logs.LogWarn(op, errors.Str("No id provided!"))
-			infra.S.HTML(w, http.StatusOK, "back/board_one_add", nil)
+			infra.S.Redirect(w, r, "/admin/boards/")
 			return
 		}
-		the_id = id
-
-		boards.BoardOneUpdate(infra.S.Conn, boards.Board{
-			ID:          id,
-			Name:        r.PostFormValue("name"),
-			Topic_id:    topic_id,
-			Code:        r.PostFormValue("code"),
-			Description: r.PostFormValue("description"),
-			Deleted_at:  deleted_at,
-		})
-	} else { // create
-		boards.BoardOneCreate(infra.S.Conn, boards.Board{
-			Name:        r.PostFormValue("name"),
-			Topic_id:    topic_id,
-			Code:        r.PostFormValue("code"),
-			Description: r.PostFormValue("description"),
-			Deleted_at:  0,
-		})
+		bd.ID = id
 	}
 
-	data := map[string]any{
-		"board":      boards.BoardOne(infra.S.Conn, the_id),
-		"topic_list": topics.TopicList(infra.S.Conn),
+	boards.BoardOneUpdate(infra.S.Conn, bd)
+
+	redirect_url := fmt.Sprintf("/admin/boards/%d/", bd.ID)
+	infra.S.Redirect(w, r, redirect_url)
+}
+
+func BoardOneCreate(w http.ResponseWriter, r *http.Request) {
+	const op errors.Op = "back.BoardOneCreate"
+	redirect_url := "/admin/boards/"
+
+	topic_id, _ := strconv.Atoi(r.PostFormValue("topic_id"))
+	newBoard := boards.Board{
+		Name:        r.PostFormValue("name"),
+		Topic_id:    topic_id,
+		Code:        r.PostFormValue("code"),
+		Description: r.PostFormValue("description"),
+		Deleted_at:  0,
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/board_one", data)
+	boards.BoardOneCreate(infra.S.Conn, newBoard)
+
+	infra.S.Redirect(w, r, redirect_url)
 }
