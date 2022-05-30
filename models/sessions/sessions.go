@@ -17,8 +17,9 @@ import (
 
 var (
 	PublicUrl = map[string]string{
-		"login":  "/admin/login/",
-		"logout": "/admin/logout/",
+		"front_index": "/",
+		"login":       "/admin/login/",
+		"logout":      "/admin/logout/",
 	}
 )
 

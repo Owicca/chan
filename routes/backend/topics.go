@@ -1,15 +1,16 @@
 package backend
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
-	"upspin.io/errors"
 	"github.com/gorilla/mux"
+	"upspin.io/errors"
 
-	"github.com/Owicca/chan/models/logs"
 	"github.com/Owicca/chan/infra"
+	"github.com/Owicca/chan/models/logs"
 	"github.com/Owicca/chan/models/topics"
 )
 
@@ -18,7 +19,7 @@ func init() {
 	adminRouter.HandleFunc("/topics/", http.HandlerFunc(TopicList)).Methods(http.MethodGet).Name("topic_list")
 
 	adminRouter.HandleFunc("/topics/add/", http.HandlerFunc(TopicOneAdd)).Methods(http.MethodGet).Name("topic_one_add")
-	adminRouter.HandleFunc("/topics/", http.HandlerFunc(TopicOneUpdate)).Methods(http.MethodPost).Name("topic_one_add_post")
+	adminRouter.HandleFunc("/topics/", http.HandlerFunc(TopicOneCreate)).Methods(http.MethodPost).Name("topic_one_create")
 
 	adminRouter.HandleFunc("/topics/{id:[0-9]+}/", http.HandlerFunc(TopicOne)).Methods(http.MethodGet).Name("topic_one")
 	adminRouter.HandleFunc("/topics/{id:[0-9]+}/", http.HandlerFunc(TopicOneUpdate)).Methods(http.MethodPost).Name("topic_one_post")
@@ -27,7 +28,7 @@ func init() {
 func TopicList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back/TopicList"
 
-	data := map[string]any {
+	data := map[string]any{
 		"topic_list": topics.TopicList(infra.S.Conn),
 	}
 
@@ -37,7 +38,7 @@ func TopicList(w http.ResponseWriter, r *http.Request) {
 func TopicOneAdd(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back/TopicOneAdd"
 
-	data := map[string]any {
+	data := map[string]any{
 		"topic": topics.Topic{},
 	}
 
@@ -55,7 +56,7 @@ func TopicOne(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := map[string]any {
+	data := map[string]any{
 		"topic": topics.TopicOne(infra.S.Conn, id),
 	}
 
@@ -65,39 +66,48 @@ func TopicOne(w http.ResponseWriter, r *http.Request) {
 func TopicOneUpdate(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back/TopicOneUpdate"
 	vars := mux.Vars(r)
+	redirect_url := fmt.Sprintf("/admin/topics/%s/", vars["id"])
 
 	form_deleted_at := r.PostFormValue("deleted_at")
 	var deleted_at int64 = 0
 	if form_deleted_at == "1" {
 		deleted_at = time.Now().Unix()
 	}
+	tp := topics.Topic{
+		Name:       r.PostFormValue("name"),
+		Deleted_at: deleted_at,
+	}
 
 	val, ok := vars["id"]
-	the_id := 0
-	if ok {// update
+	if ok { // update
 		id, err := strconv.Atoi(val)
 		if err != nil || id < 1 {
 			logs.LogWarn(op, errors.Str("No id provided!"))
-			infra.S.HTML(w, http.StatusOK, "back/topic_one_add", nil)
+			infra.S.Redirect(w, r, "/admin/topics/")
 			return
 		}
-		the_id = id
+		tp.ID = id
+	}
+	topics.TopicOneUpdate(infra.S.Conn, &tp)
 
-		topics.TopicOneUpdate(infra.S.Conn, topics.Topic{
-			ID: id,
-			Name: r.PostFormValue("name"),
-			Deleted_at: deleted_at,
-		})
-	} else {// create
-		topics.TopicOneCreate(infra.S.Conn, topics.Topic{
-			Name: r.PostFormValue("name"),
-			Deleted_at: 0,
-		})
+	infra.S.Redirect(w, r, redirect_url)
+}
+
+func TopicOneCreate(w http.ResponseWriter, r *http.Request) {
+	const op errors.Op = "back/TopicOneCreate"
+	redirect_url := "/admin/topics/"
+
+	form_deleted_at := r.PostFormValue("deleted_at")
+	var deleted_at int64 = 0
+	if form_deleted_at == "1" {
+		deleted_at = time.Now().Unix()
+	}
+	newTopic := topics.Topic{
+		Name:       r.PostFormValue("name"),
+		Deleted_at: deleted_at,
 	}
 
-	data := map[string]any {
-		"topic": topics.TopicOne(infra.S.Conn, the_id),
-	}
+	topics.TopicOneCreate(infra.S.Conn, &newTopic)
 
-	infra.S.HTML(w, http.StatusOK, "back/topic_one", data)
+	infra.S.Redirect(w, r, redirect_url)
 }

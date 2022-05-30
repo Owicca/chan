@@ -7,10 +7,10 @@ import (
 )
 
 type Topic struct {
-	ID int `gorm:"primaryKey;column:id"`
-	Name string
+	ID         int `gorm:"primaryKey;column:id"`
+	Name       string
 	Deleted_at int64
-	BoardList []boards.Board `gorm:"foreignKey:topic_id"`
+	BoardList  []boards.Board `gorm:"foreignKey:topic_id"`
 }
 
 func TopicList(db *gorm.DB) []Topic {
@@ -37,10 +37,10 @@ func TopicOne(db *gorm.DB, id int) Topic {
 	return topic
 }
 
-func TopicOneCreate(db *gorm.DB, topic Topic) error {
+func TopicOneCreate(db *gorm.DB, topic *Topic) error {
 	return db.Create(&topic).Error
 }
 
-func TopicOneUpdate(db *gorm.DB, topic Topic) error {
+func TopicOneUpdate(db *gorm.DB, topic *Topic) error {
 	return db.Model(&topic).Select("*").Updates(topic).Error
 }
