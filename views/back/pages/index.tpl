@@ -13,6 +13,7 @@
 							<th scope="col">Image</th>
 							<th scope="col">Name</th>
 							<th scope="col">Description</th>
+							<th scope="col">Thread count</th>
 							<th scope="col">Actions</th>
 						</tr>
 					</thead>
@@ -39,6 +40,16 @@
 							</td>
 							<td>
 								{{$board.Description}}
+							</td>
+							<td>
+								{{$thread_count := len $board.ThreadList}}
+								{{if gt $thread_count 0}}
+									<a href="/admin/boards/{{$board.ID}}/threads/">
+										{{$thread_count}}
+									</a>
+								{{else}}
+									<span>{{$thread_count}}</span>
+								{{end}}
 							</td>
 							<td>
 								{{template "back/actions" params "view_name" "boards" "view_id" $board.ID}}

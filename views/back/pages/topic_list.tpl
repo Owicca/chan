@@ -5,6 +5,7 @@
 		<tr>
 			<td scope="col">#</td>
 			<td scope="col">Name</td>
+			<td scope="col">Board count</td>
 			<td scope="col">Deleted</td>
 			<td scope="col">Actions</td>
 		</tr>
@@ -17,6 +18,16 @@
 		</th>
 		<td>
 			<a href="/admin/topics/{{$topic.ID}}/">{{$topic.Name}}</a>
+		</td>
+		<td>
+			{{$board_count := len $topic.BoardList}}
+			{{if gt $board_count 0}}
+				<a href="/admin/topics/{{$topic.ID}}/boards/">
+					{{$board_count}}
+				</a>
+			{{else}}
+				<span>{{$board_count}}</span>
+			{{end}}
 		</td>
 		<td>
 			{{if gt $topic.Deleted_at 0}}

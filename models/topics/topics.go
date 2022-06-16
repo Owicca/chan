@@ -29,10 +29,26 @@ func TopicListWithBoardList(db *gorm.DB) []Topic {
 	return topicList
 }
 
+func TopicListWithBoardListWithThreadCount(db *gorm.DB) []Topic {
+	var topicList []Topic
+
+	db.Preload("BoardList.ThreadList").Find(&topicList)
+
+	return topicList
+}
+
 func TopicOne(db *gorm.DB, id int) Topic {
 	var topic Topic
 
 	db.First(&topic, id)
+
+	return topic
+}
+
+func TopicOneWithBoardList(db *gorm.DB, id int) Topic {
+	var topic Topic
+
+	db.Preload("BoardList.ThreadList").First(&topic, id)
 
 	return topic
 }

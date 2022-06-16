@@ -21,7 +21,7 @@ func init() {
 	adminRouter.HandleFunc("/boards/", http.HandlerFunc(BoardList)).Methods(http.MethodGet).Name("board_list")
 
 	adminRouter.HandleFunc("/boards/add/", http.HandlerFunc(BoardOneAdd)).Methods(http.MethodGet).Name("board_one_add")
-	adminRouter.HandleFunc("/boards/", http.HandlerFunc(BoardOneCreate)).Methods(http.MethodPost).Name("topic_one_create")
+	adminRouter.HandleFunc("/boards/", http.HandlerFunc(BoardOneCreate)).Methods(http.MethodPost).Name("board_one_create")
 
 	adminRouter.HandleFunc("/boards/{id:[0-9]+}/", http.HandlerFunc(BoardOne)).Methods(http.MethodGet).Name("board_one")
 	adminRouter.HandleFunc("/boards/{id:[0-9]+}/", http.HandlerFunc(BoardOneUpdate)).Methods(http.MethodPost).Name("board_one_update")

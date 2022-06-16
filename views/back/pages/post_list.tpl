@@ -3,9 +3,9 @@
     <thead>
         <tr>
             <td scope="col">#</td>
+            <td scope="col">Thread</td>
             <td scope="col">Status</td>
             <td scope="col" width="50%">Content</td>
-            <td scope="col">Thread</td>
             <td scope="col">Actions</td>
         </tr>
     </thead>
@@ -15,6 +15,11 @@
             <td>
                 <a href="/admin/posts/{{$post.ID}}/">
                     {{$post.ID}}
+                </a>
+            </td>
+            <td>
+                <a href="/admin/threads/{{$post.Thread_id}}/">
+                    {{$post.Thread_id}}
                 </a>
             </td>
             <td>
@@ -30,11 +35,6 @@
             </td>
             <td>
                 {{$post.Content}}
-            </td>
-            <td>
-                <a href="/admin/threads/{{$post.Thread_id}}/">
-                    {{$post.Thread_id}}
-                </a>
             </td>
             <td>
                 <form method="post" action="/admin/posts/{{$post.ID}}/">

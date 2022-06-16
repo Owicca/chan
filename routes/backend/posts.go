@@ -15,7 +15,7 @@ import (
 
 func init() {
 	adminRouter := infra.S.Router.PathPrefix("/admin/").Subrouter()
-	adminRouter.HandleFunc("/threads/{thread_id:[0-9]+}/posts/", http.HandlerFunc(ThreadPostList)).Methods(http.MethodGet).Name("post_list")
+	adminRouter.HandleFunc("/threads/{thread_id:[0-9]+}/posts/", ThreadPostList).Methods(http.MethodGet).Name("post_list")
 	adminRouter.HandleFunc("/posts/{post_id:[0-9]+}/", http.HandlerFunc(PostOne)).Methods(http.MethodGet).Name("post_one")
 	adminRouter.HandleFunc("/posts/{post_id:[0-9]+}/", http.HandlerFunc(PostOneDelete)).Methods(http.MethodPost).Name("post_one_delete")
 }

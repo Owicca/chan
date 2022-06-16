@@ -20,7 +20,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	data := map[string]any{
 		"title":      "The title",
-		"topic_list": topics.TopicListWithBoardList(infra.S.Conn),
+		"topic_list": topics.TopicListWithBoardListWithThreadCount(infra.S.Conn),
 	}
 
 	infra.S.HTML(w, http.StatusOK, "back/index", data)

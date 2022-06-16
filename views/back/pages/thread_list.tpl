@@ -3,6 +3,7 @@
     <thead>
         <tr>
             <td scope="col">#</td>
+            <td scope="col">Board</td>
             <td scope="col">Status</td>
             <td scope="col">Posts</td>
             <td scope="col">Actions</td>
@@ -14,6 +15,11 @@
         <td> 
             <a href="/admin/threads/{{$thread.ID}}/">
                 {{$thread.ID}}
+            </a>
+        </td>
+        <td> 
+            <a href="/admin/boards/{{$thread.Board_id}}/">
+                {{$thread.Board_id}}
             </a>
         </td>
         <td> 
