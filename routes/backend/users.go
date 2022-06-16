@@ -1,11 +1,14 @@
 package backend
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Owicca/chan/infra"
 	"github.com/Owicca/chan/models/acl"
+	"github.com/Owicca/chan/models/boards"
 	"github.com/Owicca/chan/models/logs"
+	"github.com/Owicca/chan/models/sessions"
 	"github.com/Owicca/chan/models/users"
 	"github.com/gorilla/mux"
 
@@ -16,9 +19,11 @@ import (
 
 func init() {
 	adminRouter := infra.S.Router.PathPrefix("/admin").Subrouter()
-	adminRouter.HandleFunc("/users/", http.HandlerFunc(UserList)).Methods(http.MethodGet).Name("user_list")
-	adminRouter.HandleFunc("/users/{user_id:[0-9]+}/", http.HandlerFunc(UserOne)).Methods(http.MethodGet).Name("user_one")
-	adminRouter.HandleFunc("/users/{user_id:[0-9]+}/", http.HandlerFunc(UserOneUpdate)).Methods(http.MethodPost).Name("user_one_update")
+	adminRouter.HandleFunc("/users/", UserList).Methods(http.MethodGet).Name("user_list")
+	adminRouter.HandleFunc("/users/add/", UserCreateForm).Methods(http.MethodGet).Name("user_one_create")
+	adminRouter.HandleFunc("/users/", UserOneCreate).Methods(http.MethodPost).Name("user_one_create")
+	adminRouter.HandleFunc("/users/{user_id:[0-9]+}/", UserOne).Methods(http.MethodGet).Name("user_one")
+	adminRouter.HandleFunc("/users/{user_id:[0-9]+}/", UserOneUpdate).Methods(http.MethodPost).Name("user_one_update")
 }
 
 func UserList(w http.ResponseWriter, r *http.Request) {
@@ -50,6 +55,57 @@ func UserOne(w http.ResponseWriter, r *http.Request) {
 	infra.S.HTML(w, http.StatusOK, "back/user", data)
 }
 
+func UserCreateForm(w http.ResponseWriter, r *http.Request) {
+	const op errors.Op = "back.UserCreateForm"
+
+	data := map[string]interface{}{
+		"user_status_list": users.UserStatusList(),
+		"user_role_list":   acl.RoleList(infra.S.Conn),
+		"board_list":       boards.BoardList(infra.S.Conn),
+	}
+
+	infra.S.HTML(w, http.StatusOK, "back/user_create_form", data)
+}
+
+func UserOneCreate(w http.ResponseWriter, r *http.Request) {
+	const op errors.Op = "back.UserOneCreate"
+	redirect_url := "/admin/users/add/"
+
+	role_id_list := acl.RoleIdList(infra.S.Conn)
+	role_id, err := strconv.Atoi(r.PostFormValue("role"))
+	if err != nil || !infra.Contains(role_id_list, role_id) {
+		logs.LogWarn(op, errors.Errorf("Invalid role id! (%s)", err))
+		infra.S.Redirect(w, r, redirect_url)
+		return
+	}
+
+	email := r.PostFormValue("email")
+	status := r.PostFormValue("status")
+	pass1 := r.PostFormValue("password1")
+	pass2 := r.PostFormValue("password2")
+	if err := users.UserValidate(email, pass1, pass2); err != nil {
+		logs.LogWarn(op, errors.Errorf("Invalid email and pass! (%s)", err))
+		infra.S.Redirect(w, r, redirect_url)
+		return
+	}
+
+	pepper := sessions.GeneratePepper(32)
+	hash := sessions.GeneratePassword(pass1, pepper)
+
+	newUser := users.User{
+		Username: r.PostFormValue("username"),
+		Email:    email,
+		Status:   status,
+		Password: hash,
+		Pepper:   pepper,
+		RoleId:   role_id,
+	}
+	users.UserOneCreate(infra.S.Conn, &newUser)
+
+	redirect_url = fmt.Sprintf("/admin/users/%d/", newUser.ID)
+	infra.S.Redirect(w, r, redirect_url)
+}
+
 func UserOneUpdate(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.UserOneUpdate"
 	if err := r.ParseForm(); err != nil {
@@ -67,13 +123,14 @@ func UserOneUpdate(w http.ResponseWriter, r *http.Request) {
 
 	role_id, _ := strconv.Atoi(r.PostFormValue("role"))
 
-	users.UserOneUpdate(infra.S.Conn, users.User{
+	newUser := users.User{
 		ID:       user_id,
 		Username: r.PostFormValue("username"),
 		Email:    r.PostFormValue("email"),
 		Status:   r.PostFormValue("status"),
 		RoleId:   role_id,
-	})
+	}
+	users.UserOneUpdate(infra.S.Conn, &newUser)
 
 	data := map[string]any{
 		"user":       users.UserOne(infra.S.Conn, user_id),

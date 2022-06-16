@@ -77,11 +77,10 @@ CREATE TABLE roles(
 );
 
 INSERT INTO roles(id, name) VALUES
-(1, 'anon'),
-(2, 'op'),
+(1, 'root'),
+(2, 'site_admin'),
 (3, 'board_admin'),
-(4, 'site_admin'),
-(5, 'root');
+(4, 'op');
 
 CREATE TABLE pair_to_role(
 	id bigint NOT NULL AUTO_INCREMENT,
@@ -156,14 +155,15 @@ INSERT INTO pair_to_role(ato_id, role_id) VALUES
 (54, 5);
 
 CREATE TABLE users(
-	id bigint primary key,
+	id bigint NOT NULL AUTO_INCREMENT,
 	deleted_at int NOT NULL DEFAULT 0,
 	username varchar(255) NOT NULL,
 	email varchar(255) NOT NULL,
 	password varchar(255) NOT NULL,-- bcrypt(pepper + pass)
 	pepper varchar(255) NOT NULL,
 	status varchar(2) NOT NULL,
-	role_id integer REFERENCES roles(id)
+	role_id integer REFERENCES roles(id),
+	PRIMARY KEY(id)
 );
 
 INSERT INTO users(id, username, email, password, pepper, status, role_id) VALUES

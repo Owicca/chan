@@ -157,3 +157,16 @@ func Decrement(i int) int {
 func Increment(i int) int {
 	return i + 1
 }
+
+func Contains[T comparable](haystack []T, needle T) bool {
+	results := false
+
+	for _, elem := range haystack {
+		if elem == needle{
+			results = true
+			break;
+		}
+	}
+
+	return results
+}

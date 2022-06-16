@@ -1,6 +1,9 @@
 package sessions
 
 import (
+	"math/rand"
+	"time"
+
 	"github.com/Owicca/chan/models/logs"
 	"golang.org/x/crypto/bcrypt"
 	"upspin.io/errors"
@@ -15,12 +18,18 @@ import (
 //	return hex.EncodeToString(hash[:])
 //}
 
+const (
+	charset = "abcdefghijklmnopqrstuvwxyz" +
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+)
+
 var (
 	PublicUrl = map[string]string{
 		"front_index": "/",
 		"login":       "/admin/login/",
 		"logout":      "/admin/logout/",
 	}
+	seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 )
 
 func GeneratePassword(password string, pepper string) string {
@@ -37,4 +46,18 @@ func GeneratePassword(password string, pepper string) string {
 	results = string(hash)
 
 	return results
+}
+
+func StringWithCharset(length int, charset string) string {
+	b := make([]byte, length)
+
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+
+	return string(b)
+}
+
+func GeneratePepper(length int) string {
+	return StringWithCharset(length, charset)
 }

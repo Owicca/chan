@@ -22,6 +22,7 @@ type User struct {
 	Username   string
 	Email      string
 	Password   string
+	Pepper     string
 	Status     string
 	RoleId     int
 	Role       acl.Role `gorm:"foreignKey:role_id;"`
@@ -100,10 +101,10 @@ func UserGetByCredentials(db *gorm.DB, email string, password string) (User, err
 	return user, nil
 }
 
-func UserOneCreate(db *gorm.DB, user User) error {
+func UserOneCreate(db *gorm.DB, user *User) error {
 	return db.Create(&user).Error
 }
 
-func UserOneUpdate(db *gorm.DB, user User) error {
+func UserOneUpdate(db *gorm.DB, user *User) error {
 	return db.Model(&user).Updates(user).Error
 }

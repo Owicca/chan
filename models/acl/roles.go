@@ -11,3 +11,13 @@ func RoleList(db *gorm.DB) []Role {
 
 	return roleList
 }
+
+func RoleIdList(db *gorm.DB) []int {
+	var roleIdList []int
+
+	db.Raw(`
+	SELECT id FROM roles;
+	`).Scan(&roleIdList)
+
+	return roleIdList
+}
