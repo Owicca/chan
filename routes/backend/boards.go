@@ -117,7 +117,7 @@ func BoardOneUpdate(w http.ResponseWriter, r *http.Request) {
 		bd.ID = id
 	}
 
-	boards.BoardOneUpdate(infra.S.Conn, bd)
+	boards.BoardOneUpdate(infra.S.Conn, &bd)
 
 	redirect_url := fmt.Sprintf("/admin/boards/%d/", bd.ID)
 	infra.S.Redirect(w, r, redirect_url)
@@ -136,7 +136,7 @@ func BoardOneCreate(w http.ResponseWriter, r *http.Request) {
 		Deleted_at:  0,
 	}
 
-	boards.BoardOneCreate(infra.S.Conn, newBoard)
+	boards.BoardOneCreate(infra.S.Conn, &newBoard)
 
 	infra.S.Redirect(w, r, redirect_url)
 }
