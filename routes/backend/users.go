@@ -75,6 +75,9 @@ func UserOneCreate(w http.ResponseWriter, r *http.Request) {
 	role_id, err := strconv.Atoi(r.PostFormValue("role"))
 	if err != nil || !infra.Contains(role_id_list, role_id) {
 		logs.LogWarn(op, errors.Errorf("Invalid role id! (%s)", err))
+		infra.S.Data["errors"] = map[string]any{
+			"role": []any{"Invalid role id!"},
+		}
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
@@ -85,6 +88,9 @@ func UserOneCreate(w http.ResponseWriter, r *http.Request) {
 	pass2 := r.PostFormValue("password2")
 	if err := users.UserValidate(email, pass1, pass2); err != nil {
 		logs.LogWarn(op, errors.Errorf("Invalid email and pass! (%s)", err))
+		infra.S.Data["errors"] = map[string]any{
+			"password1": []any{err},
+		}
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
@@ -108,18 +114,15 @@ func UserOneCreate(w http.ResponseWriter, r *http.Request) {
 
 func UserOneUpdate(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.UserOneUpdate"
-	if err := r.ParseForm(); err != nil {
-		logs.LogErr(op, err)
-		infra.S.HTML(w, http.StatusOK, "back/user", nil)
-		return
-	}
+	default_redirect_url := "/admin/users/"
 
 	user_id, err := strconv.Atoi(r.PostFormValue("user_id"))
 	if err != nil || user_id < 1 {
 		logs.LogWarn(op, errors.Str("No user_id provided!"))
-		infra.S.HTML(w, http.StatusOK, "back/user", nil)
+		infra.S.Redirect(w, r, default_redirect_url)
 		return
 	}
+	redirect_url := fmt.Sprintf("/admin/users/%d/", user_id)
 
 	role_id, _ := strconv.Atoi(r.PostFormValue("role"))
 
@@ -132,11 +135,5 @@ func UserOneUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 	users.UserOneUpdate(infra.S.Conn, &newUser)
 
-	data := map[string]any{
-		"user":       users.UserOne(infra.S.Conn, user_id),
-		"roles":      acl.RoleList(infra.S.Conn),
-		"statusList": users.UserStatusList(),
-	}
-
-	infra.S.HTML(w, http.StatusOK, "back/user", data)
+	infra.S.Redirect(w, r, redirect_url)
 }

@@ -64,13 +64,16 @@ func NewServer(
 	tmpl *Template,
 ) *Server {
 	if S == nil {
+		data := map[string]any{
+			"errors": map[string]any{},
+		}
 		S = &Server{
 			Config:       cfg,
 			SessionStore: store.(*sessions.CookieStore),
 			Router:       *mux.NewRouter(),
 			Conn:         conn,
 			Template:     tmpl,
-			Data:         map[string]any{},
+			Data:         data,
 		}
 	}
 
