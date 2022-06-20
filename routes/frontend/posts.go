@@ -24,8 +24,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "front.CreatePost"
 	vars := mux.Vars(r)
 	redirect_url := fmt.Sprintf("/boards/%s/threads/%s/", vars["board_code"], vars["thread_id"])
-	var maxFormSize int64 = 4194304
-	if err := r.ParseMultipartForm(maxFormSize); err != nil {
+	if err := r.ParseMultipartForm(media.MaxFileSize); err != nil {
 		logs.LogErr(op, err)
 
 		infra.S.Errors.Set("misc", "Invalid file size!")

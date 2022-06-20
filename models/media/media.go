@@ -18,6 +18,10 @@ import (
 	"upspin.io/errors"
 )
 
+const (
+	MaxFileSize int64 = 4194304
+)
+
 type Media struct {
 	Object_id   int
 	Object_type string

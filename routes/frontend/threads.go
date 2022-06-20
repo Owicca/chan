@@ -27,8 +27,7 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "front.ThreadCreate"
 	vars := mux.Vars(r)
 	redirect_url := fmt.Sprintf("/boards/%s/", vars["board_code"])
-	var maxFormSize int64 = 4194304
-	if err := r.ParseMultipartForm(maxFormSize); err != nil {
+	if err := r.ParseMultipartForm(media.MaxFileSize); err != nil {
 		logs.LogErr(op, errors.Errorf("Could not parse form (%s)", err))
 		infra.S.Errors.Set("misc", "Invalid file size!")
 		infra.S.Redirect(w, r, redirect_url)
