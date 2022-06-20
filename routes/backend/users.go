@@ -75,9 +75,7 @@ func UserOneCreate(w http.ResponseWriter, r *http.Request) {
 	role_id, err := strconv.Atoi(r.PostFormValue("role"))
 	if err != nil || !infra.Contains(role_id_list, role_id) {
 		logs.LogWarn(op, errors.Errorf("Invalid role id! (%s)", err))
-		infra.S.Data["errors"] = map[string]any{
-			"role": []any{"Invalid role id!"},
-		}
+		infra.S.Errors.Set("role", "Invalid role id!")
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
@@ -88,9 +86,7 @@ func UserOneCreate(w http.ResponseWriter, r *http.Request) {
 	pass2 := r.PostFormValue("password2")
 	if err := users.UserValidate(email, pass1, pass2); err != nil {
 		logs.LogWarn(op, errors.Errorf("Invalid email and pass! (%s)", err))
-		infra.S.Data["errors"] = map[string]any{
-			"password1": []any{err},
-		}
+		infra.S.Errors.Set("password1", err)
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}

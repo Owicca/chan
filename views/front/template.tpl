@@ -12,7 +12,7 @@
 	</header>
 	<hr>
 	<main>
-		{{.page | asHTML}}
+		{{asHTML .page}}
 	</main>
 	<hr>
 	<footer class="fixed-bottom">

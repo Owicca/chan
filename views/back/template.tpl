@@ -11,7 +11,7 @@
 		{{template "back/nav" .}}
 	</header>
 	<main>
-		{{.page | asHTML}}
+		{{asHTML .page}}
 	</main>
 	<footer class="fixed-bottom">
 	</footer>

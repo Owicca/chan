@@ -8,7 +8,7 @@
 				<td>
 					<input class="name" name="name" type="text" tabindex="1" placeholder="Anonymous">
 					<input type="submit" value="Post" tabindex="6">
-					{{template "front/errors" .errors.name}}
+					{{template "front/errors" (.errors.Get "name")}}
 				</td>
 			</tr>
 			{{if .create_thread}}
@@ -16,7 +16,7 @@
 					<td>Subject</td>
 					<td>
 						<input name="subject" type="text" tabindex="3">
-						{{template "front/errors" .errors.subject}}
+						{{template "front/errors" (.errors.Get "subject")}}
 					</td>
 				</tr>
 			{{end}}
@@ -24,14 +24,14 @@
 				<td>Content</td>
 				<td>
 					<textarea name="content" cols="48" rows="4" tabindex="4" wrap="soft"></textarea>
-					{{template "front/errors" .errors.content}}
+					{{template "front/errors" (.errors.Get "content")}}
 				</td>
 			</tr>
 			<tr data-type="File">
 				<td>File</td>
 				<td>
 					<input id="postFile" name="media" type="file" tabindex="7" {{if .create_thread}}required="required"{{end}}>
-					{{template "front/errors" .errors.media}}
+					{{template "front/errors" (.errors.Get "media")}}
 				</td>
 			</tr>
 			<tr class="rules">
@@ -48,7 +48,7 @@
 			<tr>
 				<td colspan="2">
 					<div id="postFormError">
-						{{template "front/errors" .errors.misc}}
+						{{template "front/errors" (.errors.Get "misc")}}
 					</div>
 				</td>
 			</tr>

@@ -28,9 +28,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseMultipartForm(maxFormSize); err != nil {
 		logs.LogErr(op, err)
 
-		infra.S.Data["errors"] = map[string]any{
-			"misc": []any{"Invalid file size!"},
-		}
+		infra.S.Errors.Set("misc", "Invalid file size!")
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
@@ -39,9 +37,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logs.LogErr(op, err)
 
-		infra.S.Data["errors"] = map[string]any{
-			"misc": []any{"Invalid thread id!"},
-		}
+		infra.S.Errors.Set("misc", "Invalid thread id!")
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
@@ -62,9 +58,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	content = r.PostFormValue("content")
 	if content == "" {
 		logs.LogWarn(op, errors.Str("No content provided!"))
-		infra.S.Data["errors"] = map[string]any{
-			"content": []any{"No content provided!"},
-		}
+		infra.S.Errors.Set("content", "No content provided!")
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
@@ -81,9 +75,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 			newPost.Tripcode = trip
 		} else {
 			logs.LogWarn(op, errors.Str("Invalid name provided!"))
-			infra.S.Data["errors"] = map[string]any{
-				"name": []any{"Invalid name format!"},
-			}
+			infra.S.Errors.Set("name", "Invalid name format!")
 			infra.S.Redirect(w, r, redirect_url)
 			return
 		}
@@ -98,9 +90,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			logs.LogErr(op, err)
 
-			infra.S.Data["errors"] = map[string]any{
-				"media": []any{"Error while processing the file!"},
-			}
+			infra.S.Errors.Set("media", "Error while processing the file!")
 			infra.S.Redirect(w, r, redirect_url)
 			return
 		}
@@ -112,9 +102,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		}, mediaFile)
 		if err != nil {
 			logs.LogErr(op, err)
-			infra.S.Data["errors"] = map[string]any{
-				"media": []any{"Error while uploading the file!"},
-			}
+			infra.S.Errors.Set("media", "Error while uploading the file!")
 		} else {
 			infra.S.Conn.Create(&newMedia)
 		}

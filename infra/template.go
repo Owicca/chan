@@ -68,11 +68,12 @@ func (t *Template) Render(w http.ResponseWriter, status int, name string, data m
 	w.WriteHeader(status)
 
 	// add data to main template
-	//if data == nil {
-	//	data = map[string]any{}
-	//}
+	if data == nil {
+		data = map[string]any{}
+	}
 	//data["is_index"] = false
 	//data["is_thread"] = false
+	data["errors"] = S.Errors
 	buffer := bytes.NewBufferString("")
 	t.custom.ExecuteTemplate(buffer, name, data)
 

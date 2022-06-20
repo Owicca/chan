@@ -20,6 +20,7 @@ import (
 
 	"github.com/Owicca/chan/models/acl"
 	"github.com/Owicca/chan/models/logs"
+	"github.com/Owicca/chan/models/utils"
 
 	"go.uber.org/zap"
 )
@@ -55,6 +56,7 @@ type Server struct {
 	Conn         *gorm.DB
 	Template     *Template
 	Data         map[string]any
+	Errors       *utils.Errors
 }
 
 func NewServer(
@@ -64,16 +66,14 @@ func NewServer(
 	tmpl *Template,
 ) *Server {
 	if S == nil {
-		data := map[string]any{
-			"errors": map[string]any{},
-		}
 		S = &Server{
 			Config:       cfg,
 			SessionStore: store.(*sessions.CookieStore),
 			Router:       *mux.NewRouter(),
 			Conn:         conn,
 			Template:     tmpl,
-			Data:         data,
+			Data:         map[string]any{},
+			Errors:       utils.NewErrors(),
 		}
 	}
 
