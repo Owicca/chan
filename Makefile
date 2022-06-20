@@ -2,12 +2,10 @@ bin=./chan.exe
 dev_reload=CompileDaemon \
 					 -build="go build -o ../chan.exe ./main.go" \
 					 -command="../chan.exe" \
-					 -exclude-dir=".git" \
-					 -exclude-dir="log" \
-					 -exclude-dir="./static/media" \
-					 -exclude-dir="./db" \
+					 -pattern="(.*)\.(go|tpl|js|css|json|sql)" \
+					 -exclude-dir=./log/ \
+					 -exclude-dir=./static/media/ \
 					 -exclude="./chan.exe" \
-					 -pattern="(.*)" \
 					 -polling=true \
 					 -polling-interval=300 \
 					 -color \
@@ -16,12 +14,10 @@ dev_reload=CompileDaemon \
 dev_reload_no_pool=CompileDaemon \
 					 -build="go build -o ../chan.exe ./main.go" \
 					 -command="../chan.exe" \
-					 -exclude-dir=".git" \
-					 -exclude-dir="log" \
-					 -exclude-dir="./static/media" \
-					 -exclude-dir="./db" \
+					 -pattern="(.*)\.(go|tpl|js|css|json|sql)" \
+					 -exclude-dir=./log/ \
+					 -exclude-dir=./static/media/ \
 					 -exclude="./chan.exe" \
-					 -pattern="(.*)" \
 					 -color \
 					 -verbose
 
