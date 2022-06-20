@@ -20,7 +20,7 @@ pre {
 }
 
 .hidden {
-	display: none;
+	display: none !important;
 }
 
 .postContainer,
@@ -71,4 +71,17 @@ pre {
 .break {
 	display: block;
 	flex-basis: 100%;
+}
+
+#quickReply {
+  display: block;
+  position: fixed;
+  padding: 2px;
+  font-size: 10pt;
+	top: 50%;
+	right: 0;
+}
+
+.quotePost {
+	cursor: pointer;
 }

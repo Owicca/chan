@@ -90,6 +90,17 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 			logs.LogErr(op, err)
 
 			infra.S.Errors.Set("media", "Error while processing the file!")
+			posts.PostOneDelete(infra.S.Conn, newPost.ID)
+			infra.S.Redirect(w, r, redirect_url)
+			return
+		}
+		defer mediaFile.Close()
+		if m.Size < media.MinFileSize && m.Size > media.MaxFileSize {
+			errMsg := fmt.Sprintf("File size should be between %d KB and %d!", media.MinFileSize*1000, media.MaxFileSize*1000*1000)
+
+			logs.LogErr(op, errMsg)
+			infra.S.Errors.Set("media", errMsg)
+			posts.PostOneDelete(infra.S.Conn, newPost.ID)
 			infra.S.Redirect(w, r, redirect_url)
 			return
 		}
@@ -102,6 +113,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			logs.LogErr(op, err)
 			infra.S.Errors.Set("media", "Error while uploading the file!")
+			posts.PostOneDelete(infra.S.Conn, newPost.ID)
 		} else {
 			infra.S.Conn.Create(&newMedia)
 		}

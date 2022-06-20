@@ -19,7 +19,8 @@ import (
 )
 
 const (
-	MaxFileSize int64 = 4194304
+	MinFileSize int64 = 100000
+	MaxFileSize int64 = 4000000
 )
 
 type Media struct {

@@ -18,10 +18,16 @@
 				<span class="dateTime" data-utc="{{.post.Created_at}}">{{u2d .post.Created_at}}</span>
 				<span class="postNum">
 					<a href="#p{{.post.ID}}" title="Link to this post">No.</a>
-					<a href="javascript:quote('{{.post.ID}}');" title="Reply to this post">{{.post.ID}}</a>
+					<a class="quotePost" data-id="{{.post.ID}}" title="Reply to this post">{{.post.ID}}</a>
 				</span>
 				<a href="#" class="postMenuBtn" title="Post menu" data-cmd="post-menu">▶</a>
-				<!-- <div id="bl_86931392" class="backlink"><span><a href="#p86932976" class="quotelink">&gt;&gt;86932976</a> </span></div> -->
+				<div id="bl_{{.post.ID}}" class="backlink">
+					<span>
+						{{range $bl := .post.BacklinkList}}
+							<a href="#p{{$bl.Link}}" class="quotelink">&gt;&gt;{{$bl.Link}}</a>
+						{{end}}
+					</span>
+				</div>
 			</div>
 			{{if .post.Media.Object_id}}
 			<div class="file">

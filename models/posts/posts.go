@@ -21,12 +21,13 @@ type Post struct {
 	Name           string
 	Content        string
 	Media          media.Media `gorm:"foreignKey:object_id;references:id"`
+	BacklinkList   []Backlink  `gorm:"foreignKey:post_id;references:id"`
 }
 
 func ThreadPostList(db *gorm.DB, thread_id int, limit int, offset int) []Post {
 	var postList []Post
 
-	stmt := db.Preload("Media", "media.object_type = 'posts'")
+	stmt := db.Preload("Media", "media.object_type = 'posts'").Preload("BacklinkList")
 	if limit > 0 {
 		stmt = stmt.Limit(limit)
 	}

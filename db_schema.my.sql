@@ -233,3 +233,14 @@ CREATE TABLE posts (
 	PRIMARY KEY (id),
 	FOREIGN KEY (thread_id) REFERENCES threads (id)
 );
+
+-- ---
+
+CREATE TABLE backlinks (
+	id bigint NOT NULL AUTO_INCREMENT,
+	post_id bigint NOT NULL,
+	link bigint NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (post_id) REFERENCES posts(id),
+	FOREIGN KEY (link) REFERENCES posts(id),
+);
