@@ -5,7 +5,7 @@
 		<span id="qrTid"></span>
 		<img alt="X" src="/static/media/image/cross.png" id="qrClose" class="extButton" title="Close Window">
 	</div>
-	<form id="quickReply" action="{{.form_action}}" method="POST" enctype="multipart/form-data">
+	<form id="quickReplyForm" action="{{.form_action}}" method="POST" enctype="multipart/form-data" data-board-code="{{.board_code}}">
 		<div id="qrForm">
 			<div>
 				<input class="name" name="name" type="text" tabindex="1" placeholder="Name">
@@ -13,6 +13,8 @@
 			</div>
 			<div>
 				<input name="email" type="text" tabindex="0" id="qrEmail" placeholder="Options">
+			</div>
+			<div id="linkCnt" class="backlink">
 			</div>
 			<div>
 				<textarea name="content" cols="48" rows="4" tabindex="0" placeholder="Content" wrap="soft"></textarea>

@@ -1,7 +1,7 @@
-bin=./chan.exe
+bin=/chan.exe
 dev_reload=CompileDaemon \
-					 -build="go build -o ../chan.exe ./main.go" \
-					 -command="../chan.exe" \
+					 -build="go build -o /chan.exe ./main.go" \
+					 -command="/chan.exe" \
 					 -pattern="(.*)\.(go|tpl|js|css|json|sql)" \
 					 -exclude-dir=./log/ \
 					 -exclude-dir=./static/media/ \
@@ -12,8 +12,8 @@ dev_reload=CompileDaemon \
 					 -verbose
 
 dev_reload_no_pool=CompileDaemon \
-					 -build="go build -o ../chan.exe ./main.go" \
-					 -command="../chan.exe" \
+					 -build="go build -o /chan.exe ./main.go" \
+					 -command="/chan.exe" \
 					 -pattern="(.*)\.(go|tpl|js|css|json|sql)" \
 					 -exclude-dir=./log/ \
 					 -exclude-dir=./static/media/ \

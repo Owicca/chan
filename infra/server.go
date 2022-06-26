@@ -195,6 +195,7 @@ func Setup(configPath string) (Config, sessions.Store, *gorm.DB, *zap.Logger) {
 	}
 
 	store := sessions.NewCookieStore([]byte(cfg.Sessions.AuthenticationKey), []byte(cfg.Sessions.EncryptionKey))
+	store.Options.SameSite = http.SameSiteStrictMode
 
 	return cfg, store, conn, logger
 }

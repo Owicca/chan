@@ -23,8 +23,8 @@
 				<a href="#" class="postMenuBtn" title="Post menu" data-cmd="post-menu">▶</a>
 				<div id="bl_{{.post.ID}}" class="backlink">
 					<span>
-						{{range $bl := .post.BacklinkList}}
-							<a href="#p{{$bl.Link}}" class="quotelink">&gt;&gt;{{$bl.Link}}</a>
+						{{range $l := .post.LinkList}}
+							<a href="#p{{$l.Dest}}" class="quotelink">&gt;&gt;{{$l.Dest}}</a>
 						{{end}}
 					</span>
 				</div>

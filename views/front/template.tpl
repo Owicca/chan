@@ -4,7 +4,7 @@
 <head>
 	{{template "front/meta"}}
 	{{template "front/links"}}
-	<title>{{with .title}}{{.title}}{{else}}The Chan{{end}}</title>
+	<title>{{with .title}}{{.title}}{{else}}Imageboard{{end}}</title>
 </head>
 <body class="{{if .is_index}}is_index{{end}}{{if .is_thread}}is_thread{{end}}">
 	<header>

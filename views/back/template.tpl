@@ -4,7 +4,7 @@
 <head>
 	{{template "back/meta" .}}
 	{{template "back/links" .}}
-	<title>{{with .title}}{{.title}}{{else}}The Chan{{end}}</title>
+	<title>{{with .title}}{{.title}}{{else}}Imageboard{{end}}</title>
 </head>
 <body class="container-sm">
 	<header>

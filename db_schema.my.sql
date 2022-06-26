@@ -1,7 +1,3 @@
-DROP DATABASE chan;
-CREATE DATABASE IF NOT EXISTS chan CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE chan;
-
 CREATE TABLE log_actions(
 	id bigint NOT NULL AUTO_INCREMENT,
 	action varchar(255) NOT NULL,-- insert, update, delete, virtual_delete
@@ -93,7 +89,25 @@ CREATE TABLE pair_to_role(
 
 INSERT INTO pair_to_role(ato_id, role_id) VALUES
 (11, 1),
+(12, 1),
+(13, 1),
+(14, 1),
 (21, 1),
+(22, 1),
+(23, 1),
+(24, 1),
+(31, 1),
+(32, 1),
+(33, 1),
+(34, 1),
+(41, 1),
+(42, 1),
+(43, 1),
+(44, 1),
+(51, 1),
+(52, 1),
+(53, 1),
+(54, 1),
 
 (11, 2),
 (12, 2),
@@ -101,6 +115,16 @@ INSERT INTO pair_to_role(ato_id, role_id) VALUES
 (21, 2),
 (22, 2),
 (23, 2),
+(31, 2),
+(32, 2),
+(33, 2),
+(41, 2),
+(42, 2),
+(43, 2),
+(44, 2),
+(51, 2),
+(52, 2),
+(53, 2),
 
 (11, 3),
 (12, 3),
@@ -121,38 +145,7 @@ INSERT INTO pair_to_role(ato_id, role_id) VALUES
 (13, 4),
 (21, 4),
 (22, 4),
-(23, 4),
-(31, 4),
-(32, 4),
-(33, 4),
-(41, 4),
-(42, 4),
-(43, 4),
-(44, 4),
-(51, 4),
-(52, 4),
-(53, 4),
-
-(11, 5),
-(12, 5),
-(13, 5),
-(14, 5),
-(21, 5),
-(22, 5),
-(23, 5),
-(24, 5),
-(31, 5),
-(32, 5),
-(33, 5),
-(34, 5),
-(41, 5),
-(42, 5),
-(43, 5),
-(44, 5),
-(51, 5),
-(52, 5),
-(53, 5),
-(54, 5);
+(23, 4);
 
 CREATE TABLE users(
 	id bigint NOT NULL AUTO_INCREMENT,
@@ -162,12 +155,13 @@ CREATE TABLE users(
 	password varchar(255) NOT NULL,-- bcrypt(pepper + pass)
 	pepper varchar(255) NOT NULL,
 	status varchar(2) NOT NULL,
-	role_id integer REFERENCES roles(id),
+	role_id bigint NOT NULL,
+	FOREIGN KEY(role_id) REFERENCES roles(id),
 	PRIMARY KEY(id)
 );
 
 INSERT INTO users(id, username, email, password, pepper, status, role_id) VALUES
-(1, 'root', 'root@root.com', '$2a$10$ILRgDxBKyNyBdGP9969PuO7Egb5naBWgQeAJwjrHvw39mzaFwtDU2', 'pepper', "A", 5);-- password: password; pepper: pepper
+(1, 'root', 'root@root.com', '$2a$10$ILRgDxBKyNyBdGP9969PuO7Egb5naBWgQeAJwjrHvw39mzaFwtDU2', 'pepper', "A", 1);-- password: password; pepper: pepper
 
 -- ---
 
@@ -236,11 +230,10 @@ CREATE TABLE posts (
 
 -- ---
 
-CREATE TABLE backlinks (
-	id bigint NOT NULL AUTO_INCREMENT,
-	post_id bigint NOT NULL,
-	link bigint NOT NULL,
-	PRIMARY KEY (id),
-	FOREIGN KEY (post_id) REFERENCES posts(id),
-	FOREIGN KEY (link) REFERENCES posts(id),
+CREATE TABLE links (
+	src bigint NOT NULL,
+	dest bigint NOT NULL,
+	PRIMARY KEY (src, dest),
+	FOREIGN KEY (src) REFERENCES posts(id),
+	FOREIGN KEY (dest) REFERENCES posts(id)
 );

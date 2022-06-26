@@ -80,6 +80,7 @@ pre {
   font-size: 10pt;
 	top: 50%;
 	right: 0;
+	border: 1px solid black;
 }
 
 .quotePost {
