@@ -16,6 +16,7 @@
 					<li class="navbar-item"><a class="nav-link" href="/admin/topics/">Topics</a></li>
 					<li class="navbar-item"><a class="nav-link" href="/admin/boards/">Boards</a></li>
 					<li class="navbar-item"><a class="nav-link" href="/admin/threads/">Threads</a></li>
+					<li class="navbar-item"><a class="nav-link" href="/admin/settings/">Settings</a></li>
 					<li class="navbar-item">
 							<form method="POST" action="/admin/logout/" class="nav-link">
 								<input type="hidden" name="logout" value="1">
