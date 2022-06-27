@@ -2,7 +2,7 @@
 <div class="navLinks navLinksBot">
 	<div>
 		[<a href="/boards/{{.board_code}}/" accesskey="a">Return</a>]
-		[<a href="/boards/{{.board_code}}/catalog/">Catalog</a>]
+		<!--[<a href="/boards/{{.board_code}}/catalog/">Catalog</a>]-->
 		[<a href="#top">Top</a>]
 	</div>
 	<div class="open-qr-wrap">

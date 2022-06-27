@@ -2,7 +2,7 @@
 <div class="navLinks">
 	<div>
 		[<a href="/boards/{{.board_code}}/" accesskey="a">Return</a>]
-		[<a href="/boards/{{.board_code}}/catalog/">Catalog</a>]
+		<!--[<a href="/boards/{{.board_code}}/catalog/">Catalog</a>]-->
 		[<a href="#bottom">Bottom</a>]
 	</div>
 	<div class="thread-stats">

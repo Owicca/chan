@@ -15,8 +15,8 @@
 			<a href="/boards/{{$.board_code}}/{{inc .page}}/">Next</a>
 		</div>
 	{{end}}
-	<div class="pages cataloglink">
+	<!--<div class="pages cataloglink">
 		<a href="/boards/{{.board_code}}/catalog/">Catalog</a>
-	</div>
+	</div>-->
 </div>
 {{end}}
