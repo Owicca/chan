@@ -1,5 +1,11 @@
 :root {
 	--danger: #dc3545;
+	--target: #ba9dbf;
+}
+
+body {
+	margin-top: 0px;
+	padding-top: 5px;
 }
 
 pre {
@@ -85,4 +91,9 @@ pre {
 
 .quotePost {
 	cursor: pointer;
+}
+
+.pagelist div.prev,
+.pagelist div.next {
+	padding: 4px;
 }

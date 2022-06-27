@@ -1,7 +1,7 @@
 {{define "front/post_one"}}
-<li id="p{{.post.ID}}">
+<li>
 	<div class="postContainer {{.type}}Container">
-		<div class="post {{.type}}">
+		<div id="p{{.post.ID}}" class="post {{.type}}">
 			<div class="postInfo">
 				<span class="nameBlock">
 					{{if .subject}}

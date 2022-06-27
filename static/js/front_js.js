@@ -1,10 +1,7 @@
 'use strict';
 (function() {
-  let toggleForm = document.querySelector("#togglePostFormLink > a");
-  toggleForm.addEventListener("click", (e) => {
-    document.getElementById("togglePostFormLink").classList.add("hidden");
-    document.getElementById("postForm").classList.remove("hidden");
-  });
+  document.querySelector("#togglePostFormLink > a").addEventListener("click", openPostForm);
+  document.querySelector(".open-qr-link").addEventListener("click", openPostForm);
 
   let thread = document.querySelector(".thread");
 
@@ -52,6 +49,10 @@
   });
 })();
 
+function openPostForm() {
+  document.getElementById("togglePostFormLink").classList.add("hidden");
+  document.getElementById("postForm").classList.remove("hidden");
+};
 
 function createLinkSpan(boardCode, pid) {
   let el = document.createElement("span");

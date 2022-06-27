@@ -2,8 +2,11 @@ package backend
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
+	"regexp"
+	"strconv"
 
 	"github.com/Owicca/chan/infra"
 	"github.com/Owicca/chan/models/boards"
@@ -24,6 +27,7 @@ func SettingList(w http.ResponseWriter, r *http.Request) {
 
 func LoadDummyData(w http.ResponseWriter, r *http.Request) {
 	infra.ClearDb(infra.S.Conn)
+	pidReg := regexp.MustCompile(`#p(\d{1,})`)
 
 	for id := 1; id <= 10; id++ {
 		newTopic := topics.Topic{
@@ -33,7 +37,7 @@ func LoadDummyData(w http.ResponseWriter, r *http.Request) {
 		topics.TopicOneCreate(infra.S.Conn, &newTopic)
 	}
 
-	bList := infra.LoadBoards("./boards.json")
+	bList := infra.LoadBoards("./log/boards.json")
 	bIdList := []int{}
 	for _, b := range bList {
 		if b.Ws_board == 0 {
@@ -50,9 +54,14 @@ func LoadDummyData(w http.ResponseWriter, r *http.Request) {
 		bIdList = append(bIdList, newBoard.ID)
 	}
 
-	pList := infra.LoadPosts("./posts.json")
-	for _, p := range pList {
-		//created_at, err := strconv.ParseInt(p.Now, 10, 64)
+	//pList := infra.LoadPosts("./log/posts.json")
+	pCh := infra.LoadThreads("./log/threads.json")
+	defer close(pCh)
+	for p := range pCh {
+		if p.No == 0 {
+			break
+		}
+		log.Println(p.No)
 		thread_id := p.Resto
 		if p.Resto == 0 {
 			boardIndex := rand.Intn(len(bIdList))
@@ -60,13 +69,13 @@ func LoadDummyData(w http.ResponseWriter, r *http.Request) {
 			thread_id = p.No
 			newThread := threads.Thread{
 				ID:       thread_id,
-				Subject:  fmt.Sprintf("%s (thread_%d)", p.Name, thread_id),
+				Subject:  fmt.Sprintf("Thread subject: %s (thread_%d)", p.Name, thread_id),
 				Board_id: bIdList[boardIndex],
 			}
 			threads.ThreadOneCreate(infra.S.Conn, &newThread)
 		}
 
-		var created_at int64 = 0
+		var created_at int64 = int64(p.Time)
 		newPost := posts.Post{
 			ID:         p.No,
 			Created_at: created_at,
@@ -75,7 +84,22 @@ func LoadDummyData(w http.ResponseWriter, r *http.Request) {
 			Content:    p.Com,
 		}
 		posts.PostOneCreate(infra.S.Conn, &newPost)
+
+		matches := pidReg.FindAllStringSubmatch(p.Com, -1)
+		for _, m := range matches {
+			if len(m) > 1 {
+				dest, _ := strconv.Atoi(m[1])
+				link := posts.Link{
+					Src:  p.No,
+					Dest: dest,
+				}
+
+				posts.LinkOneCreate(infra.S.Conn, &link)
+			}
+		}
 	}
+
+	log.Println("finished entering dummy data")
 
 	infra.S.Redirect(w, r, "/admin/settings/")
 }

@@ -38,7 +38,7 @@ func ThreadPreviewByCode(db *gorm.DB, board_code string, limit int, offset int) 
 	)
 
 	db.Raw("SELECT id FROM boards WHERE code = ?", board_code).Scan(&board_id)
-	stmt := db.Preload("Preview")
+	stmt := db.Preload("Preview").Preload("Preview.LinkList")
 	if limit > 0 {
 		stmt = stmt.Limit(limit)
 	}

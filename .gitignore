@@ -8,4 +8,4 @@
 /static/js/bootstrap.bundle.min.js
 
 # don't add config
-/*.json
+*.json

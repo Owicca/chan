@@ -54,6 +54,7 @@ func ClearDb(db *gorm.DB) {
 	tables := []string{
 		"pair_to_role",
 		"action_to_object",
+		"links",
 
 		"posts",
 		"threads",
