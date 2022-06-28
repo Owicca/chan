@@ -1,4 +1,7 @@
 {{define "back/thread_list"}}
+
+{{template "back/pagination" .}}
+
 <table class="table table-sm table-striped align-middle">
     <thead>
         <tr>
@@ -40,9 +43,12 @@
     </tr>
 {{else}}
     <tr>
-        <td colspan="4">No threads available!</td>
+        <td colspan="5">No threads available!</td>
     </tr>
 {{end}}
     </tbody>
 </table>
+
+{{template "back/pagination" .}}
+
 {{end}}

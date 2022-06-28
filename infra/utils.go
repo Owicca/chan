@@ -138,9 +138,9 @@ func GetStaticDir() string {
 func GeneratePagination(total int, limit int) (int, []any) {
 	pageCount := total / limit
 
-	if (total % 2) != 0 {
-		pageCount += 1
-	}
+	//if (total % limit) != 0 {
+	//	pageCount += 1
+	//}
 
 	pageHelper := make([]any, pageCount)
 	for idx, _ := range pageHelper {

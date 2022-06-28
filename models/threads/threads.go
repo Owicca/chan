@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	ThreadPageLimit = 2
+	ThreadPageLimit = 15
 )
 
 type Thread struct {
@@ -89,10 +89,29 @@ func ThreadList(db *gorm.DB) []Thread {
 	return threadList
 }
 
-func ThreadPreviewList(db *gorm.DB) []Thread {
+func ThreadPreviewListCount(db *gorm.DB) int {
+	var count int
+
+	db.Raw(`
+	SELECT COUNT(id) FROM threads
+	WHERE deleted_at = 0;
+	`).Scan(&count)
+
+	return count
+}
+
+func ThreadPreviewList(db *gorm.DB, limit int, offset int) []Thread {
 	var threadList []Thread
 
-	db.Preload("Preview").Find(&threadList)
+	stmt := db.Preload("Preview")
+	if limit > 0 {
+		stmt = stmt.Limit(limit)
+	}
+	if offset > 0 {
+		stmt = stmt.Offset(offset)
+	}
+
+	stmt.Find(&threadList)
 
 	return threadList
 }

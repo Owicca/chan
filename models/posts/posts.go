@@ -10,6 +10,10 @@ import (
 	"github.com/Owicca/chan/models/tripkeys"
 )
 
+const (
+	PostPageLimit = 15
+)
+
 type Post struct {
 	ID             int `gorm:"primaryKey;column:id"`
 	Created_at     int64

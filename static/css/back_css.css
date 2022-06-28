@@ -29,3 +29,7 @@ pre {
 .break {
 	flex-basis: 100%;
 }
+
+.pagination-cnt {
+	margin-bottom: 1rem;
+}
