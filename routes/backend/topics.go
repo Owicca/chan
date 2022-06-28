@@ -10,6 +10,7 @@ import (
 	"upspin.io/errors"
 
 	"github.com/Owicca/chan/infra"
+	"github.com/Owicca/chan/models/boards"
 	"github.com/Owicca/chan/models/logs"
 	"github.com/Owicca/chan/models/topics"
 )
@@ -26,6 +27,7 @@ func init() {
 	adminRouter.HandleFunc("/topics/{id:[0-9]+}/", TopicOneUpdate).Methods(http.MethodPost).Name("topic_one_post")
 
 	adminRouter.HandleFunc("/topics/{id:[0-9]+}/boards/", TopicOneBoardList).Methods(http.MethodGet).Name("topic_list_board_list")
+	adminRouter.HandleFunc("/topics/{id:[0-9]+}/boards/p{page:[0-9]+}/", TopicOneBoardList).Methods(http.MethodGet).Name("topic_list_board_list_page")
 }
 
 func TopicList(w http.ResponseWriter, r *http.Request) {
@@ -142,8 +144,19 @@ func TopicOneBoardList(w http.ResponseWriter, r *http.Request) {
 		}
 		topic_id = id
 	}
+	page_limit := infra.S.Data["page_limit"].(int)
+	page, _ := strconv.Atoi(vars["page"])
+	offset := page * page_limit
+	total := boards.BoardListCountOfTopic(infra.S.Conn, topic_id)
+	topic := topics.TopicOneWithBoardList(infra.S.Conn, topic_id, page_limit, offset)
+	pageCount, pageHelper := infra.GeneratePagination(total, page_limit)
+
 	data := map[string]any{
-		"topic": topics.TopicOneWithBoardList(infra.S.Conn, topic_id),
+		"topic":       topic,
+		"page_count":  pageCount,
+		"page_helper": pageHelper,
+		"page":        page,
+		"base_url":    fmt.Sprintf("/admin/topics/%d/boards/", topic_id),
 	}
 
 	infra.S.HTML(w, http.StatusOK, "back/topic_one_board_list", data)

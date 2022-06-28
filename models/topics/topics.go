@@ -64,10 +64,18 @@ func TopicOne(db *gorm.DB, id int) Topic {
 	return topic
 }
 
-func TopicOneWithBoardList(db *gorm.DB, id int) Topic {
+func TopicOneWithBoardList(db *gorm.DB, id int, limit int, offset int) Topic {
 	var topic Topic
 
-	db.Preload("BoardList.ThreadList").First(&topic, id)
+	db.Preload("BoardList.ThreadList", func(tx *gorm.DB) *gorm.DB {
+		if limit > 0 {
+			tx = tx.Limit(limit)
+		}
+		if offset > 0 {
+			tx = tx.Offset(offset)
+		}
+		return tx
+	}).First(&topic, id)
 
 	return topic
 }

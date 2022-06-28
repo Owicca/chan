@@ -1,7 +1,6 @@
 package backend
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/Owicca/chan/infra"
@@ -54,7 +53,6 @@ func ThreadList(w http.ResponseWriter, r *http.Request) {
 	totalThreads := threads.ThreadPreviewListCount(infra.S.Conn)
 	threads := threads.ThreadPreviewList(infra.S.Conn, threads.ThreadPageLimit, offset)
 	pageCount, pageHelper := infra.GeneratePagination(totalThreads, posts.PostPageLimit)
-	log.Println(page, offset, totalThreads, posts.PostPageLimit)
 
 	data := map[string]any{
 		"threads":     threads,

@@ -59,6 +59,17 @@ func BoardList(db *gorm.DB) []Board {
 	return boards
 }
 
+func BoardListCountOfTopic(db *gorm.DB, topic_id int) int {
+	var count int
+
+	db.Raw(`
+	SELECT COUNT(id) FROM boards
+	WHERE topic_id = ?
+	`, topic_id).Scan(&count)
+
+	return count
+}
+
 func BoardListCount(db *gorm.DB) int {
 	var count int
 

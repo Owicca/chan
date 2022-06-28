@@ -12,7 +12,7 @@ import (
 
 func init() {
 	adminRouter := infra.S.Router.PathPrefix("/admin").Subrouter()
-	adminRouter.HandleFunc("/", http.HandlerFunc(Index)).Methods(http.MethodGet).Name("back_index")
+	adminRouter.HandleFunc("/", Index).Methods(http.MethodGet).Name("back_index")
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
