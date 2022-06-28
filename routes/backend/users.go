@@ -20,6 +20,7 @@ import (
 func init() {
 	adminRouter := infra.S.Router.PathPrefix("/admin").Subrouter()
 	adminRouter.HandleFunc("/users/", UserList).Methods(http.MethodGet).Name("user_list")
+	adminRouter.HandleFunc("/users/p{page:[0-9]+}/", UserList).Methods(http.MethodGet).Name("user_list_page")
 	adminRouter.HandleFunc("/users/add/", UserCreateForm).Methods(http.MethodGet).Name("user_one_create")
 	adminRouter.HandleFunc("/users/", UserOneCreate).Methods(http.MethodPost).Name("user_one_create")
 	adminRouter.HandleFunc("/users/{user_id:[0-9]+}/", UserOne).Methods(http.MethodGet).Name("user_one")
@@ -28,8 +29,21 @@ func init() {
 
 func UserList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.UserList"
+	vars := mux.Vars(r)
+
+	page_limit := infra.S.Data["page_limit"].(int)
+	page, _ := strconv.Atoi(vars["page"])
+	offset := page * page_limit
+	totalUsers := users.UserListCount(infra.S.Conn)
+	users := users.UserList(infra.S.Conn, page_limit, offset)
+	pageCount, pageHelper := infra.GeneratePagination(totalUsers, page_limit)
+
 	data := map[string]any{
-		"users": users.UserList(infra.S.Conn),
+		"users":       users,
+		"page_count":  pageCount,
+		"page_helper": pageHelper,
+		"page":        page,
+		"base_url":    "/admin/users/",
 	}
 
 	infra.S.HTML(w, http.StatusOK, "back/user_list", data)

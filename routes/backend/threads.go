@@ -61,6 +61,7 @@ func ThreadList(w http.ResponseWriter, r *http.Request) {
 		"page_count":  pageCount,
 		"page_helper": pageHelper,
 		"page":        page,
+		"base_url":    "/admin/threads/",
 	}
 
 	infra.S.HTML(w, http.StatusOK, "back/thread_list", data)

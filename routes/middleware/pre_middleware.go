@@ -36,6 +36,7 @@ func LoadPreMd(srv *infra.Server) {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			LogRequest(w, r)
 			infra.S.Data["request"] = r
+			infra.S.Data["page_limit"] = 15
 			next.ServeHTTP(w, r)
 		})
 	})

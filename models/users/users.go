@@ -28,12 +28,31 @@ type User struct {
 	Role       acl.Role `gorm:"foreignKey:role_id;"`
 }
 
-func UserList(db *gorm.DB) []User {
-	userList := []User{}
+func UserList(db *gorm.DB, limit int, offset int) []User {
+	var userList []User
 
-	db.Preload("Role").Find(&userList)
+	stmt := db.Preload("Role")
+	if limit > 0 {
+		stmt = stmt.Limit(limit)
+	}
+	if offset > 0 {
+		stmt = stmt.Offset(offset)
+	}
+
+	stmt.Find(&userList)
 
 	return userList
+}
+
+func UserListCount(db *gorm.DB) int {
+	var count int
+
+	db.Raw(`
+	SELECT COUNT(id) FROM users
+	WHERE deleted_at = 0;
+	`).Scan(&count)
+
+	return count
 }
 
 func TotalActiveUsers(db *gorm.DB) int {

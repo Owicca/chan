@@ -1,5 +1,8 @@
 {{define "back/user_list"}}
 <a href="/admin/users/add/">Add new</a>
+
+{{template "back/pagination" .}}
+
 <table class="table table-sm table-stripped align-middle text-start">
 	<thead>
 		<tr>
@@ -28,4 +31,7 @@
 		{{end}}
 	</tbody>
 </table>
+
+{{template "back/pagination" .}}
+
 {{end}}
