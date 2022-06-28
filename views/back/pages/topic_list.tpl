@@ -1,5 +1,8 @@
 {{define "back/topic_list"}}
 <a href="/admin/topics/add/">Add new</a>
+
+{{template "back/pagination" .}}
+
 <table class="table table-sm table-striped align-middle">
 	<thead>
 		<tr>
@@ -47,4 +50,7 @@
 {{end}}
 	</tbody>
 </table>
+
+{{template "back/pagination" .}}
+
 {{end}}

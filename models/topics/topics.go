@@ -21,12 +21,31 @@ func TopicList(db *gorm.DB) []Topic {
 	return topicList
 }
 
-func TopicListWithBoardList(db *gorm.DB) []Topic {
+func TopicListWithBoardList(db *gorm.DB, limit int, offset int) []Topic {
 	var topicList []Topic
 
-	db.Preload("BoardList").Find(&topicList)
+	stmt := db.Preload("BoardList")
+	if limit > 0 {
+		stmt = stmt.Limit(limit)
+	}
+	if offset > 0 {
+		stmt = stmt.Offset(offset)
+	}
+
+	stmt.Find(&topicList)
 
 	return topicList
+}
+
+func TopicListCount(db *gorm.DB) int {
+	var count int
+
+	db.Raw(`
+	SELECT COUNT(id) FROM topics
+	WHERE deleted_at = 0;
+	`).Scan(&count)
+
+	return count
 }
 
 func TopicListWithBoardListWithThreadCount(db *gorm.DB) []Topic {

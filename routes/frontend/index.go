@@ -27,7 +27,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 Be sure to familiarize yourself with the Rules before posting, and read the FAQ if you wish to learn more about how to use the site.`,
 		},
-		"topic_list": topics.TopicListWithBoardList(infra.S.Conn),
+		"topic_list": topics.TopicListWithBoardList(infra.S.Conn, 0, 0),
 		"stats": map[string]any{
 			"total_posts":          posts.TotalActivePosts(infra.S.Conn),
 			"total_users":          users.TotalActiveUsers(infra.S.Conn),

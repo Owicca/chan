@@ -2,6 +2,7 @@ package backend
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -17,21 +18,38 @@ import (
 func init() {
 	adminRouter := infra.S.Router.PathPrefix("/admin").Subrouter()
 	adminRouter.HandleFunc("/topics/", TopicList).Methods(http.MethodGet).Name("topic_list")
+	adminRouter.HandleFunc("/topics/p{page:[0-9]+}/", TopicList).Methods(http.MethodGet).Name("topic_list_page")
 
-	adminRouter.HandleFunc("/topics/add/", http.HandlerFunc(TopicOneAdd)).Methods(http.MethodGet).Name("topic_one_add")
-	adminRouter.HandleFunc("/topics/", http.HandlerFunc(TopicOneCreate)).Methods(http.MethodPost).Name("topic_one_create")
+	adminRouter.HandleFunc("/topics/add/", TopicOneAdd).Methods(http.MethodGet).Name("topic_one_add")
+	adminRouter.HandleFunc("/topics/", TopicOneCreate).Methods(http.MethodPost).Name("topic_one_create")
 
-	adminRouter.HandleFunc("/topics/{id:[0-9]+}/", http.HandlerFunc(TopicOne)).Methods(http.MethodGet).Name("topic_one")
-	adminRouter.HandleFunc("/topics/{id:[0-9]+}/", http.HandlerFunc(TopicOneUpdate)).Methods(http.MethodPost).Name("topic_one_post")
+	adminRouter.HandleFunc("/topics/{id:[0-9]+}/", TopicOne).Methods(http.MethodGet).Name("topic_one")
+	adminRouter.HandleFunc("/topics/{id:[0-9]+}/", TopicOneUpdate).Methods(http.MethodPost).Name("topic_one_post")
 
 	adminRouter.HandleFunc("/topics/{id:[0-9]+}/boards/", TopicOneBoardList).Methods(http.MethodGet).Name("topic_list_board_list")
 }
 
 func TopicList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back/TopicList"
+	vars := mux.Vars(r)
+
+	page_limit := infra.S.Data["page_limit"].(int)
+	page, _ := strconv.Atoi(vars["page"])
+	offset := page * page_limit
+	total := topics.TopicListCount(infra.S.Conn)
+	topic_list := topics.TopicListWithBoardList(infra.S.Conn, page_limit, offset)
+	pageCount, pageHelper := infra.GeneratePagination(total, page_limit)
+
+	log.Println(total, len(topic_list))
+	log.Println(page, offset)
+	log.Println(pageCount, pageHelper)
 
 	data := map[string]any{
-		"topic_list": topics.TopicListWithBoardList(infra.S.Conn),
+		"topic_list":  topic_list,
+		"page_count":  pageCount,
+		"page_helper": pageHelper,
+		"page":        page,
+		"base_url":    "/admin/topics/",
 	}
 
 	infra.S.HTML(w, http.StatusOK, "back/topic_list", data)
