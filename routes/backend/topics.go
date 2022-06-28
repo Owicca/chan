@@ -2,7 +2,6 @@ package backend
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -39,10 +38,6 @@ func TopicList(w http.ResponseWriter, r *http.Request) {
 	total := topics.TopicListCount(infra.S.Conn)
 	topic_list := topics.TopicListWithBoardList(infra.S.Conn, page_limit, offset)
 	pageCount, pageHelper := infra.GeneratePagination(total, page_limit)
-
-	log.Println(total, len(topic_list))
-	log.Println(page, offset)
-	log.Println(pageCount, pageHelper)
 
 	data := map[string]any{
 		"topic_list":  topic_list,

@@ -18,22 +18,35 @@ import (
 
 func init() {
 	adminRouter := infra.S.Router.PathPrefix("/admin").Subrouter()
-	adminRouter.HandleFunc("/boards/", http.HandlerFunc(BoardList)).Methods(http.MethodGet).Name("board_list")
+	adminRouter.HandleFunc("/boards/", BoardList).Methods(http.MethodGet).Name("board_list")
+	adminRouter.HandleFunc("/boards/p{page:[0-9]+}/", BoardList).Methods(http.MethodGet).Name("board_list_page")
 
-	adminRouter.HandleFunc("/boards/add/", http.HandlerFunc(BoardOneAdd)).Methods(http.MethodGet).Name("board_one_add")
-	adminRouter.HandleFunc("/boards/", http.HandlerFunc(BoardOneCreate)).Methods(http.MethodPost).Name("board_one_create")
+	adminRouter.HandleFunc("/boards/add/", BoardOneAdd).Methods(http.MethodGet).Name("board_one_add")
+	adminRouter.HandleFunc("/boards/", BoardOneCreate).Methods(http.MethodPost).Name("board_one_create")
 
-	adminRouter.HandleFunc("/boards/{id:[0-9]+}/", http.HandlerFunc(BoardOne)).Methods(http.MethodGet).Name("board_one")
-	adminRouter.HandleFunc("/boards/{id:[0-9]+}/", http.HandlerFunc(BoardOneUpdate)).Methods(http.MethodPost).Name("board_one_update")
+	adminRouter.HandleFunc("/boards/{id:[0-9]+}/", BoardOne).Methods(http.MethodGet).Name("board_one")
+	adminRouter.HandleFunc("/boards/{id:[0-9]+}/", BoardOneUpdate).Methods(http.MethodPost).Name("board_one_update")
 
-	adminRouter.HandleFunc("/boards/{id:[0-9]+}/threads/", http.HandlerFunc(BoardListThreadList)).Methods(http.MethodGet).Name("board_list_thread_list")
+	adminRouter.HandleFunc("/boards/{id:[0-9]+}/threads/", BoardListThreadList).Methods(http.MethodGet).Name("board_list_thread_list")
 }
 
 func BoardList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.BoardList"
+	vars := mux.Vars(r)
+
+	page_limit := infra.S.Data["page_limit"].(int)
+	page, _ := strconv.Atoi(vars["page"])
+	offset := page * page_limit
+	total := boards.BoardListCount(infra.S.Conn)
+	board_list := boards.BoardListWithThreadCount(infra.S.Conn, page_limit, offset)
+	pageCount, pageHelper := infra.GeneratePagination(total, page_limit)
 
 	data := map[string]any{
-		"board_list": boards.BoardListWithThreadCount(infra.S.Conn),
+		"board_list":  board_list,
+		"page_count":  pageCount,
+		"page_helper": pageHelper,
+		"page":        page,
+		"base_url":    "/admin/boards/",
 	}
 
 	infra.S.HTML(w, http.StatusOK, "back/board_list", data)

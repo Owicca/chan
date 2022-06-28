@@ -23,14 +23,19 @@ type BoardWithThreadCount struct {
 	Thread_count int
 }
 
-func BoardListWithThreadCount(db *gorm.DB) []BoardWithThreadCount {
+func BoardListWithThreadCount(db *gorm.DB, limit int, offset int) []BoardWithThreadCount {
 	var boards []BoardWithThreadCount
 
-	db.Preload("MediaList", "object_type = 'boards'").Raw(`
-		SELECT b.*, COUNT(t.id) as thread_count FROM boards AS b
-		LEFT JOIN threads AS t ON t.board_id=b.id
-		GROUP BY b.id
-	`).Find(&boards)
+	stmt := db.Table("boards AS b").Select("b.*, COUNT(t.id) as thread_count").Joins("LEFT JOIN threads AS t ON t.board_id=b.id")
+	stmt = stmt.Where("b.deleted_at = 0").Group("b.id")
+	if limit > 0 {
+		stmt = stmt.Limit(limit)
+	}
+	if offset > 0 {
+		stmt = stmt.Offset(offset)
+	}
+
+	stmt.Find(&boards)
 
 	return boards
 }
@@ -52,6 +57,17 @@ func BoardList(db *gorm.DB) []Board {
 	db.Preload("MediaList", "object_type = 'boards'").Find(&boards)
 
 	return boards
+}
+
+func BoardListCount(db *gorm.DB) int {
+	var count int
+
+	db.Raw(`
+	SELECT COUNT(id) FROM boards
+	WHERE deleted_at = 0;
+	`).Scan(&count)
+
+	return count
 }
 
 func BoardOne(db *gorm.DB, id int) Board {
