@@ -1,6 +1,6 @@
 {{define "back/nav"}}
 <nav class="container-sm navbar navbar-light bg-light fixed-top">
-	<a href="/admin/" class="navbar-brand">Chan</a>
+	<a href="/admin/" class="navbar-brand">Imageboard</a>
 	<button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
 		<span class="navbar-toggler-icon"></span>
 	</button>
