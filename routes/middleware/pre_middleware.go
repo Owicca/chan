@@ -3,12 +3,10 @@ package middleware
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/Owicca/chan/infra"
-	"github.com/Owicca/chan/models/sessions"
 
 	"go.uber.org/zap"
 )
@@ -53,25 +51,25 @@ func LoadPreMd(srv *infra.Server) {
 
 	srv.Router.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if _, ok := srv.Data["user"]; !ok {
-				urlPath := r.URL.Path
-				for _, url := range sessions.PublicUrl {
-					if url == urlPath {
-						next.ServeHTTP(w, r)
-						return
-					}
-				}
-				infra.S.Redirect(w, r, "/admin/login/")
-				return
-			}
+			//if _, ok := srv.Data["user"]; !ok {
+			//	urlPath := r.URL.Path
+			//	for _, url := range sessions.PublicUrl {
+			//		if url == urlPath {
+			//			next.ServeHTTP(w, r)
+			//			return
+			//		}
+			//	}
+			//	infra.S.Redirect(w, r, "/admin/login/")
+			//	return
+			//}
 
-			user_id := srv.Data["user"].(map[string]any)["ID"]
+			//user_id := srv.Data["user"].(map[string]any)["ID"]
 
-			session, _ := srv.SessionStore.Get(r, strconv.Itoa(user_id.(int)))
-			flashList := session.Flashes()
-			if len(flashList) > 0 {
-				srv.Data["flash_list"] = flashList
-			}
+			//session, _ := srv.SessionStore.Get(r, strconv.Itoa(user_id.(int)))
+			//flashList := session.Flashes()
+			//if len(flashList) > 0 {
+			//	srv.Data["flash_list"] = flashList
+			//}
 			next.ServeHTTP(w, r)
 		})
 	})
