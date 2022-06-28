@@ -1,4 +1,7 @@
 {{define "back/board_list_thread_list"}}
+
+{{template "back/pagination" .}}
+
 <table class="table table-sm table-striped align-middle">
     <thead>
         <tr>
@@ -41,4 +44,7 @@
 {{end}}
     </tbody>
 </table>
+
+{{template "back/pagination" .}}
+
 {{end}}

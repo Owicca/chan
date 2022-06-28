@@ -73,10 +73,29 @@ func BoardThreadList(db *gorm.DB, board_id int) []Thread {
 	return threadList
 }
 
-func BoardThreadPreviewList(db *gorm.DB, board_id int) []Thread {
+func ThreadListCountOfBoard(db *gorm.DB, board_id int) int {
+	var count int
+
+	db.Raw(`
+	SELECT COUNT(id) FROM threads
+	WHERE board_id = ?
+	`, board_id).Scan(&count)
+
+	return count
+}
+
+func BoardThreadPreviewList(db *gorm.DB, board_id int, limit int, offset int) []Thread {
 	var threadList []Thread
 
-	db.Preload("Preview").Find(&threadList, "board_id = ?", board_id)
+	stmt := db.Preload("Preview")
+	if limit > 0 {
+		stmt = stmt.Limit(limit)
+	}
+	if offset > 0 {
+		stmt = stmt.Offset(offset)
+	}
+
+	stmt.Find(&threadList, "board_id = ?", board_id)
 
 	return threadList
 }

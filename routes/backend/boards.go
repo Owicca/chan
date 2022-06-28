@@ -28,6 +28,7 @@ func init() {
 	adminRouter.HandleFunc("/boards/{id:[0-9]+}/", BoardOneUpdate).Methods(http.MethodPost).Name("board_one_update")
 
 	adminRouter.HandleFunc("/boards/{id:[0-9]+}/threads/", BoardListThreadList).Methods(http.MethodGet).Name("board_list_thread_list")
+	adminRouter.HandleFunc("/boards/{id:[0-9]+}/threads/p{page:[0-9]+}/", BoardListThreadList).Methods(http.MethodGet).Name("board_list_thread_list_page")
 }
 
 func BoardList(w http.ResponseWriter, r *http.Request) {
@@ -63,8 +64,19 @@ func BoardListThreadList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	page_limit := infra.S.Data["page_limit"].(int)
+	page, _ := strconv.Atoi(vars["page"])
+	offset := page * page_limit
+	total := threads.ThreadListCountOfBoard(infra.S.Conn, board_id)
+	thread_list := threads.BoardThreadPreviewList(infra.S.Conn, board_id, page_limit, offset)
+	pageCount, pageHelper := infra.GeneratePagination(total, page_limit)
+
 	data := map[string]any{
-		"thread_list": threads.BoardThreadPreviewList(infra.S.Conn, board_id),
+		"thread_list": thread_list,
+		"page_count":  pageCount,
+		"page_helper": pageHelper,
+		"page":        page,
+		"base_url":    fmt.Sprintf("/admin/boards/%d/threads/", board_id),
 	}
 
 	infra.S.HTML(w, http.StatusOK, "back/board_list_thread_list", data)
