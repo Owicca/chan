@@ -65,6 +65,17 @@ func PostList(db *gorm.DB) []Post {
 	return postList
 }
 
+func PostListCountOfThread(db *gorm.DB, thread_id int) int {
+	var count int
+
+	db.Raw(`
+	SELECT COUNT(id) FROM posts
+	WHERE thread_id = ?
+	`, thread_id).Scan(&count)
+
+	return count
+}
+
 func PostOne(db *gorm.DB, id int) Post {
 	var post Post
 

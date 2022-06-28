@@ -16,8 +16,9 @@ import (
 func init() {
 	adminRouter := infra.S.Router.PathPrefix("/admin/").Subrouter()
 	adminRouter.HandleFunc("/threads/{thread_id:[0-9]+}/posts/", ThreadPostList).Methods(http.MethodGet).Name("post_list")
-	adminRouter.HandleFunc("/posts/{post_id:[0-9]+}/", http.HandlerFunc(PostOne)).Methods(http.MethodGet).Name("post_one")
-	adminRouter.HandleFunc("/posts/{post_id:[0-9]+}/", http.HandlerFunc(PostOneDelete)).Methods(http.MethodPost).Name("post_one_delete")
+	adminRouter.HandleFunc("/threads/{thread_id:[0-9]+}/posts/p{page:[0-9]+}/", ThreadPostList).Methods(http.MethodGet).Name("post_list_page")
+	adminRouter.HandleFunc("/posts/{post_id:[0-9]+}/", PostOne).Methods(http.MethodGet).Name("post_one")
+	adminRouter.HandleFunc("/posts/{post_id:[0-9]+}/", PostOneDelete).Methods(http.MethodPost).Name("post_one_delete")
 }
 
 func ThreadPostList(w http.ResponseWriter, r *http.Request) {
@@ -30,9 +31,20 @@ func ThreadPostList(w http.ResponseWriter, r *http.Request) {
 		infra.S.Redirect(w, r, "/admin/threads/")
 		return
 	}
+	page_limit := infra.S.Data["page_limit"].(int)
+	page, _ := strconv.Atoi(vars["page"])
+	offset := page * page_limit
+	total := posts.PostListCountOfThread(infra.S.Conn, thread_id)
+	post_list := posts.ThreadPostList(infra.S.Conn, thread_id, page_limit, offset)
+	pageCount, pageHelper := infra.GeneratePagination(total, page_limit)
+
 	data := map[string]any{
-		"posts":          posts.ThreadPostList(infra.S.Conn, thread_id, 0, 0),
+		"posts":          post_list,
 		"postStatusList": posts.PostStatusList(),
+		"page_count":     pageCount,
+		"page_helper":    pageHelper,
+		"page":           page,
+		"base_url":       fmt.Sprintf("/admin/threads/%d/posts/", thread_id),
 	}
 
 	infra.S.HTML(w, http.StatusOK, "back/post_list", data)
