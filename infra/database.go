@@ -9,6 +9,10 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	DefaultDbName = "imageboard"
+)
+
 func GetDbConn(DbHost string, DbPort string, DbName string, DbUser string, DbPassword string) (*gorm.DB, error) {
 	connectionString := GetConnString("mysql", DbHost, DbPort, DbName, DbUser, DbPassword)
 	dialector := GetDialector("mysql", connectionString)
@@ -20,7 +24,7 @@ func GetDbConn(DbHost string, DbPort string, DbName string, DbUser string, DbPas
 	var tableList []string
 	conn.Raw("SHOW TABLES LIKE 'posts'").Scan(&tableList)
 	if len(tableList) == 0 {
-		PopulateDb(conn)
+		CreateDbSchema(conn)
 	}
 
 	return conn, nil
@@ -40,14 +44,18 @@ func GetConnString(db string, DbHost string, DbPort string, DbName string, DbUse
 			DbHost, DbPort, DbName, DbUser, DbPassword)
 	}
 
-	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?multiStatements=true",
 		DbUser, DbPassword, DbHost, DbPort, DbName)
 }
 
-func PopulateDb(db *gorm.DB) {
+func CreateDbSchema(db *gorm.DB) {
 	data, _ := os.ReadFile("./db_schema.my.sql")
 
-	db.Exec(string(data))
+	_ = db.Exec(string(data))
+}
+
+func DeleteDb(db *gorm.DB) {
+	db.Exec("DROP DATABASE " + DefaultDbName)
 }
 
 func ClearDb(db *gorm.DB) {
