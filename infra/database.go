@@ -60,20 +60,20 @@ func DeleteDb(db *gorm.DB) {
 
 func ClearDb(db *gorm.DB) {
 	tables := []string{
-		"pair_to_role",
-		"action_to_object",
+		//"pair_to_role",
+		//"action_to_object",
 		"links",
 
 		"posts",
 		"threads",
 		"boards",
 		"topics",
-		"users",
+		//"users",
 
-		"roles",
+		//"roles",
 		"log_actions",
-		"objects",
-		"actions",
+		//"objects",
+		//"actions",
 		"media",
 	}
 
