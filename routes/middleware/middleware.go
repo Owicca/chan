@@ -45,6 +45,11 @@ func LoadMd(srv *infra.Server) {
 
 	srv.Router.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if !strings.HasPrefix(r.URL.Path, "/admin") {
+				next.ServeHTTP(w, r)
+				return
+			}
+
 			session, _ := srv.SessionStore.Get(r, srv.Config.Sessions.Key)
 			//log.Printf("read %+v\n", session)
 			if session.IsNew {
