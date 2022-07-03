@@ -20,6 +20,7 @@ import (
 
 	"github.com/Owicca/chan/models/acl"
 	"github.com/Owicca/chan/models/logs"
+	msessions "github.com/Owicca/chan/models/sessions"
 	"github.com/Owicca/chan/models/utils"
 
 	"go.uber.org/zap"
@@ -52,6 +53,7 @@ func init() {
 type Server struct {
 	mux.Router
 	SessionStore *sessions.CookieStore
+	Session      *sessions.Session
 	Config       Config
 	Conn         *gorm.DB
 	Template     *Template
@@ -86,20 +88,35 @@ func (s *Server) Addr() string {
 }
 
 // Server JSON response.
-func (s *Server) JSON(w http.ResponseWriter, status int, data map[string]any) error {
+func (s *Server) JSON(w http.ResponseWriter, r *http.Request, status int, data map[string]any) error {
+	const op errors.Op = "server.JSON"
+
 	if data != nil {
 		data = MergeMaps(s.Data, data)
 	}
 	w.Header().Set("Content-Type", "application/json")
 	if data != nil {
 		json.NewEncoder(w).Encode(data)
+
+		if S.Session != nil {
+			session := S.Session
+			//log.Printf("end => %+v\n", session)
+			user_id_str, ok := session.Values["user_id"]
+
+			if err := session.Save(r, w); err != nil {
+				logs.LogErr(op, errors.Errorf("Could not save post session on JSON (%s)!", err))
+			} else if ok {
+				msessions.Update(S.Conn, user_id_str.(int), S.Data)
+			}
+		}
+
 		return nil
 	}
 	return fmt.Errorf("No data to return")
 }
 
 // Serve a media file.
-func (s *Server) MEDIA(w http.ResponseWriter, status int, media []byte, mediaType string) {
+func (s *Server) MEDIA(w http.ResponseWriter, r *http.Request, status int, media []byte, mediaType string) {
 	w.Header().Set("Content-Type", mediaType)
 	w.Header().Set("Cache-Control", "max-age=31536000")
 	w.WriteHeader(status)
@@ -107,24 +124,42 @@ func (s *Server) MEDIA(w http.ResponseWriter, status int, media []byte, mediaTyp
 }
 
 // Server a HTML response.
-func (s *Server) HTML(w http.ResponseWriter, status int, htmlView string, data map[string]any) error {
+func (s *Server) HTML(w http.ResponseWriter, r *http.Request, status int, htmlView string, data map[string]any) error {
 	const op errors.Op = "server.HTML"
 	if data != nil {
 		data = MergeMaps(data, s.Data)
 	}
 
-	if r, ok := data["request"]; ok {
-		req := r.(*http.Request)
-		session, _ := S.SessionStore.Get(req, S.Config.Sessions.Key)
-		if err := session.Save(req, w); err != nil {
-			logs.LogErr(op, errors.Errorf("Could not save post session (%s)!", err))
+	if S.Session != nil {
+		session := S.Session
+		//log.Printf("end => %+v\n", session)
+		user_id_str, ok := session.Values["user_id"]
+
+		if err := session.Save(r, w); err != nil {
+			logs.LogErr(op, errors.Errorf("Could not save post session on HTML (%s)!", err))
+		} else if ok {
+			msessions.Update(S.Conn, user_id_str.(int), S.Data)
 		}
 	}
 
-	return s.Template.Render(w, status, htmlView, data)
+	return s.Template.Render(w, r, status, htmlView, data)
 }
 
 func (s *Server) Redirect(w http.ResponseWriter, r *http.Request, dst string) {
+	const op errors.Op = "server.Redirect"
+
+	if S.Session != nil {
+		session := S.Session
+		//log.Printf("end => %+v\n", session)
+		user_id_str, ok := session.Values["user_id"]
+
+		if err := session.Save(r, w); err != nil {
+			logs.LogErr(op, errors.Errorf("Could not save post session on redirect (%s)!", err))
+		} else if ok {
+			msessions.Update(S.Conn, user_id_str.(int), S.Data)
+		}
+	}
+
 	http.Redirect(w, r, dst, http.StatusSeeOther)
 }
 

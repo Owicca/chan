@@ -31,7 +31,7 @@ func UserList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.UserList"
 	vars := mux.Vars(r)
 
-	page_limit := infra.S.Data["page_limit"].(int)
+	page_limit := int(infra.S.Data["page_limit"].(float64))
 	page, _ := strconv.Atoi(vars["page"])
 	offset := page * page_limit
 	totalUsers := users.UserListCount(infra.S.Conn)
@@ -46,7 +46,7 @@ func UserList(w http.ResponseWriter, r *http.Request) {
 		"base_url":    "/admin/users/",
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/user_list", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/user_list", data)
 }
 
 func UserOne(w http.ResponseWriter, r *http.Request) {
@@ -56,7 +56,7 @@ func UserOne(w http.ResponseWriter, r *http.Request) {
 	user_id, err := strconv.Atoi(vars["user_id"])
 	if err != nil || user_id < 1 {
 		logs.LogWarn(op, errors.Str("No user_id provided!"))
-		infra.S.HTML(w, http.StatusOK, "back/user", nil)
+		infra.S.HTML(w, r, http.StatusOK, "back/user", nil)
 		return
 	}
 
@@ -66,7 +66,7 @@ func UserOne(w http.ResponseWriter, r *http.Request) {
 		"statusList": users.UserStatusList(),
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/user", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/user", data)
 }
 
 func UserCreateForm(w http.ResponseWriter, r *http.Request) {
@@ -78,7 +78,7 @@ func UserCreateForm(w http.ResponseWriter, r *http.Request) {
 		"board_list":       boards.BoardList(infra.S.Conn),
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/user_create_form", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/user_create_form", data)
 }
 
 func UserOneCreate(w http.ResponseWriter, r *http.Request) {

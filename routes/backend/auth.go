@@ -5,6 +5,7 @@ import (
 
 	"github.com/Owicca/chan/infra"
 	"github.com/Owicca/chan/models/logs"
+	msessions "github.com/Owicca/chan/models/sessions"
 	"github.com/Owicca/chan/models/users"
 	"github.com/fatih/structs"
 	"github.com/gorilla/mux"
@@ -26,7 +27,7 @@ func init() {
 
 func LoginForm(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.Login"
-	infra.S.HTML(w, http.StatusOK, "back/login", nil)
+	infra.S.HTML(w, r, http.StatusOK, "back/login", nil)
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -57,18 +58,31 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		MaxAge:   SessionMaxAge,
 		HttpOnly: true,
 	}
+	session.Values["user_id"] = user.ID
+	infra.S.Session = session
+
 	infra.S.Data["user"] = structs.Map(user)
+
+	if err := session.Save(r, w); err != nil {
+		logs.LogErr(op, errors.Errorf("Could not save post session at login (%s)!", err))
+	} else {
+		msessions.Update(infra.S.Conn, user.ID, infra.S.Data)
+	}
 
 	infra.S.Redirect(w, r, "/admin/")
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "auth.Logout"
-	session, _ := infra.S.SessionStore.Get(r, infra.S.Config.Sessions.Key)
 
-	delete(session.Values, "user")
-	if err := session.Save(r, w); err != nil {
-		logs.LogErr(op, errors.Errorf("Could not save session on logout (%s)!", err))
+	user_id := infra.S.Session.Values["user_id"].(int)
+	msessions.Delete(infra.S.Conn, user_id)
+	infra.S.Session.Options.MaxAge = -1
+
+	if err := infra.S.Session.Save(r, w); err != nil {
+		logs.LogErr(op, errors.Errorf("Could not save post session at logout (%s)!", err))
+	} else {
+		msessions.Update(infra.S.Conn, user_id, infra.S.Data)
 	}
 
 	infra.S.Redirect(w, r, "/admin/login/")

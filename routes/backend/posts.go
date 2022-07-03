@@ -31,7 +31,7 @@ func ThreadPostList(w http.ResponseWriter, r *http.Request) {
 		infra.S.Redirect(w, r, "/admin/threads/")
 		return
 	}
-	page_limit := infra.S.Data["page_limit"].(int)
+	page_limit := int(infra.S.Data["page_limit"].(float64))
 	page, _ := strconv.Atoi(vars["page"])
 	offset := page * page_limit
 	total := posts.PostListCountOfThread(infra.S.Conn, thread_id)
@@ -47,7 +47,7 @@ func ThreadPostList(w http.ResponseWriter, r *http.Request) {
 		"base_url":       fmt.Sprintf("/admin/threads/%d/posts/", thread_id),
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/post_list", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/post_list", data)
 }
 
 func PostOne(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +64,7 @@ func PostOne(w http.ResponseWriter, r *http.Request) {
 		"post": posts.PostOne(infra.S.Conn, post_id),
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/post_one", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/post_one", data)
 }
 
 func PostOneDelete(w http.ResponseWriter, r *http.Request) {

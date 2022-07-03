@@ -155,5 +155,5 @@ func PostList(w http.ResponseWriter, r *http.Request) {
 		"thread_id":  vars["thread_id"],
 	}
 
-	infra.S.HTML(w, http.StatusOK, "front/post_list", data)
+	infra.S.HTML(w, r, http.StatusOK, "front/post_list", data)
 }

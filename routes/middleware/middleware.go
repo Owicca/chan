@@ -1,29 +1,32 @@
 package middleware
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/Owicca/chan/infra"
+	"github.com/Owicca/chan/models/sessions"
 
 	"go.uber.org/zap"
 )
 
 func init() {
-	LoadPreMd(infra.S)
+	LoadMd(infra.S)
 }
 
 // Load middlewares
-func LoadPreMd(srv *infra.Server) {
+func LoadMd(srv *infra.Server) {
 	srv.Router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		LogRequest(w, r)
 		template404Path := "front/404"
 		if strings.HasPrefix(r.URL.Path, "/admin") {
 			template404Path = "back/404"
 		}
-		srv.HTML(w, http.StatusNotFound, template404Path, nil)
+		srv.HTML(w, r, http.StatusNotFound, template404Path, nil)
 		return
 	})
 	srv.Router.Use(setCSPHeader)
@@ -35,7 +38,6 @@ func LoadPreMd(srv *infra.Server) {
 	srv.Router.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			LogRequest(w, r)
-			infra.S.Data["request"] = r
 			infra.S.Data["page_limit"] = 15
 			next.ServeHTTP(w, r)
 		})
@@ -43,34 +45,42 @@ func LoadPreMd(srv *infra.Server) {
 
 	srv.Router.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			session, _ := infra.S.SessionStore.Get(r, infra.S.Config.Sessions.Key)
-			//log.Println("get session pre", session.Values["user"])
-			infra.S.Data = infra.MergeMapsInterface(infra.S.Data, session.Values)
+			session, _ := srv.SessionStore.Get(r, srv.Config.Sessions.Key)
+			//log.Printf("read %+v\n", session)
+			if session.IsNew {
+				urlPath := r.URL.Path
+				for _, url := range sessions.PublicUrl {
+					if url == urlPath {
+						//log.Println("is public")
+						next.ServeHTTP(w, r)
+						return
+					}
+				}
+				//log.Println("not logged")
+				infra.S.Redirect(w, r, "/admin/login/")
+				return
+			}
+
+			srv.Session = session
+			user_id, _ := session.Values["user_id"].(int)
+			ses := sessions.Get(srv.Conn, user_id)
+
+			if err := json.Unmarshal([]byte(ses.Data), &srv.Data); err != nil {
+				log.Fatalf("err while unmarshaling db session data (%s)", err)
+			}
+
 			next.ServeHTTP(w, r)
 		})
 	})
 
 	srv.Router.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			//if _, ok := srv.Data["user"]; !ok {
-			//	urlPath := r.URL.Path
-			//	for _, url := range sessions.PublicUrl {
-			//		if url == urlPath {
-			//			next.ServeHTTP(w, r)
-			//			return
-			//		}
-			//	}
-			//	infra.S.Redirect(w, r, "/admin/login/")
-			//	return
-			//}
-
-			//user_id := srv.Data["user"].(map[string]any)["ID"]
-
-			//session, _ := srv.SessionStore.Get(r, strconv.Itoa(user_id.(int)))
-			//flashList := session.Flashes()
-			//if len(flashList) > 0 {
-			//	srv.Data["flash_list"] = flashList
-			//}
+			if srv.Session != nil {
+				flashList := srv.Session.Flashes()
+				if len(flashList) > 0 {
+					srv.Data["flash_list"] = flashList
+				}
+			}
 			next.ServeHTTP(w, r)
 		})
 	})

@@ -22,7 +22,7 @@ func init() {
 }
 
 func SettingList(w http.ResponseWriter, r *http.Request) {
-	infra.S.HTML(w, http.StatusOK, "back/setting_list", nil)
+	infra.S.HTML(w, r, http.StatusOK, "back/setting_list", nil)
 }
 
 func LoadDummyData(w http.ResponseWriter, r *http.Request) {

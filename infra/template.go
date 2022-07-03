@@ -10,6 +10,7 @@ import (
 	stdtemplate "html/template"
 
 	"github.com/Owicca/chan/models/boards"
+	"upspin.io/errors"
 	// customtemplate "github.com/alecthomas/template"
 	// blackfriday "gopkg.in/russross/blackfriday.v2"
 )
@@ -64,7 +65,8 @@ func (t *Template) JSEscapeString(s string) string {
 	return customtemplate.JSEscapeString(s)
 }
 
-func (t *Template) Render(w http.ResponseWriter, status int, name string, data map[string]any) error {
+func (t *Template) Render(w http.ResponseWriter, r *http.Request, status int, name string, data map[string]any) error {
+	const op errors.Op = "infra.Render"
 	w.WriteHeader(status)
 
 	// add data to main template

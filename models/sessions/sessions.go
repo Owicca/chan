@@ -1,11 +1,14 @@
 package sessions
 
 import (
+	"encoding/json"
+	"log"
 	"math/rand"
 	"time"
 
 	"github.com/Owicca/chan/models/logs"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 	"upspin.io/errors"
 )
 
@@ -31,6 +34,11 @@ var (
 	}
 	seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 )
+
+type Session struct {
+	ID   int `gorm:"primaryKey;column:id"`
+	Data string
+}
 
 func GeneratePassword(password string, pepper string) string {
 	const op errors.Op = "sessions.GeneratePassword"
@@ -60,4 +68,29 @@ func StringWithCharset(length int, charset string) string {
 
 func GeneratePepper(length int) string {
 	return StringWithCharset(length, charset)
+}
+
+func Get(db *gorm.DB, session_id int) Session {
+	var session Session
+
+	db.First(&session, session_id)
+
+	return session
+}
+
+func Update(db *gorm.DB, session_id int, data map[string]any) {
+	d := []byte{}
+
+	d, err := json.Marshal(data)
+	if err != nil {
+		log.Fatalf("err while unmarshaling (%s)", err)
+	}
+
+	db.Exec(`
+		REPLACE INTO sessions VALUES(?,?)
+	`, session_id, d)
+}
+
+func Delete(db *gorm.DB, session_id int) {
+	db.Delete(&Session{}, session_id)
 }

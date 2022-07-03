@@ -34,7 +34,7 @@ func TopicList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back/TopicList"
 	vars := mux.Vars(r)
 
-	page_limit := infra.S.Data["page_limit"].(int)
+	page_limit := int(infra.S.Data["page_limit"].(float64))
 	page, _ := strconv.Atoi(vars["page"])
 	offset := page * page_limit
 	total := topics.TopicListCount(infra.S.Conn)
@@ -49,7 +49,7 @@ func TopicList(w http.ResponseWriter, r *http.Request) {
 		"base_url":    "/admin/topics/",
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/topic_list", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/topic_list", data)
 }
 
 func TopicOneAdd(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +59,7 @@ func TopicOneAdd(w http.ResponseWriter, r *http.Request) {
 		"topic": topics.Topic{},
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/topic_one", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/topic_one", data)
 }
 
 func TopicOne(w http.ResponseWriter, r *http.Request) {
@@ -69,7 +69,7 @@ func TopicOne(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil || id < 1 {
 		logs.LogWarn(op, errors.Str("No id provided!"))
-		infra.S.HTML(w, http.StatusOK, "back/board_one", nil)
+		infra.S.HTML(w, r, http.StatusOK, "back/board_one", nil)
 		return
 	}
 
@@ -77,7 +77,7 @@ func TopicOne(w http.ResponseWriter, r *http.Request) {
 		"topic": topics.TopicOne(infra.S.Conn, id),
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/topic_one", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/topic_one", data)
 }
 
 func TopicOneUpdate(w http.ResponseWriter, r *http.Request) {
@@ -159,5 +159,5 @@ func TopicOneBoardList(w http.ResponseWriter, r *http.Request) {
 		"base_url":    fmt.Sprintf("/admin/topics/%d/boards/", topic_id),
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/topic_one_board_list", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/topic_one_board_list", data)
 }

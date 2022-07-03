@@ -35,7 +35,7 @@ func BoardList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.BoardList"
 	vars := mux.Vars(r)
 
-	page_limit := infra.S.Data["page_limit"].(int)
+	page_limit := int(infra.S.Data["page_limit"].(float64))
 	page, _ := strconv.Atoi(vars["page"])
 	offset := page * page_limit
 	total := boards.BoardListCount(infra.S.Conn)
@@ -50,7 +50,7 @@ func BoardList(w http.ResponseWriter, r *http.Request) {
 		"base_url":    "/admin/boards/",
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/board_list", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/board_list", data)
 }
 
 func BoardListThreadList(w http.ResponseWriter, r *http.Request) {
@@ -60,11 +60,11 @@ func BoardListThreadList(w http.ResponseWriter, r *http.Request) {
 	board_id, err := strconv.Atoi(vars["id"])
 	if err != nil || board_id < 1 {
 		logs.LogWarn(op, errors.Str("No id provided!"))
-		infra.S.HTML(w, http.StatusOK, "back/board_list", nil)
+		infra.S.HTML(w, r, http.StatusOK, "back/board_list", nil)
 		return
 	}
 
-	page_limit := infra.S.Data["page_limit"].(int)
+	page_limit := int(infra.S.Data["page_limit"].(float64))
 	page, _ := strconv.Atoi(vars["page"])
 	offset := page * page_limit
 	total := threads.ThreadListCountOfBoard(infra.S.Conn, board_id)
@@ -79,7 +79,7 @@ func BoardListThreadList(w http.ResponseWriter, r *http.Request) {
 		"base_url":    fmt.Sprintf("/admin/boards/%d/threads/", board_id),
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/board_list_thread_list", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/board_list_thread_list", data)
 }
 
 func BoardOneAdd(w http.ResponseWriter, r *http.Request) {
@@ -90,7 +90,7 @@ func BoardOneAdd(w http.ResponseWriter, r *http.Request) {
 		"topic_list": topics.TopicList(infra.S.Conn),
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/board_one", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/board_one", data)
 }
 
 func BoardOne(w http.ResponseWriter, r *http.Request) {
@@ -110,7 +110,7 @@ func BoardOne(w http.ResponseWriter, r *http.Request) {
 		"topic_list": topics.TopicList(infra.S.Conn),
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/board_one", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/board_one", data)
 }
 
 func BoardOneUpdate(w http.ResponseWriter, r *http.Request) {

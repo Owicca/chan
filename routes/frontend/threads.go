@@ -143,5 +143,5 @@ func ThreadList(w http.ResponseWriter, r *http.Request) {
 		"page":        offset,
 	}
 
-	infra.S.HTML(w, http.StatusOK, "front/thread_list", data)
+	infra.S.HTML(w, r, http.StatusOK, "front/thread_list", data)
 }

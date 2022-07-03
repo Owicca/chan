@@ -41,13 +41,14 @@ func BoardThreadList(w http.ResponseWriter, r *http.Request) {
 		"threads": threads.ThreadList(infra.S.Conn),
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/thread_list", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/thread_list", data)
 }
 
 func ThreadList(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.ThreadList"
 	vars := mux.Vars(r)
 
+	//page_limit := int(infra.S.Data["page_limit"].(float64))
 	page, _ := strconv.Atoi(vars["page"])
 	offset := page * posts.PostPageLimit
 	totalThreads := threads.ThreadPreviewListCount(infra.S.Conn)
@@ -62,7 +63,7 @@ func ThreadList(w http.ResponseWriter, r *http.Request) {
 		"base_url":    "/admin/threads/",
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/thread_list", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/thread_list", data)
 }
 
 func ThreadOne(w http.ResponseWriter, r *http.Request) {
@@ -81,28 +82,28 @@ func ThreadOne(w http.ResponseWriter, r *http.Request) {
 		"boardList": boards.BoardList(infra.S.Conn),
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/thread_one", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/thread_one", data)
 }
 
 func ThreadOneUpdate(w http.ResponseWriter, r *http.Request) {
 	const op errors.Op = "back.ThreadOneUpdate"
 	if err := r.ParseForm(); err != nil {
 		logs.LogErr(op, err)
-		infra.S.HTML(w, http.StatusOK, "back/thread_one", nil)
+		infra.S.HTML(w, r, http.StatusOK, "back/thread_one", nil)
 		return
 	}
 
 	thread_id, err := strconv.Atoi(r.PostFormValue("thread_id"))
 	if err != nil || thread_id < 1 {
 		logs.LogWarn(op, errors.Str("No thread_id provided!"))
-		infra.S.HTML(w, http.StatusOK, "back/thread_one", nil)
+		infra.S.HTML(w, r, http.StatusOK, "back/thread_one", nil)
 		return
 	}
 
 	board_id, err := strconv.Atoi(r.PostFormValue("board_id"))
 	if err != nil || board_id < 1 {
 		logs.LogWarn(op, errors.Str("No board_id provided!"))
-		infra.S.HTML(w, http.StatusOK, "back/thread_one", nil)
+		infra.S.HTML(w, r, http.StatusOK, "back/thread_one", nil)
 		return
 	}
 
@@ -124,5 +125,5 @@ func ThreadOneUpdate(w http.ResponseWriter, r *http.Request) {
 		"boardList": boards.BoardList(infra.S.Conn),
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/thread_one", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/thread_one", data)
 }

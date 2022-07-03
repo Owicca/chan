@@ -23,5 +23,5 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		"topic_list": topics.TopicListWithBoardListWithThreadCount(infra.S.Conn),
 	}
 
-	infra.S.HTML(w, http.StatusOK, "back/index", data)
+	infra.S.HTML(w, r, http.StatusOK, "back/index", data)
 }

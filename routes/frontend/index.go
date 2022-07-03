@@ -35,5 +35,5 @@ Be sure to familiarize yourself with the Rules before posting, and read the FAQ 
 		},
 	}
 
-	infra.S.HTML(w, http.StatusOK, "front/index", data)
+	infra.S.HTML(w, r, http.StatusOK, "front/index", data)
 }

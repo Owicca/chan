@@ -237,3 +237,11 @@ CREATE TABLE links (
 	FOREIGN KEY (src) REFERENCES posts(id),
 	FOREIGN KEY (dest) REFERENCES posts(id)
 );
+
+-- ---
+
+CREATE TABLE sessions (
+	id bigint NOT NULL,
+	data text NULL,
+	PRIMARY KEY(id)
+);
