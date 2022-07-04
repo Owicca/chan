@@ -51,6 +51,24 @@ func ThreadPreviewByCode(db *gorm.DB, board_code string, limit int, offset int) 
 	return threadList
 }
 
+func ThreadPreviewByIdList(db *gorm.DB, thread_id_list []int, limit int, offset int) []Thread {
+	var (
+		threadList []Thread
+	)
+
+	stmt := db.Preload("Preview").Preload("Preview.LinkList")
+	if limit > 0 {
+		stmt = stmt.Limit(limit)
+	}
+	if offset > 0 {
+		stmt = stmt.Offset(offset)
+	}
+
+	stmt.Find(&threadList, "id IN (?)", thread_id_list)
+
+	return threadList
+}
+
 func TotalActiveThreads(db *gorm.DB, board_code string) int {
 	var count int
 
@@ -104,6 +122,16 @@ func ThreadList(db *gorm.DB) []Thread {
 	threadList := []Thread{}
 
 	db.Find(&threadList)
+
+	return threadList
+}
+
+func ThreadListByIdList(db *gorm.DB, id_list []int) []Thread {
+	var threadList []Thread
+
+	if len(id_list) > 0 {
+		db.Find(&threadList, id_list)
+	}
 
 	return threadList
 }

@@ -65,6 +65,20 @@ func PostList(db *gorm.DB) []Post {
 	return postList
 }
 
+func PostSearch(db *gorm.DB, board_code string, search string) []int {
+	var threadIdList []int
+
+	db.Raw(`
+	SELECT p.thread_id FROM posts p
+	LEFT JOIN threads t ON t.id = p.thread_id
+	LEFT JOIN boards b ON b.id = t.board_id
+	WHERE p.content like ?
+	AND b.code = ?
+	`, "%"+search+"%", board_code).Scan(&threadIdList)
+
+	return threadIdList
+}
+
 func PostListCountOfThread(db *gorm.DB, thread_id int) int {
 	var count int
 

@@ -4,8 +4,10 @@ import (
 	"net/http"
 
 	"github.com/Owicca/chan/infra"
+	"github.com/Owicca/chan/models/boards"
 	"github.com/Owicca/chan/models/media"
 	"github.com/Owicca/chan/models/posts"
+	"github.com/Owicca/chan/models/threads"
 	"github.com/Owicca/chan/models/topics"
 	"github.com/Owicca/chan/models/users"
 
@@ -14,6 +16,8 @@ import (
 
 func init() {
 	infra.S.HandleFunc("/", Index).Methods(http.MethodGet).Name("site_index")
+	infra.S.HandleFunc("/search/", Search).Methods(http.MethodGet).Name("search")
+	infra.S.HandleFunc("/search/", Search).Methods(http.MethodPost).Name("search_post")
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
@@ -36,4 +40,21 @@ Be sure to familiarize yourself with the Rules before posting, and read the FAQ 
 	}
 
 	infra.S.HTML(w, r, http.StatusOK, "front/index", data)
+}
+
+func Search(w http.ResponseWriter, r *http.Request) {
+	const op errors.Op = "front.Search"
+
+	search := r.PostFormValue("search")
+	board_code := r.PostFormValue("board_code")
+	thread_id_list := posts.PostSearch(infra.S.Conn, board_code, search)
+
+	data := map[string]any{
+		"search":      search,
+		"board_code":  board_code,
+		"board_list":  boards.BoardList(infra.S.Conn),
+		"thread_list": threads.ThreadPreviewByIdList(infra.S.Conn, thread_id_list, 0, 0),
+	}
+
+	infra.S.HTML(w, r, http.StatusOK, "front/search", data)
 }
