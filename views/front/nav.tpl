@@ -12,8 +12,8 @@
 		</span>
   </span>
   <span id="navtopright">
-		[ <a href="javascript:void(0);" id="settingsWindowLink">Settings</a>]
-		[ <a href="/search" title="Search">Search</a>]
+		{{/*[ <a href="javascript:void(0);" id="settingsWindowLink">Settings</a>]*/}}
+		[ <a href="/search/" title="Search">Search</a>]
 		[ <a href="/" target="_top">Home</a>]
 	</span>
 </div>
