@@ -10,7 +10,7 @@
 		</div>
 		<div class="offcanvas-body">
 			<ul class="container navbar-nav">
-				{{/*{{if .data.user}}*/}}
+					{{if .data.user}}
 					<li class="navbar-item"><a class="nav-link" href="/admin/">Home</a></li>
 					<li class="navbar-item"><a class="nav-link" href="/admin/users/">Users</a></li>
 					<li class="navbar-item"><a class="nav-link" href="/admin/topics/">Topics</a></li>
@@ -23,9 +23,9 @@
 								<input type="submit" value="Logout">
 							</form>
 					</li>
-				{{/*{{else}}
-					<li class="navbar-item"><a href="/admin/login/">Login</a></li>
-				{{end}}*/}}
+					{{else}}
+						<li class="navbar-item"><a href="/admin/login/">Login</a></li>
+					{{end}}
 			</ul>
 		</div>
 	</div>

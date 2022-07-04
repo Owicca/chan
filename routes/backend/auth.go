@@ -14,8 +14,7 @@ import (
 )
 
 var (
-	adminRouter   *mux.Router
-	SessionMaxAge = 86400 * 7
+	adminRouter *mux.Router
 )
 
 func init() {
@@ -55,7 +54,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	session, _ := infra.S.SessionStore.Get(r, infra.S.Config.Sessions.Key)
 	session.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   SessionMaxAge,
+		MaxAge:   msessions.MaxAge,
 		HttpOnly: true,
 	}
 	session.Values["user_id"] = user.ID

@@ -33,6 +33,7 @@ var (
 		"logout":      "/admin/logout/",
 	}
 	seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+	MaxAge                = 86400 * 7
 )
 
 type Session struct {
