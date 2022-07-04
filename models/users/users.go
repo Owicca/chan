@@ -112,7 +112,7 @@ func UserGetByCredentials(db *gorm.DB, email string, password string) (User, err
 		return user, errors.Errorf("Couldn't find an user with the email '%s'!", email)
 	}
 
-	pepper := "pepper"
+	pepper := user.Pepper
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pepper+password)); err != nil {
 		return user, errors.Errorf("Wrong password! (%s)", err)
 	}

@@ -4,10 +4,14 @@ import (
 	"gorm.io/gorm"
 )
 
+var (
+	privilegedRoles = []string{"root", "board_admin", "op"}
+)
+
 func RoleList(db *gorm.DB) []Role {
 	var roleList []Role
 
-	db.Not("name = ?", "root").Not("deleted_at > ?", 0).Find(&roleList)
+	db.Where("name NOT IN (?)", privilegedRoles).Not("deleted_at > ?", 0).Find(&roleList)
 
 	return roleList
 }
@@ -15,7 +19,7 @@ func RoleList(db *gorm.DB) []Role {
 func RoleIdList(db *gorm.DB) []int {
 	var roleIdList []int
 
-	db.Table("roles").Select("id").Not("name = ?", "root").Not("deleted_at > ?", 0).Scan(&roleIdList)
+	db.Table("roles").Select("id").Where("name NOT IN (?)", privilegedRoles).Not("deleted_at > ?", 0).Scan(&roleIdList)
 
 	return roleIdList
 }
