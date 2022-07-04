@@ -10,6 +10,7 @@ import (
 
 	"github.com/Owicca/chan/infra"
 	"github.com/Owicca/chan/models/sessions"
+	"github.com/Owicca/chan/models/users"
 
 	"go.uber.org/zap"
 )
@@ -73,6 +74,8 @@ func LoadMd(srv *infra.Server) {
 			if err := json.Unmarshal([]byte(ses.Data), &srv.Data); err != nil {
 				log.Fatalf("err while unmarshaling db session data (%s)", err)
 			}
+
+			srv.Data["user"] = users.UserOne(srv.Conn, user_id)
 
 			next.ServeHTTP(w, r)
 		})
