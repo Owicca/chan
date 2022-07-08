@@ -40,11 +40,13 @@
                 {{$post.Content}}
             </td>
             <td>
+                {{if eq $post.Deleted_at 0}}
                 <form method="post" action="/admin/posts/{{$post.ID}}/">
                     <input name="post_id" type="hidden" value="{{$post.ID}}" />
                     <input name="thread_id" type="hidden" value="{{$post.Thread_id}}" />
                     <input type="submit" value="Delete" />
                 </form>
+                {{end}}
             </td>
         </tr>
 {{else}}
