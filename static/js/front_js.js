@@ -1,7 +1,13 @@
 'use strict';
 (function() {
-  document.querySelector("#togglePostFormLink > a").addEventListener("click", openPostForm);
-  document.querySelector(".open-qr-link").addEventListener("click", openPostForm);
+  let threadListPostFormLink = document.querySelector("#togglePostFormLink > a");
+  if(threadListPostFormLink) {
+    threadListPostFormLink.addEventListener("click", openPostForm);
+  }
+  let postFormLink = document.querySelector(".open-qr-link");
+  if(postFormLink) {
+    postFormLink.addEventListener("click", openPostForm);
+  }
 
   let thread = document.querySelector(".thread");
 

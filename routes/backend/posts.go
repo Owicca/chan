@@ -73,11 +73,11 @@ func PostOneDelete(w http.ResponseWriter, r *http.Request) {
 
 	post_id, thread_id := r.PostFormValue("post_id"), r.PostFormValue("thread_id")
 	post_id_int, _ := strconv.Atoi(post_id)
-	//if err != nil {
-	//	logs.LogWarn(op, errors.Str("No post_id provided!"))
-	//	infra.S.Redirect(w, r, "/admin/posts/")
-	//	return
-	//}
+	if post_id_int < 1 {
+		logs.LogWarn(op, errors.Str("Invalid post_id!"))
+		infra.S.Redirect(w, r, "/admin/posts/")
+		return
+	}
 	posts.PostOneDelete(infra.S.Conn, post_id_int)
 
 	infra.S.Redirect(w, r, fmt.Sprintf("/admin/threads/%s/posts/", thread_id))

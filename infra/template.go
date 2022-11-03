@@ -10,9 +10,14 @@ import (
 	stdtemplate "html/template"
 
 	"github.com/Owicca/chan/models/boards"
+	"github.com/microcosm-cc/bluemonday"
 	"upspin.io/errors"
 	// customtemplate "github.com/alecthomas/template"
 	// blackfriday "gopkg.in/russross/blackfriday.v2"
+)
+
+var (
+	P = bluemonday.UGCPolicy()
 )
 
 type Template struct {

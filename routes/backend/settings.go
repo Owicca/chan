@@ -79,9 +79,10 @@ func LoadDummyData(w http.ResponseWriter, r *http.Request) {
 		newPost := posts.Post{
 			ID:         p.No,
 			Created_at: created_at,
+			Status:     string(posts.PostStatusActive),
 			Thread_id:  thread_id,
-			Name:       p.Name,
-			Content:    p.Com,
+			Name:       infra.P.Sanitize(p.Name),
+			Content:    infra.P.Sanitize(p.Com),
 		}
 		posts.PostOneCreate(infra.S.Conn, &newPost)
 
