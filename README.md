@@ -150,3 +150,9 @@ closed threads?
 ### reporting:
 - board: # of threads in a daterange
 - topic: # of threads in a daterange
+
+
+### todo:
+- [] abstract methods in `/models/`
+- [] test at least 50% of `/models/` methods
+- [] document EVERY method
