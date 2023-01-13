@@ -27,7 +27,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseMultipartForm(media.MaxFileSize); err != nil {
 		logs.LogErr(op, err)
 
-		infra.S.Errors.Set("misc", "Invalid file size!")
+		infra.S.Errors.Set("misc", []any{errors.Str("Invalid file size!")})
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
@@ -36,7 +36,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logs.LogErr(op, err)
 
-		infra.S.Errors.Set("misc", "Invalid thread id!")
+		infra.S.Errors.Set("misc", []any{errors.Str("Invalid thread id!")})
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
@@ -56,8 +56,9 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	content = r.PostFormValue("content")
 	if content == "" {
-		logs.LogWarn(op, errors.Str("No content provided!"))
-		infra.S.Errors.Set("content", "No content provided!")
+		err := errors.Str("No content provided!")
+		logs.LogWarn(op, err)
+		infra.S.Errors.Set("content", []any{err})
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
@@ -74,7 +75,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 			newPost.Tripcode = trip
 		} else {
 			logs.LogWarn(op, errors.Str("Invalid name provided!"))
-			infra.S.Errors.Set("name", "Invalid name format!")
+			infra.S.Errors.Set("name", []any{errors.Str("Invalid name format!")})
 			infra.S.Redirect(w, r, redirect_url)
 			return
 		}
@@ -89,7 +90,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			logs.LogErr(op, err)
 
-			infra.S.Errors.Set("media", "Error while processing the file!")
+			infra.S.Errors.Set("media", []any{errors.Str("Error while processing the file!")})
 			posts.PostOneDelete(infra.S.Conn, newPost.ID)
 			infra.S.Redirect(w, r, redirect_url)
 			return
@@ -99,7 +100,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 			errMsg := fmt.Sprintf("File size should be between %d KB and %d!", media.MinFileSize*1000, media.MaxFileSize*1000*1000)
 
 			logs.LogErr(op, errMsg)
-			infra.S.Errors.Set("media", errMsg)
+			infra.S.Errors.Set("media", []any{errMsg})
 			posts.PostOneDelete(infra.S.Conn, newPost.ID)
 			infra.S.Redirect(w, r, redirect_url)
 			return
@@ -112,7 +113,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		}, mediaFile)
 		if err != nil {
 			logs.LogErr(op, err)
-			infra.S.Errors.Set("media", "Error while uploading the file!")
+			infra.S.Errors.Set("media", []any{errors.Str("Error while uploading the file!")})
 			posts.PostOneDelete(infra.S.Conn, newPost.ID)
 		} else {
 			infra.S.Conn.Create(&newMedia)

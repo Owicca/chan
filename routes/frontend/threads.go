@@ -29,23 +29,24 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
 	redirect_url := fmt.Sprintf("/boards/%s/", vars["board_code"])
 	if err := r.ParseMultipartForm(media.MaxFileSize); err != nil {
 		logs.LogErr(op, errors.Errorf("Could not parse form (%s)", err))
-		infra.S.Errors.Set("misc", "Invalid file size!")
+		infra.S.Errors.Set("misc", []any{errors.Str("Invalid file size!")})
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
 
 	subject := r.PostFormValue("subject")
 	if subject == "" {
-		logs.LogWarn(op, errors.Str("A subject is required when creating a thread!"))
-		infra.S.Errors.Set("subject", "A subject is required when creating a thread!")
+		err := errors.Str("A subject is required when creating a thread!")
+		logs.LogWarn(op, err)
+		infra.S.Errors.Set("subject", []any{err})
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
 	mediaList, ok := r.MultipartForm.File["media"]
 	if !ok || len(mediaList) == 0 {
-		logs.LogErr(op, errors.Errorf("Media is required when creating a thread!"))
-
-		infra.S.Errors.Set("media", "Media is required when creating a thread!")
+		err := errors.Errorf("Media is required when creating a thread!")
+		logs.LogErr(op, err)
+		infra.S.Errors.Set("media", []any{err})
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
@@ -72,7 +73,7 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
 	content = r.PostFormValue("content")
 	if content == "" {
 		logs.LogWarn(op, errors.Str("No content provided!"))
-		infra.S.Errors.Set("content", "No content provided!")
+		infra.S.Errors.Set("content", []any{errors.Str("No content provided!")})
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
@@ -88,8 +89,9 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
 			newPost.Name = name
 			newPost.Tripcode = trip
 		} else {
-			logs.LogWarn(op, errors.Str("Invalid name provided!"))
-			infra.S.Errors.Set("name", "Invalid name provided!")
+			err := errors.Str("Invalid name provided!")
+			logs.LogWarn(op, err)
+			infra.S.Errors.Set("name", []any{err})
 			infra.S.Redirect(w, r, redirect_url)
 			return
 		}
@@ -105,7 +107,7 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logs.LogErr(op, err)
 
-		infra.S.Errors.Set("media", "Error while processing the file!")
+		infra.S.Errors.Set("media", []any{errors.Str("Error while processing the file!")})
 		infra.S.Redirect(w, r, redirect_url)
 		return
 	}
@@ -117,7 +119,7 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
 	}, mediaFile)
 	if err != nil {
 		logs.LogErr(op, err)
-		infra.S.Errors.Set("media", "Error while creating the file!")
+		infra.S.Errors.Set("media", []any{errors.Str("Error while creating the file!")})
 	} else {
 		infra.S.Conn.Create(&newMedia)
 	}

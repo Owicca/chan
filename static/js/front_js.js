@@ -14,7 +14,7 @@
   /**
    * Show quick form
    */
-  thread.addEventListener("click", (e) => {
+  thread && thread.addEventListener("click", (e) => {
     let post = e.target;
     if (!post.classList.contains("quotePost")) {
       return;
@@ -37,7 +37,7 @@
   /**
    * Add link
    */
-  thread.addEventListener("click", (e) => {
+  thread && thread.addEventListener("click", (e) => {
     let post = e.target;
     if (!post.classList.contains("quotePost")) {
       return;
@@ -49,7 +49,8 @@
     addLink(boardCode, pid, form.dataset.curpid);
   });
 
-  document.getElementById("qrClose").addEventListener("click", function(e) {
+  let close = document.getElementById("qrClose");
+  close && close.addEventListener("click", function(e) {
     clearFormLinks();
     document.getElementById("quickReply").classList.add("hidden");
   });

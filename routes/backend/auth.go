@@ -36,7 +36,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	email, pass1, pass2 := r.PostFormValue("email"), r.PostFormValue("password1"), r.PostFormValue("password2")
 	if err := users.UserValidate(email, pass1, pass2); err != nil {
 		logs.LogErr(op, err)
-		infra.S.Errors.Set("misc", err)
+		infra.S.Errors.Set("misc", []any{err})
 
 		infra.S.Redirect(w, r, url.String())
 		return
@@ -46,7 +46,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logs.LogErr(op, err)
 
-		infra.S.Errors.Set("email", err)
+		infra.S.Errors.Set("email", []any{err})
 		infra.S.Redirect(w, r, url.String())
 		return
 	}

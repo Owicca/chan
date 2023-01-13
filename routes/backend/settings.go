@@ -26,6 +26,12 @@ func SettingList(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoadDummyData(w http.ResponseWriter, r *http.Request) {
+	GenerateDummyData()
+
+	infra.S.Redirect(w, r, "/admin/settings/")
+}
+
+func GenerateDummyData() {
 	infra.ClearDb(infra.S.Conn)
 	pidReg := regexp.MustCompile(`#p(\d{1,})`)
 
@@ -101,6 +107,4 @@ func LoadDummyData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("finished entering dummy data")
-
-	infra.S.Redirect(w, r, "/admin/settings/")
 }
