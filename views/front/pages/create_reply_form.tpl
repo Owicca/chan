@@ -37,7 +37,7 @@
 			<tr class="rules">
 				<td colspan="2">
 					<ul class="rules">
-						<li>Please read the <a href="/rules#g/">Rules</a> and <a href="/faq/">FAQ</a> before posting.</li>
+						<li>Please read the <a href="/rules/">Rules</a> and <a href="/faq/">FAQ</a> before posting.</li>
 						<li>You may highlight syntax and preserve whitespace by using [code] tags.</li>
 						<li>There are <strong id="unique-ips">#@#</strong> posters in this thread.</li>
 					</ul>

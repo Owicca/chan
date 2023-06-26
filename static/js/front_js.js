@@ -15,6 +15,7 @@
    * Show quick form
    */
   thread && thread.addEventListener("click", (e) => {
+    console.log("here");
     let post = e.target;
     if (!post.classList.contains("quotePost")) {
       return;
@@ -38,6 +39,7 @@
    * Add link
    */
   thread && thread.addEventListener("click", (e) => {
+    console.log("here2");
     let post = e.target;
     if (!post.classList.contains("quotePost")) {
       return;

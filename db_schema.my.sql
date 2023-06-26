@@ -1,4 +1,4 @@
-CREATE TABLE log_actions(
+CREATE TABLE log_actions (
 	id bigint NOT NULL AUTO_INCREMENT,
 	action varchar(255) NOT NULL,-- insert, update, delete, virtual_delete
 	subject bigint NOT NULL,-- subject that does the action
@@ -8,26 +8,26 @@ CREATE TABLE log_actions(
 	PRIMARY KEY(id)
 );
 
-CREATE TABLE actions(
+CREATE TABLE actions (
 	id bigint NOT NULL AUTO_INCREMENT,
 	deleted_at int NOT NULL DEFAULT 0,
 	name varchar(64) NOT NULL,
 	PRIMARY KEY(id)
 );
 
-INSERT INTO actions(id, name) VALUES
+INSERT INTO actions (id, name) VALUES
 (1, 'read'),
 (2, 'create'),
 (3, 'update'),
 (4, 'delete');
 
-CREATE TABLE objects(
+CREATE TABLE objects (
 	id bigint NOT NULL AUTO_INCREMENT,
 	name varchar(64) NOT NULL,
 	PRIMARY KEY(id)
 );
 
-INSERT INTO objects(id, name) VALUES
+INSERT INTO objects (id, name) VALUES
 (1, "post"),
 (2, "thread"),
 (3, "board"),
@@ -65,20 +65,20 @@ INSERT INTO action_to_object (id, action_id, obj_id) VALUES
 (53, 3,	5),
 (54, 4,	5);
 
-CREATE TABLE roles(
+CREATE TABLE roles (
 	id bigint NOT NULL AUTO_INCREMENT,
 	deleted_at int NOT NULL DEFAULT 0,
 	name varchar(64) NOT NULL,
 	PRIMARY KEY(id)
 );
 
-INSERT INTO roles(id, name) VALUES
+INSERT INTO roles (id, name) VALUES
 (1, 'root'),
 (2, 'site_admin'),
 (3, 'board_admin'),
 (4, 'op');
 
-CREATE TABLE pair_to_role(
+CREATE TABLE pair_to_role (
 	id bigint NOT NULL AUTO_INCREMENT,
 	ato_id bigint NOT NULL,
 	role_id bigint NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE pair_to_role(
 	FOREIGN KEY(role_id) REFERENCES roles(id)
 );
 
-INSERT INTO pair_to_role(ato_id, role_id) VALUES
+INSERT INTO pair_to_role (ato_id, role_id) VALUES
 (11, 1),
 (12, 1),
 (13, 1),
@@ -147,8 +147,9 @@ INSERT INTO pair_to_role(ato_id, role_id) VALUES
 (22, 4),
 (23, 4);
 
-CREATE TABLE users(
+CREATE TABLE users (
 	id bigint NOT NULL AUTO_INCREMENT,
+	created_at int NOT NULL DEFAULT 0,
 	deleted_at int NOT NULL DEFAULT 0,
 	username varchar(255) NOT NULL,
 	email varchar(255) NOT NULL,
@@ -160,14 +161,15 @@ CREATE TABLE users(
 	PRIMARY KEY(id)
 );
 
-INSERT INTO users(id, username, email, password, pepper, status, role_id) VALUES
-(1, 'root', 'root@root.com', '$2a$10$ILRgDxBKyNyBdGP9969PuO7Egb5naBWgQeAJwjrHvw39mzaFwtDU2', 'pepper', "A", 1);-- password: password; pepper: pepper
+INSERT INTO users (id, created_at, username, email, password, pepper, status, role_id) VALUES
+(1, UNIX_TIMESTAMP(), 'root', 'root@root.com', '$2a$10$ILRgDxBKyNyBdGP9969PuO7Egb5naBWgQeAJwjrHvw39mzaFwtDU2', 'pepper', "A", 1);-- password: password; pepper: pepper
 
 -- ---
 
 CREATE TABLE media (
 	object_id bigint NOT NULL,
 	object_type varchar(64) NOT NULL,
+	created_at int NOT NULL DEFAULT 0,
 	deleted_at int NOT NULL DEFAULT 0,
 	name varchar(64) NOT NULL,-- seo name
 	type varchar(64) NOT NULL DEFAULT 'img',-- img, vid
@@ -180,8 +182,9 @@ CREATE TABLE media (
 
 -- ---
 
-CREATE TABLE topics(
+CREATE TABLE topics (
 	id bigint NOT NULL AUTO_INCREMENT,
+	created_at int NOT NULL DEFAULT 0,
 	deleted_at int NOT NULL DEFAULT 0,
 	name varchar(255) NOT NULL,
 	PRIMARY KEY(id)
@@ -189,8 +192,9 @@ CREATE TABLE topics(
 
 -- ---
 
-CREATE TABLE boards(
+CREATE TABLE boards (
 	id bigint NOT NULL AUTO_INCREMENT,
+	created_at int NOT NULL DEFAULT 0,
 	deleted_at int NOT NULL DEFAULT 0,
 	topic_id bigint NOT NULL,
 	name varchar(255) NOT NULL,
@@ -204,6 +208,7 @@ CREATE TABLE boards(
 
 CREATE TABLE threads (
 	id bigint NOT NULL AUTO_INCREMENT,
+	created_at int NOT NULL DEFAULT 0,
 	deleted_at int NOT NULL DEFAULT 0,
 	board_id bigint NOT NULL,
 	subject varchar(255) NOT NULL,

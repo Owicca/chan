@@ -1,40 +1,58 @@
-### entities:
-- #image: jpg/jpeg/png/webp/gif
-
-- #action:
-	- a subject does an action on an object
-	- structure:
-		- name: short text
-		- code: short text
-
-- actions:
-	1. post:
-		1. create
-		2. update
-		3. delete
-	2. thread:
-		1. create
-		2. update
-		3. delete
-	3. board:
-		1. create
-		2. update
-		3. delete
-	4. site
-	5. op:
-		1. create
-		2. update
-		3. delete
-	6. board admin:
-		1. create
-		2. update
-		3. delete
-	7. site admin:
-		1. create
-		2. update
-		3. delete
-
-- #role: a list of actions
+```
+classDiagram
+    Topics "1" <-- "0..n" Boards
+    Boards "1" <-- "0..n" Threads
+    Threads "1" <-- "0..n" Posts
+    Boards "1" <-- "0..n" Media
+    Posts "1" <-- "0..n" Media
+    class Topics{
+        +int ID
+        +string Name
+        +int Deleted_at
+    }
+    class Boards{
+        +int ID
+        +int Deleted_at
+        +string Name
+        +string Code
+        +string Description
+        +int Topic_id
+    }
+    class Threads{
+        +int ID
+        +int Deleted_at
+        +int Board_id
+        +int Primary_post_id
+        +subject Subject
+        +string Content
+        +[]posts.Post Preview
+    }
+    class Posts{
+        +int ID
+        +int Created_at
+        +int Deleted_at
+        +string Tripcode
+        +string SecureTripcode
+        +string Status
+        +int Thread_id
+        +string Name
+        +string Content
+        +media.Media Media
+        +[]Link LinkList
+    }
+    class Media {
+        +int Object_id
+        +string Object_type
+        +int Deleted_at
+        +string Name
+        +string Type
+        +string Path
+        +string Thumb
+        +int X
+        +int Y
+        +int Size
+    }
+```
 
 - default_roles(new roles can be created, but these are unchangeable):
 	- anon:
@@ -60,53 +78,6 @@
 		- action_list:
 			- 7.1, 7.2, 7.3
 
-- #user:
-	- username: short text
-	- email: email
-	- password: short text
-	- type: char
-	- status: char
-	- group: int
-
-- #post:
-	- info:
-		- creating a post generates an id stored in a cookie,
-		as long as you have the cookie, you can delete your post
-	- metadata:
-		- thread: int
-		- status: char
-		- name: short text
-		- media:
-			- image:
-				- jpg
-				- jpeg
-				- png
-				- webp
-				- gif
-			- video:
-				- webm:
-					- 120s
-					- 2048x2048
-					- 3MB
-				- mp4
-	- message:
-		- type: text
-		- plain text
-		- can contain ">"(quote), ">>"(link), ">>>/x/123121"(cross-link) are allowed
-		- can contain tags "[tag]content[/tag]"
-- #thread:
-	- a thread needs at least one post with an image
-	- page limit: 10
-	- post per page limit: 50
-	- posts: []#post
-- #board
-	- info:
-		- thread limit: 10
-	- name: short text
-	- code: short text
-	- descriptions: text
-	- threads: []#thread
-	- image: #image
 
 
 ### tech:

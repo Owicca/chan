@@ -23,7 +23,9 @@
 	{{end}}
 
 	{{$pipe := (params "post" $post "type" $type "trp" $trp)}}
-	{{template "front/post_one" $pipe}}
+	<li>
+		{{template "front/post_one" $pipe}}
+	</li>
 {{end}}
 {{$form_action := (printf "/boards/%s/threads/%s/" .board_code .thread_id)}}
 {{$form_params := (params "form_action" $form_action "form_button_label" "Post" "errors" .errors)}}

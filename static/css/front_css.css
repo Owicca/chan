@@ -97,3 +97,7 @@ pre {
 .pagelist div.next {
 	padding: 4px;
 }
+
+.backlink {
+	display: inline-block;
+}
